@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <soap:Header>
+      <urn:Assertion xmlns:urn="urn:oasis:names:tc:SAML:2.0:assertion"
+                     ID="SAMLY2lib_assert_4256fe7751daf279186bfbe6f9d6ea4ab88c6fe7ce8a487"
+                     IssueInstant="2009-08-20T18:19:00.690+02:00"
+                     Version="2.0">
+         <urn:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">C=PL,ST=Kujawsko-Pomorskie,L=Torun,O=U
+W,OU=ICM,CN=Krzysztof Benedyczak,1.2.840.113549.1.9.1=#1610676f6c6269406d61742e756d6b2e706c</urn:Issuer>
+         <dsig:Signature xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
+            <dsig:SignedInfo>
+               <dsig:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+               <dsig:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+            <dsig:SignatureValue>dbgNSQLDSWEunS0ZaL2cv3uoS8uIIptoKCsJw02I0ROq9Lv6kd8XEezYqEYpYf43IxoNzJcfZOrx
+iIuYSl5mHse4PL2DuJFsZXpTyAWRvu8zra6vkcywEePgViwZ/v1u/DZPwsCVb6iO6OEsW+vRpQHb
+9d3dchRL3n9vrPpveJw=</dsig:SignatureValue>
+            <dsig:KeyInfo>
+               <dsig:X509Data>
+                  <dsig:X509Certificate>MIIC4TCCAcmgAwIBAgIBGzANBgkqhkiG9w0BAQQFADBWMQswCQYDVQQGEwJQTDEdMBsGA1UEAxMU
+Q2hlbW9tZW50dW0gUGlsb3QgQ0ExGjAYBgNVBAoTEVdhcnNhdyBVbml2ZXJzaXR5MQwwCgYDVQQL
+EwNJQ00wHhcNMDYxMjMxMjMwMDAwWhcNMDkxMjMxMjMwMDAwWjCBlTEfMB0GCSqGSIb3DQEJARYQ
+Z29sYmlAbWF0LnVtay5wbDEdMBsGA1UEAwwUS3J6eXN6dG9mIEJlbmVkeWN6YWsxDDAKBgNVBAsM
+A0lDTTELMAkGA1UECgwCVVcxDjAMBgNVBAcMBVRvcnVuMRswGQYDVQQIDBJLdWphd3Nrby1Qb21v
+cnNraWUxCzAJBgNVBAYTAlBMMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRqy6VhjFw6ITG
+6MN+gKH1R3FAU2VHDWnWQSP3eXHIXtvBI3KuxMrvKh92wJbbtvv91WMnvdflkCd8qkTE6loGcC9X
+NR8bn6l+b7zLyBnlTKMxlNT6eLjLClJBpDToFCPII6Rq3913A/S3CQsVrmWZTcqVU22QLEXbYKZT
+hJ83cQIDAQABMA0GCSqGSIb3DQEBBAUAA4IBAQCKZWOLLMmvmLotRnbwCR+gAWpkbdB4HAWTwr0l
+kNhgaOqw9utOEzwlCOqFMjd27xE2dwfs34W96if6GC7OinZ82i+7oRrwEFr0ZhLlq80BLCu1jrPT
+8K9PVIEyd+S3q2DUvdf4miqoMUVhicr01UenYmCpH005i2t75l8ON+8noPdEL9oR4YHmMPJ3kKQ2
+aP/Yi4CvFmG4tJLbWaYuddnLt3OOw4IaVR4XXNmh6x6RE3Z87o/NfdFj/I4nwIc5iwrKZpaalQRC
+f3HMyKYWz67OSCh9TQVfTqnrCKmJ1BDcPhGtc+ou9eFcf/3oss1PVBSV3sFtgt+n40KvadWX46U+</dsig:X509Certificate>
+               </dsig:X509Data>
+            </dsig:KeyInfo>
+         </dsig:Signature>
+         <urn:Subject>
+            <urn:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">1.2.840.113549.1.9.1=#161b746573746
+265644063686172796264612e69636d2e6564752e706c,CN=xnjs-testbed.chemomentum.org,OU=ICM,O=Warsaw University,L=Warsaw,C=PL</urn:NameID>
+         </urn:Subject>
+         <urn:Conditions>
+            <urn:ProxyRestriction Count="10"/>
+         </urn:Conditions>
+         <urn:AttributeStatement>
+            <urn:Attribute Name="TrustDelegationOfUser" NameFormat="urn:unicore:trust-delegation:dn">
+               <urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">C=PL,ST=Kujawsko-Pomorskie
+,L=Torun,O=UW,OU=ICM,CN=Krzysztof Benedyczak,1.2.840.113549.1.9.1=#1610676f6c6269406d61742e756d6b2e706c</urn:AttributeValue>
+            </urn:Attribute>
+         </urn:AttributeStatement>
+      </urn:Assertion>
+      <wsa:To xmlns:wsa="http://www.w3.org/2005/08/addressing">https://localhost:8080/TESTBED_EXECUTION/services
+/TargetSystemService?res=6efc76e0-8880-4df6-905a-ad144764a476</wsa:To>
+      <wsa:Action xmlns:wsa="http://www.w3.org/2005/08/addressing">http://docs.oasis-open.org/wsrf/rpw-2/GetResourcePropertyDo
+cument/GetResourcePropertyDocumentRequest</wsa:Action>
+      <wsa:MessageID xmlns:wsa="http://www.w3.org/2005/08/addressing">urn:uuid:6C5445DF-3017-19F5-7F6A-EAA1ED048383</wsa:MessageID>
+      <rpns1:ResourceId xmlns:rpns1="http://www.unicore.eu/unicore6"
+                        xmlns:wsa="http://www.w3.org/2005/08/addressing"
+                        wsa:IsReferenceParameter="true">6efc76e0-8880-4df6-905a-ad144764a476</rpns1:ResourceId>
+   </soap:Header>
+   <soap:Body>
+      <rp:GetResourcePropertyDocument xmlns:rp="http://docs.oasis-open.org/wsrf/rp-2"/>
+   </soap:Body>
+</soap:Envelope>
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <soap:Header>
+      <urn:Assertion xmlns:urn="urn:oasis:names:tc:SAML:2.0:assertion"
+                     ID="SAMLY2lib_assert_4256fe7751daf279186bfbe6f9d6ea4ab88c6fe7ce8a487"
+                     IssueInstant="2009-08-20T18:19:00.690+02:00"
+                     Version="2.0">
+         <urn:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">C=PL,ST=Kujawsko-Pomorskie,L=Torun,O=U
+W,OU=ICM,CN=Krzysztof Benedyczak,1.2.840.113549.1.9.1=#1610676f6c6269406d61742e756d6b2e706c</urn:Issuer>
+         <dsig:Signature xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
+            <dsig:SignedInfo>
+               <dsig:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+               <dsig:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+               <dsig:Reference URI="#SAMLY2lib_assert_4256fe7751daf279186bfbe6f9d6ea4ab88c6fe7ce8a487">
+                  <dsig:Transforms>
+                     <dsig:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                     <dsig:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                  </dsig:Transforms>
+                  <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                  <dsig:DigestValue>6CzCgDc38wm/qC28L8WQPGAe/HM=</dsig:DigestValue>
+               </dsig:Reference>
+            </dsig:SignedInfo>
+            <dsig:SignatureValue>dbgNSQLDSWEunS0ZaL2cv3uoS8uIIptoKCsJw02I0ROq9Lv6kd8XEezYqEYpYf43IxoNzJcfZOrx
+iIuYSl5mHse4PL2DuJFsZXpTyAWRvu8zra6vkcywEePgViwZ/v1u/DZPwsCVb6iO6OEsW+vRpQHb
+9d3dchRL3n9vrPpveJw=</dsig:SignatureValue>
+            <dsig:KeyInfo>
+               <dsig:X509Data>
+                  <dsig:X509Certificate>MIIC4TCCAcmgAwIBAgIBGzANBgkqhkiG9w0BAQQFADBWMQswCQYDVQQGEwJQTDEdMBsGA1UEAxMU
+Q2hlbW9tZW50dW0gUGlsb3QgQ0ExGjAYBgNVBAoTEVdhcnNhdyBVbml2ZXJzaXR5MQwwCgYDVQQL
+EwNJQ00wHhcNMDYxMjMxMjMwMDAwWhcNMDkxMjMxMjMwMDAwWjCBlTEfMB0GCSqGSIb3DQEJARYQ
+Z29sYmlAbWF0LnVtay5wbDEdMBsGA1UEAwwUS3J6eXN6dG9mIEJlbmVkeWN6YWsxDDAKBgNVBAsM
+A0lDTTELMAkGA1UECgwCVVcxDjAMBgNVBAcMBVRvcnVuMRswGQYDVQQIDBJLdWphd3Nrby1Qb21v
+cnNraWUxCzAJBgNVBAYTAlBMMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRqy6VhjFw6ITG
+6MN+gKH1R3FAU2VHDWnWQSP3eXHIXtvBI3KuxMrvKh92wJbbtvv91WMnvdflkCd8qkTE6loGcC9X
+NR8bn6l+b7zLyBnlTKMxlNT6eLjLClJBpDToFCPII6Rq3913A/S3CQsVrmWZTcqVU22QLEXbYKZT
+hJ83cQIDAQABMA0GCSqGSIb3DQEBBAUAA4IBAQCKZWOLLMmvmLotRnbwCR+gAWpkbdB4HAWTwr0l
+kNhgaOqw9utOEzwlCOqFMjd27xE2dwfs34W96if6GC7OinZ82i+7oRrwEFr0ZhLlq80BLCu1jrPT
+8K9PVIEyd+S3q2DUvdf4miqoMUVhicr01UenYmCpH005i2t75l8ON+8noPdEL9oR4YHmMPJ3kKQ2
+aP/Yi4CvFmG4tJLbWaYuddnLt3OOw4IaVR4XXNmh6x6RE3Z87o/NfdFj/I4nwIc5iwrKZpaalQRC
+f3HMyKYWz67OSCh9TQVfTqnrCKmJ1BDcPhGtc+ou9eFcf/3oss1PVBSV3sFtgt+n40KvadWX46U+</dsig:X509Certificate>
+               </dsig:X509Data>AkGA1UECgwCAkGA1UECgwCVVcxDjAMBgNVBAcMBVRvcnVuMRswGQYDVQQIDBJLdWphd3Nrby1Qb21v
+cnNraWUxCzAJBgNVBAYTAlBMMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRqy6VhjFw6ITG
+6MN+gKH1R3FAU2VHDWnWQSP3eXHIXtvBI3KuxMrvKh92wJbbtvv91WMnvdflkCd8qkTE6loGcC9X
+NR8bn6l+b7zLyBnlTKMxlNT6eLjLClJBpDToFCPII6Rq3913A/S3CQsVrmWZTcqVU22QLEXbYKZT
+hJ83cQIDAQABMA0GCSqGSIb3DQEBBAUAA4IBAQCKZWOLLMmvmLotRnbwCR+gAWpkbdB4HAWTwr0l
+kNhgaOqw9utOEzwlCOqFMjd27xE2dwfs34W96if6GC7OinZ82i+7oRrwEFr0ZhLlq80BLCu1jrPT
+8K9PVIEyd+S3q2DUvdf4miqoMUVhicr01UenYmCpH005i2t75l8ON+8noPdEL9oR4YHmMPJ3kKQ2
+aP/Yi4CvFmG4tJLbWaYuddnLt3OOw4IaVR4XXNmh6x6RE3Z87o/NfdFj/I4nwIc5iwrKZpaalQRC
+f3HMyKYWz67OSCh9TQVfTqnrCKmJ1BDcPhGtc+ou9eFcf/3oss1PVBSV3sFtgt+n40KvadWX46U+</dsig:X509Certificate>
+               </dsig:X509Data>AkGA1UECgwCVVcxDjAMBgNVBAcMBVRvcnVuMRswGQYDVQQIDBJLdWphd3Nrby1Qb21v
+cnNraWUxCzAJBgNVBAYTAlBMMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRqy6VhjFw6ITG
+6MN+gKH1R3FAU2VHDWnWQSP3eXHIXtvBI3KuxMrvKh92wJbbtvv91WMnvdflkCd8qkTE6loGcC9X
+NR8bn6l+b7zLyBnlTKMxlNT6eLjLClJBpDToFCPII6Rq3913A/S3CQsVrmWZTcqVU22QLEXbYKZT
+hJ83cQIDAQABMA0GCSqGSIb3DQEBBAUAA4IBAQCKZWOLLMmvmLotRnbwCR+gAWpkbdB4HAWTwr0l
+kNhgaOqw9utOEzwlCOqFMjd27xE2dwfs34W96if6GC7OinZ82i+7oRrwEFr0ZhLlq80BLCu1jrPT
+8K9PVIEyd+S3q2DUvdf4miqoMUVhicr01UenYmCpH005i2t75l8ON+8noPdEL9oR4YHmMPJ3kKQ2
+aP/Yi4CvFmG4tJLbWaYuddnLt3OOw4IaVR4XXNmh6x6RE3Z87o/NfdFj/I4nwIc5iwrKZpaalQRC
+f3HMyKYWz67OSCh9TQVfTqnrCKmJ1BDcPhGtc+ou9eFcf/3oss1PVBSV3sFtgt+n40KvadWX46U+</dsig:X509Certificate>
+               </dsig:X509Data>AkGA1UECgwCVVcxDjAMBgNVBAcMBVRvcnVuMRswGQYDVQQIDBJLdWphd3Nrby1Qb21v
+cnNraWUxCzAJBgNVBAYTAlBMMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRqy6VhjFw6ITG
+6MN+gKH1R3FAU2VHDWnWQSP3eXHIXtvBI3KuxMrvKh92wJbbtvv91WMnvdflkCd8qkTE6loGcC9X
+NR8bn6l+b7zLyBnlTKMxlNT6eLjLClJBpDToFCPII6Rq3913A/S3CQsVrmWZTcqVU22QLEXbYKZT
+hJ83cQIDAQABMA0GCSqGSIb3DQEBBAUAA4IBAQCKZWOLLMmvmLotRnbwCR+gAWpkbdB4HAWTwr0l
+kNhgaOqw9utOEzwlCOqFMjd27xE2dwfs34W96if6GC7OinZ82i+7oRrwEFr0ZhLlq80BLCu1jrPT
+8K9PVIEyd+S3q2DUvdf4miqoMUVhicr01UenYmCpH005i2t75l8ON+8noPdEL9oR4YHmMPJ3kKQ2
+aP/Yi4CvFmG4tJLbWaYuddnLt3OOw4IaVR4XXNmh6x6RE3Z87o/NfdFj/I4nwIc5iwrKZpaalQRC
+f3HMyKYWz67OSCh9TQVfTqnrCKmJ1BDcPhGtc+ou9eFcf/3oss1PVBSV3sFtgt+n40KvadWX46U+</dsig:X509Certificate>
+               </dsig:X509Data>AkGA1UECgwCVVcxDjAMBgNVBAcMBVRvcnVuMRswGQYDVQQIDBJLdWphd3Nrby1Qb21v
+cnNraWUxCzAJBgNVBAYTAlBMMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRqy6VhjFw6ITG
+6MN+gKH1R3FAU2VHDWnWQSP3eXHIXtvBI3KuxMrvKh92wJbbtvv91WMnvdflkCd8qkTE6loGcC9X
+NR8bn6l+b7zLyBnlTKMxlNT6eLjLClJBpDToFCPII6Rq3913A/S3CQsVrmWZTcqVU22QLEXbYKZT
+hJ83cQIDAQABMA0GCSqGSIb3DQEBBAUAA4IBAQCKZWOLLMmvmLotRnbwCR+gAWpkbdB4HAWTwr0l
+kNhgaOqw9utOEzwlCOqFMjd27xE2dwfs34W96if6GC7OinZ82i+7oRrwEFr0ZhLlq80BLCu1jrPT
+8K9PVIEyd+S3q2DUvdf4miqoMUVhicr01UenYmCpH005i2t75l8ON+8noPdEL9oR4YHmMPJ3kKQ2
+aP/Yi4CvFmG4tJLbWaYuddnLt3OOw4IaVR4XXNmh6x6RE3Z87o/NfdFj/I4nwIc5iwrKZpaalQRC
+f3HMyKYWz67OSCh9TQVfTqnrCKmJ1BDcPhGtc+ou9eFcf/3oss1PVBSV3sFtgt+n40KvadWX46U+</dsig:X509Certificate>
+               </dsig:X509Data>AkGA1UECgwCVVcxDjAMBgNVBAcMBVRvcnVuMRswGQYDVQQIDBJLdWphd3Nrby1Qb21v
+cnNraWUxCzAJBgNVBAYTAlBMMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRqy6VhjFw6ITG
+6MN+gKH1R3FAU2VHDWnWQSP3eXHIXtvBI3KuxMrvKh92wJbbtvv91WMnvdflkCd8qkTE6loGcC9X
+NR8bn6l+b7zLyBnlTKMxlNT6eLjLClJBpDToFCPII6Rq3913A/S3CQsVrmWZTcqVU22QLEXbYKZT
+hJ83cQIDAQABMA0GCSqGSIb3DQEBBAUAA4IBAQCKZWOLLMmvmLotRnbwCR+gAWpkbdB4HAWTwr0l
+kNhgaOqw9utOEzwlCOqFMjd27xE2dwfs34W96if6GC7OinZ82i+7oRrwEFr0ZhLlq80BLCu1jrPT
+8K9PVIEyd+S3q2DUvdf4miqoMUVhicr01UenYmCpH005i2t75l8ON+8noPdEL9oR4YHmMPJ3kKQ2
+aP/Yi4CvFmG4tJLbWaYuddnLt3OOw4IaVR4XXNmh6x6RE3Z87o/NfdFj/I4nwIc5iwrKZpaalQRC
+f3HMyKYWz67OSCh9TQVfTqnrCKmJ1BDcPhGtc+ou9eFcf/3oss1PVBSV3sFtgt+n40KvadWX46U+</dsig:X509Certificate>
+               </dsig:X509Data>VVcxDjAMBgNVBAcMBVRvcnVuMRswGQYDVQQIDBJLdWphd3Nrby1Qb21v
+cnNraWUxCzAJBgNVBAYTAlBMMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRqy6VhjFw6ITG
+6MN+gKH1R3FAU2VHDWnWQSP3eXHIXtvBI3KuxMrvKh92wJbbtvv91WMnvdflkCd8qkTE6loGcC9X
+NR8bn6l+b7zLyBnlTKMxlNT6eLjLClJBpDToFCPII6Rq3913A/S3CQsVrmWZTcqVU22QLEXbYKZT
+hJ83cQIDAQABMA0GCSqGSIb3DQEBBAUAA4IBAQCKZWOLLMmvmLotRnbwCR+gAWpkbdB4HAWTwr0l
+kNhgaOqw9utOEzwlCOqFMjd27xE2dwfs34W96if6GC7OinZ82i+7oRrwEFr0ZhLlq80BLCu1jrPT
+8K9PVIEyd+S3q2DUvdf4miqoMUVhicr01UenYmCpH005i2t75l8ON+8noPdEL9oR4YHmMPJ3kKQ2
+aP/Yi4CvFmG4tJLbWaYuddnLt3OOw4IaVR4XXNmh6x6RE3Z87o/NfdFj/I4nwIc5iwrKZpaalQRC
+f3HMyKYWz67OSCh9TQVfTqnrCKmJ1BDcPhGtc+ou9eFcf/3oss1PVBSV3sFtgt+n40KvadWX46U+</dsig:X509Certificate>
+               </dsig:X509Data>
+            </dsig:KeyInfo>
+         </dsig:Signature>
+         <urn:Subject>
+            <urn:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">1.2.840.113549.1.9.1=#161b746573746
+265644063686172796264612e69636d2e6564752e706c,CN=xnjs-testbed.chemomentum.org,OU=ICM,O=Warsaw University,L=Warsaw,C=PL</urn:NameID>
+         </urn:Subject>
+         <urn:Conditions>
+            <urn:ProxyRestriction Count="10"/>
+         </urn:Conditions>
+         <urn:AttributeStatement>
+            <urn:Attribute Name="TrustDelegationOfUser" NameFormat="urn:unicore:trust-delegation:dn">
+               <urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">C=PL,ST=Kujawsko-Pomorskie
+,L=Torun,O=UW,OU=ICM,CN=Krzysztof Benedyczak,1.2.840.113549.1.9.1=#1610676f6c6269406d61742e756d6b2e706c</urn:AttributeValue>
+            </urn:Attribute>
+         </urn:AttributeStatement>
+      </urn:Assertion>
+      <wsa:To xmlns:wsa="http://www.w3.org/2005/08/addressing">https://localhost:8080/TESTBED_EXECUTION/services
+/TargetSystemService?res=6efc76e0-8880-4df6-905a-ad144764a476</wsa:To>
+      <wsa:Action xmlns:wsa="http://www.w3.org/2005/08/addressing">http://docs.oasis-open.org/wsrf/rpw-2/GetResourcePropertyDo
+cument/GetResourcePropertyDocumentRequest</wsa:Action>
+      <wsa:MessageID xmlns:wsa="http://www.w3.org/2005/08/addressing">urn:uuid:6C5445DF-3017-19F5-7F6A-EAA1ED048383</wsa:MessageID>
+      <rpns1:ResourceId xmlns:rpns1="http://www.unicore.eu/unicore6"
+                        xmlns:wsa="http://www.w3.org/2005/08/addressing"
+                        wsa:IsReferenceParameter="true">6efc76e0-8880-4df6-905a-ad144764a476</rpns1:ResourceId>
+   </soap:Header>
+   <soap:Body>
+      <rp:GetResourcePropertyDocument xmlns:rp="http://docs.oasis-open.org/wsrf/rp-2"/>
+   </soap:Body>
+</soap:Envelope>
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <soap:Header>
+      <urn:Assertion xmlns:urn="urn:oasis:names:tc:SAML:2.0:assertion"
+                     ID="SAMLY2lib_assert_4256fe7751daf279186bfbe6f9d6ea4ab88c6fe7ce8a487"
+                     IssueInstant="2009-08-20T18:19:00.690+02:00"
+                     Version="2.0">
+         <urn:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">C=PL,ST=Kujawsko-Pomorskie,L=Torun,O=U
+W,OU=ICM,CN=Krzysztof Benedyczak,1.2.840.113549.1.9.1=#1610676f6c6269406d61742e756d6b2e706c</urn:Issuer>
+         <dsig:Signature xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
+            <dsig:SignedInfo>
+               <dsig:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+               <dsig:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+               <dsig:Reference URI="#SAMLY2lib_assert_4256fe7751daf279186bfbe6f9d6ea4ab88c6fe7ce8a487">
+                  <dsig:Transforms>
+                     <dsig:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                     <dsig:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                  </dsig:Transforms>
+                  <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                  <dsig:DigestValue>6CzCgDc38wm/qC28L8WQPGAe/HM=</dsig:DigestValue>
+               </dsig:Reference>
+            </dsig:SignedInfo>
+            <dsig:SignatureValue>dbgNSQLDSWEunS0ZaL2cv3uoS8uIIptoKCsJw02I0ROq9Lv6kd8XEezYqEYpYf43IxoNzJcfZOrx
+iIuYSl5mHse4PL2DuJFsZXpTyAWRvu8zra6vkcywEePgViwZ/v1u/DZPwsCVb6iO6OEsW+vRpQHb
+9d3dchRL3n9vrPpveJw=</dsig:SignatureValue>
+            <dsig:KeyInfo>
+               <dsig:X509Data>
+                  <dsig:X509Certificate>MIIC4TCCAcmgAwIBAgIBGzANBgkqhkiG9w0BAQQFADBWMQswCQYDVQQGEwJQTDEdMBsGA1UEAxMU
+Q2hlbW9tZW50dW0gUGlsb3QgQ0ExGjAYBgNVBAoTEVdhcnNhdyBVbml2ZXJzaXR5MQwwCgYDVQQL
+EwNJQ00wHhcNMDYxMjMxMjMwMDAwWhcNMDkxMjMxMjMwMDAwWjCBlTEfMB0GCSqGSIb3DQEJARYQ
+Z29sYmlAbWF0LnVtay5wbDEdMBsGA1UEAwwUS3J6eXN6dG9mIEJlbmVkeWN6YWsxDDAKBgNVBAsM
+A0lDTTELMAkGA1UECgwCVVcxDjAMBgNVBAcMBVRvcnVuMRswGQYDVQQIDBJLdWphd3Nrby1Qb21v
+cnNraWUxCzAJBgNVBAYTAlBMMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRqy6VhjFw6ITG
+6MN+gKH1R3FAU2VHDWnWQSP3eXHIXtvBI3KuxMrvKh92wJbbtvv91WMnvdflkCd8qkTE6loGcC9X
+NR8bn6l+b7zLyBnlTKMxlNT6eLjLClJBpDToFCPII6Rq3913A/S3CQsVrmWZTcqVU22QLEXbYKZT
+hJ83cQIDAQABMA0GCSqGSIb3DQEBBAUAA4IBAQCKZWOLLMmvmLotRnbwCR+gAWpkbdB4HAWTwr0l
+kNhgaOqw9utOEzwlCOqFMjd27xE2dwfs34W96if6GC7OinZ82i+7oRrwEFr0ZhLlq80BLCu1jrPT
+8K9PVIEyd+S3q2DUvdf4miqoMUVhicr01UenYmCpH005i2t75l8ON+8noPdEL9oR4YHmMPJ3kKQ2
+aP/Yi4CvFmG4tJLbWaYuddnLt3OOw4IaVR4XXNmh6x6RE3Z87o/NfdFj/I4nwIc5iwrKZpaalQRC
+f3HMyKYWz67OSCh9TQVfTqnrCKmJ1BDcPhGtc+ou9eFcf/3oss1PVBSV3sFtgt+n40KvadWX46U+</dsig:X509Certificate>
+               </dsig:X509Data>
+            </dsig:KeyInfo>
+         </dsig:Signature>
+         <urn:Subject>
+            <urn:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">1.2.840.113549.1.9.1=#161b746573746
+265644063686172796264612e69636d2e6564752e706c,CN=xnjs-testbed.chemomentum.org,OU=ICM,O=Warsaw University,L=Warsaw,C=PL</urn:NameID>
+         </urn:Subject>
+         <urn:Conditions>
+            <urn:ProxyRestriction Count="10"/>
+         </urn:Conditions>
+         <urn:AttributeStatement>
+            <urn:Attribute Name="TrustDelegationOfUser" NameFormat="urn:unicore:trust-delegation:dn">
+               <urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">C=PL,ST=Kujawsko-Pomorskie
+,L=Torun,O=UW,OU=ICM,CN=Krzysztof Benedyczak,1.2.840.113549.1.9.1=#1610676f6c6269406d61742e756d6b2e706c</urn:AttributeValue>
+            </urn:Attribute>
+         </urn:AttributeStatement>
+      </urn:Assertion>
+      <wsa:To xmlns:wsa="http://www.w3.org/2005/08/addressing">https://localhost:8080/TESTBED_EXECUTION/services
+/TargetSystemService?res=6efc76e0-8880-4df6-905a-ad144764a476</wsa:To>
+      <wsa:Action xmlns:wsa="http://www.w3.org/2005/08/addressing">http://docs.oasis-open.org/wsrf/rpw-2/GetResourcePropertyDo
+cument/GetResourcePropertyDocumentRequest</wsa:Action>
+      <wsa:MessageID xmlns:wsa="http://www.w3.org/2005/08/addressing">urn:uuid:6C5445DF-3017-19F5-7F6A-EAA1ED048383</wsa:MessageID>
+      <rpns1:ResourceId xmlns:rpns1="http://www.unicore.eu/unicore6"
+                        xmlns:wsa="http://www.w3.org/2005/08/addressing"
+                        wsa:IsReferenceParameter="true">6efc76e0-8880-4df6-905a-ad144764a476</rpns1:ResourceId>
+   </soap:Header>
+   <soap:Body>
+      <rp:GetResourcePropertyDocument xmlns:rp="http://docs.oasis-open.org/wsrf/rp-2"/>
+   </soap:Body>
+</soap:Envelope>
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <soap:Header>
+      <urn:Assertion xmlns:urn="urn:oasis:names:tc:SAML:2.0:assertion"
+                     ID="SAMLY2lib_assert_4256fe7751daf279186bfbe6f9d6ea4ab88c6fe7ce8a487"
+                     IssueInstant="2009-08-20T18:19:00.690+02:00"
+                     Version="2.0">
+         <urn:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">C=PL,ST=Kujawsko-Pomorskie,L=Torun,O=U
+W,OU=ICM,CN=Krzysztof Benedyczak,1.2.840.113549.1.9.1=#1610676f6c6269406d61742e756d6b2e706c</urn:Issuer>
+         <dsig:Signature xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
+            <dsig:SignedInfo>
+               <dsig:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+               <dsig:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+               <dsig:Reference URI="#SAMLY2lib_assert_4256fe7751daf279186bfbe6f9d6ea4ab88c6fe7ce8a487">
+                  <dsig:Transforms>
+                     <dsig:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                     <dsig:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                  </dsig:Transforms>
+                  <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                  <dsig:DigestValue>6CzCgDc38wm/qC28L8WQPGAe/HM=</dsig:DigestValue>
+               </dsig:Reference>
+            </dsig:SignedInfo>
+            <dsig:SignatureValue>dbgNSQLDSWEunS0ZaL2cv3uoS8uIIptoKCsJw02I0ROq9Lv6kd8XEezYqEYpYf43IxoNzJcfZOrx
+iIuYSl5mHse4PL2DuJFsZXpTyAWRvu8zra6vkcywEePgViwZ/v1u/DZPwsCVb6iO6OEsW+vRpQHb
+9d3dchRL3n9vrPpveJw=</dsig:SignatureValue>
+            <dsig:KeyInfo>
+               <dsig:X509Data>
+                  <dsig:X509Certificate>MIIC4TCCAcmgAwIBAgIBGzANBgkqhkiG9w0BAQQFADBWMQswCQYDVQQGEwJQTDEdMBsGA1UEAxMU
+Q2hlbW9tZW50dW0gUGlsb3QgQ0ExGjAYBgNVBAoTEVdhcnNhdyBVbml2ZXJzaXR5MQwwCgYDVQQL
+EwNJQ00wHhcNMDYxMjMxMjMwMDAwWhcNMDkxMjMxMjMwMDAwWjCBlTEfMB0GCSqGSIb3DQEJARYQ
+Z29sYmlAbWF0LnVtay5wbDEdMBsGA1UEAwwUS3J6eXN6dG9mIEJlbmVkeWN6YWsxDDAKBgNVBAsM
+A0lDTTELMAkGA1UECgwCVVcxDjAMBgNVBAcMBVRvcnVuMRswGQYDVQQIDBJLdWphd3Nrby1Qb21v
+cnNraWUxCzAJBgNVBAYTAlBMMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRqy6VhjFw6ITG
+6MN+gKH1R3FAU2VHDWnWQSP3eXHIXtvBI3KuxMrvKh92wJbbtvv91WMnvdflkCd8qkTE6loGcC9X
+NR8bn6l+b7zLyBnlTKMxlNT6eLjLClJBpDToFCPII6Rq3913A/S3CQsVrmWZTcqVU22QLEXbYKZT
+hJ83cQIDAQABMA0GCSqGSIb3DQEBBAUAA4IBAQCKZWOLLMmvmLotRnbwCR+gAWpkbdB4HAWTwr0l
+kNhgaOqw9utOEzwlCOqFMjd27xE2dwfs34W96if6GC7OinZ82i+7oRrwEFr0ZhLlq80BLCu1jrPT
+8K9PVIEyd+S3q2DUvdf4miqoMUVhicr01UenYmCpH005i2t75l8ON+8noPdEL9oR4YHmMPJ3kKQ2
+aP/Yi4CvFmG4tJLbWaYuddnLt3OOw4IaVR4XXNmh6x6RE3Z87o/NfdFj/I4nwIc5iwrKZpaalQRC
+f3HMyKYWz67OSCh9TQVfTqnrCKmJ1BDcPhGtc+ou9eFcf/3oss1PVBSV3sFtgt+n40KvadWX46U+</dsig:X509Certificate>
+               </dsig:X509Data>
+            </dsig:KeyInfo>
+         </dsig:Signature>
+         <urn:Subject>
+            <urn:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">1.2.840.113549.1.9.1=#161b746573746
+265644063686172796264612e69636d2e6564752e706c,CN=xnjs-testbed.chemomentum.org,OU=ICM,O=Warsaw University,L=Warsaw,C=PL</urn:NameID>
+         </urn:Subject>
+         <urn:Conditions>
+            <urn:ProxyRestriction Count="10"/>
+         </urn:Conditions>
+         <urn:AttributeStatement>
+            <urn:Attribute Name="TrustDelegationOfUser" NameFormat="urn:unicore:trust-delegation:dn">
+               <urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">C=PL,ST=Kujawsko-Pomorskie
+,L=Torun,O=UW,OU=ICM,CN=Krzysztof Benedyczak,1.2.840.113549.1.9.1=#1610676f6c6269406d61742e756d6b2e706c</urn:AttributeValue>
+            </urn:Attribute>
+         </urn:AttributeStatement>
+      </urn:Assertion>
+      <wsa:To xmlns:wsa="http://www.w3.org/2005/08/addressing">https://localhost:8080/TESTBED_EXECUTION/services
+/TargetSystemService?res=6efc76e0-8880-4df6-905a-ad144764a476</wsa:To>
+      <wsa:Action xmlns:wsa="http://www.w3.org/2005/08/addressing">http://docs.oasis-open.org/wsrf/rpw-2/GetResourcePropertyDo
+cument/GetResourcePropertyDocumentRequest</wsa:Action>
+      <wsa:MessageID xmlns:wsa="http://www.w3.org/2005/08/addressing">urn:uuid:6C5445DF-3017-19F5-7F6A-EAA1ED048383</wsa:MessageID>
+      <rpns1:ResourceId xmlns:rpns1="http://www.unicore.eu/unicore6"
+                        xmlns:wsa="http://www.w3.org/2005/08/addressing"
+                        wsa:IsReferenceParameter="true">6efc76e0-8880-4df6-905a-ad144764a476</rpns1:ResourceId>
+   </soap:Header>
+   <soap:Body>
+      <rp:GetResourcePropertyDocument xmlns:rp="http://docs.oasis-open.org/wsrf/rp-2"/>
+   </soap:Body>
+</soap:Envelope>
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <soap:Header>
+      <urn:Assertion xmlns:urn="urn:oasis:names:tc:SAML:2.0:assertion"
+                     ID="SAMLY2lib_assert_4256fe7751daf279186bfbe6f9d6ea4ab88c6fe7ce8a487"
+                     IssueInstant="2009-08-20T18:19:00.690+02:00"
+                     Version="2.0">
+         <urn:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">C=PL,ST=Kujawsko-Pomorskie,L=Torun,O=U
+W,OU=ICM,CN=Krzysztof Benedyczak,1.2.840.113549.1.9.1=#1610676f6c6269406d61742e756d6b2e706c</urn:Issuer>
+         <dsig:Signature xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
+            <dsig:SignedInfo>
+               <dsig:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+               <dsig:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+               <dsig:Reference URI="#SAMLY2lib_assert_4256fe7751daf279186bfbe6f9d6ea4ab88c6fe7ce8a487">
+                  <dsig:Transforms>
+                     <dsig:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                     <dsig:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                  </dsig:Transforms>
+                  <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                  <dsig:DigestValue>6CzCgDc38wm/qC28L8WQPGAe/HM=</dsig:DigestValue>
+               </dsig:Reference>
+            </dsig:SignedInfo>
+            <dsig:SignatureValue>dbgNSQLDSWEunS0ZaL2cv3uoS8uIIptoKCsJw02I0ROq9Lv6kd8XEezYqEYpYf43IxoNzJcfZOrx
+iIuYSl5mHse4PL2DuJFsZXpTyAWRvu8zra6vkcywEePgViwZ/v1u/DZPwsCVb6iO6OEsW+vRpQHb
+9d3dchRL3n9vrPpveJw=</dsig:SignatureValue>
+            <dsig:KeyInfo>
+               <dsig:X509Data>
+                  <dsig:X509Certificate>MIIC4TCCAcmgAwIBAgIBGzANBgkqhkiG9w0BAQQFADBWMQswCQYDVQQGEwJQTDEdMBsGA1UEAxMU
+Q2hlbW9tZW50dW0gUGlsb3QgQ0ExGjAYBgNVBAoTEVdhcnNhdyBVbml2ZXJzaXR5MQwwCgYDVQQL
+EwNJQ00wHhcNMDYxMjMxMjMwMDAwWhcNMDkxMjMxMjMwMDAwWjCBlTEfMB0GCSqGSIb3DQEJARYQ
+Z29sYmlAbWF0LnVtay5wbDEdMBsGA1UEAwwUS3J6eXN6dG9mIEJlbmVkeWN6YWsxDDAKBgNVBAsM
+A0lDTTELMAkGA1UECgwCVVcxDjAMBgNVBAcMBVRvcnVuMRswGQYDVQQIDBJLdWphd3Nrby1Qb21v
+cnNraWUxCzAJBgNVBAYTAlBMMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRqy6VhjFw6ITG
+6MN+gKH1R3FAU2VHDWnWQSP3eXHIXtvBI3KuxMrvKh92wJbbtvv91WMnvdflkCd8qkTE6loGcC9X
+NR8bn6l+b7zLyBnlTKMxlNT6eLjLClJBpDToFCPII6Rq3913A/S3CQsVrmWZTcqVU22QLEXbYKZT
+hJ83cQIDAQABMA0GCSqGSIb3DQEBBAUAA4IBAQCKZWOLLMmvmLotRnbwCR+gAWpkbdB4HAWTwr0l
+kNhgaOqw9utOEzwlCOqFMjd27xE2dwfs34W96if6GC7OinZ82i+7oRrwEFr0ZhLlq80BLCu1jrPT
+8K9PVIEyd+S3q2DUvdf4miqoMUVhicr01UenYmCpH005i2t75l8ON+8noPdEL9oR4YHmMPJ3kKQ2
+aP/Yi4CvFmG4tJLbWaYuddnLt3OOw4IaVR4XXNmh6x6RE3Z87o/NfdFj/I4nwIc5iwrKZpaalQRC
+f3HMyKYWz67OSCh9TQVfTqnrCKmJ1BDcPhGtc+ou9eFcf/3oss1PVBSV3sFtgt+n40KvadWX46U+</dsig:X509Certificate>
+               </dsig:X509Data>
+            </dsig:KeyInfo>
+         </dsig:Signature>
+         <urn:Subject>
+            <urn:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">1.2.840.113549.1.9.1=#161b746573746
+265644063686172796264612e69636d2e6564752e706c,CN=xnjs-testbed.chemomentum.org,OU=ICM,O=Warsaw University,L=Warsaw,C=PL</urn:NameID>
+         </urn:Subject>
+         <urn:Conditions>
+            <urn:ProxyRestriction Count="10"/>
+         </urn:Conditions>
+         <urn:AttributeStatement>
+            <urn:Attribute Name="TrustDelegationOfUser" NameFormat="urn:unicore:trust-delegation:dn">
+               <urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">C=PL,ST=Kujawsko-Pomorskie
+,L=Torun,O=UW,OU=ICM,CN=Krzysztof Benedyczak,1.2.840.113549.1.9.1=#1610676f6c6269406d61742e756d6b2e706c</urn:AttributeValue>
+            </urn:Attribute>
+         </urn:AttributeStatement>
+      </urn:Assertion>
+      <wsa:To xmlns:wsa="http://www.w3.org/2005/08/addressing">https://localhost:8080/TESTBED_EXECUTION/services
+/TargetSystemService?res=6efc76e0-8880-4df6-905a-ad144764a476</wsa:To>
+      <wsa:Action xmlns:wsa="http://www.w3.org/2005/08/addressing">http://docs.oasis-open.org/wsrf/rpw-2/GetResourcePropertyDo
+cument/GetResourcePropertyDocumentRequest</wsa:Action>
+      <wsa:MessageID xmlns:wsa="http://www.w3.org/2005/08/addressing">urn:uuid:6C5445DF-3017-19F5-7F6A-EAA1ED048383</wsa:MessageID>
+      <rpns1:ResourceId xmlns:rpns1="http://www.unicore.eu/unicore6"
+                        xmlns:wsa="http://www.w3.org/2005/08/addressing"
+                        wsa:IsReferenceParameter="true">6efc76e0-8880-4df6-905a-ad144764a476</rpns1:ResourceId>
+   </soap:Header>
+   <soap:Body>
+      <rp:GetResourcePropertyDocument xmlns:rp="http://docs.oasis-open.org/wsrf/rp-2"/>
+   </soap:Body>
+</soap:Envelope>
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <soap:Header>
+      <urn:Assertion xmlns:urn="urn:oasis:names:tc:SAML:2.0:assertion"
+                     ID="SAMLY2lib_assert_4256fe7751daf279186bfbe6f9d6ea4ab88c6fe7ce8a487"
+                     IssueInstant="2009-08-20T18:19:00.690+02:00"
+                     Version="2.0">
+         <urn:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">C=PL,ST=Kujawsko-Pomorskie,L=Torun,O=U
+W,OU=ICM,CN=Krzysztof Benedyczak,1.2.840.113549.1.9.1=#1610676f6c6269406d61742e756d6b2e706c</urn:Issuer>
+         <dsig:Signature xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
+            <dsig:SignedInfo>
+               <dsig:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+               <dsig:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+               <dsig:Reference URI="#SAMLY2lib_assert_4256fe7751daf279186bfbe6f9d6ea4ab88c6fe7ce8a487">
+                  <dsig:Transforms>
+                     <dsig:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                     <dsig:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                  </dsig:Transforms>
+                  <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                  <dsig:DigestValue>6CzCgDc38wm/qC28L8WQPGAe/HM=</dsig:DigestValue>
+               </dsig:Reference>
+            </dsig:SignedInfo>
+            <dsig:SignatureValue>dbgNSQLDSWEunS0ZaL2cv3uoS8uIIptoKCsJw02I0ROq9Lv6kd8XEezYqEYpYf43IxoNzJcfZOrx
+iIuYSl5mHse4PL2DuJFsZXpTyAWRvu8zra6vkcywEePgViwZ/v1u/DZPwsCVb6iO6OEsW+vRpQHb
+9d3dchRL3n9vrPpveJw=</dsig:SignatureValue>
+            <dsig:KeyInfo>
+               <dsig:X509Data>
+                  <dsig:X509Certificate>MIIC4TCCAcmgAwIBAgIBGzANBgkqhkiG9w0BAQQFADBWMQswCQYDVQQGEwJQTDEdMBsGA1UEAxMU
+Q2hlbW9tZW50dW0gUGlsb3QgQ0ExGjAYBgNVBAoTEVdhcnNhdyBVbml2ZXJzaXR5MQwwCgYDVQQL
+EwNJQ00wHhcNMDYxMjMxMjMwMDAwWhcNMDkxMjMxMjMwMDAwWjCBlTEfMB0GCSqGSIb3DQEJARYQ
+Z29sYmlAbWF0LnVtay5wbDEdMBsGA1UEAwwUS3J6eXN6dG9mIEJlbmVkeWN6YWsxDDAKBgNVBAsM
+A0lDTTELMAkGA1UECgwCVVcxDjAMBgNVBAcMBVRvcnVuMRswGQYDVQQIDBJLdWphd3Nrby1Qb21v
+cnNraWUxCzAJBgNVBAYTAlBMMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRqy6VhjFw6ITG
+6MN+gKH1R3FAU2VHDWnWQSP3eXHIXtvBI3KuxMrvKh92wJbbtvv91WMnvdflkCd8qkTE6loGcC9X
+NR8bn6l+b7zLyBnlTKMxlNT6eLjLClJBpDToFCPII6Rq3913A/S3CQsVrmWZTcqVU22QLEXbYKZT
+hJ83cQIDAQABMA0GCSqGSIb3DQEBBAUAA4IBAQCKZWOLLMmvmLotRnbwCR+gAWpkbdB4HAWTwr0l
+kNhgaOqw9utOEzwlCOqFMjd27xE2dwfs34W96if6GC7OinZ82i+7oRrwEFr0ZhLlq80BLCu1jrPT
+8K9PVIEyd+S3q2DUvdf4miqoMUVhicr01UenYmCpH005i2t75l8ON+8noPdEL9oR4YHmMPJ3kKQ2
+aP/Yi4CvFmG4tJLbWaYuddnLt3OOw4IaVR4XXNmh6x6RE3Z87o/NfdFj/I4nwIc5iwrKZpaalQRC
+f3HMyKYWz67OSCh9TQVfTqnrCKmJ1BDcPhGtc+ou9eFcf/3oss1PVBSV3sFtgt+n40KvadWX46U+</dsig:X509Certificate>
+               </dsig:X509Data>
+            </dsig:KeyInfo>
+         </dsig:Signature>
+         <urn:Subject>
+            <urn:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">1.2.840.113549.1.9.1=#161b746573746
+265644063686172796264612e69636d2e6564752e706c,CN=xnjs-testbed.chemomentum.org,OU=ICM,O=Warsaw University,L=Warsaw,C=PL</urn:NameID>
+         </urn:Subject>
+         <urn:Conditions>
+            <urn:ProxyRestriction Count="10"/>
+         </urn:Conditions>
+         <urn:AttributeStatement>
+            <urn:Attribute Name="TrustDelegationOfUser" NameFormat="urn:unicore:trust-delegation:dn">
+               <urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">C=PL,ST=Kujawsko-Pomorskie
+,L=Torun,O=UW,OU=ICM,CN=Krzysztof Benedyczak,1.2.840.113549.1.9.1=#1610676f6c6269406d61742e756d6b2e706c</urn:AttributeValue>
+            </urn:Attribute>
+         </urn:AttributeStatement>
+      </urn:Assertion>
+      <wsa:To xmlns:wsa="http://www.w3.org/2005/08/addressing">https://localhost:8080/TESTBED_EXECUTION/services
+/TargetSystemService?res=6efc76e0-8880-4df6-905a-ad144764a476</wsa:To>
+      <wsa:Action xmlns:wsa="http://www.w3.org/2005/08/addressing">http://docs.oasis-open.org/wsrf/rpw-2/GetResourcePropertyDo
+cument/GetResourcePropertyDocumentRequest</wsa:Action>
+      <wsa:MessageID xmlns:wsa="http://www.w3.org/2005/08/addressing">urn:uuid:6C5445DF-3017-19F5-7F6A-EAA1ED048383</wsa:MessageID>
+      <rpns1:ResourceId xmlns:rpns1="http://www.unicore.eu/unicore6"
+                        xmlns:wsa="http://www.w3.org/2005/08/addressing"
+                        wsa:IsReferenceParameter="true">6efc76e0-8880-4df6-905a-ad144764a476</rpns1:ResourceId>
+   </soap:Header>
+   <soap:Body>
+      <rp:GetResourcePropertyDocument xmlns:rp="http://docs.oasis-open.org/wsrf/rp-2"/>
+   </soap:Body>
+</soap:Envelope>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<soap:Header>
+		<wsa:To xmlns:wsa="http://www.w3.org/2005/08/addressing">http://www.w3.org/2005/08/addressing/anonymous
+		</wsa:To>
+		<wsa:Action xmlns:wsa="http://www.w3.org/2005/08/addressing">http://docs.oasis-open.org/wsrf/rpw-2/GetResourcePropertyDocument/GetResourcePropertyDocumentRequestAck
+		</wsa:Action>
+		<wsa:MessageID xmlns:wsa="http://www.w3.org/2005/08/addressing">urn:uuid:1004C817-0B28-59F1-C34B-66598211F0A2
+		</wsa:MessageID>
+		<wsa:RelatesTo xmlns:wsa="http://www.w3.org/2005/08/addressing">urn:uuid:B2C4D2C6-C275-BDD3-DD53-BAD4ACB20296
+		</wsa:RelatesTo>
+	</soap:Header>
+	<soap:Body>
+		<rp:GetResourcePropertyDocumentResponse
+			xmlns:rp="http://docs.oasis-open.org/wsrf/rp-2">
+			<tss:TargetSystemProperties
+				xmlns:tss="http://unigrids.org/2006/04/services/tss">
+				<tss:Name>DEMO-SITE</tss:Name>
+				<typ:UpSince xmlns:typ="http://unigrids.org/2006/04/types">2009-08-20T18:40:53.228+02:00
+				</typ:UpSince>
+				<tss:TotalNumberOfJobs>0</tss:TotalNumberOfJobs>
+				<jsdl:IndividualPhysicalMemory
+					xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl" xmlns:idb="http://www.fz-juelich.de/unicore/xnjs/idb">
+					<jsdl:Exact>268435456</jsdl:Exact>
+					<jsdl:Range>
+						<jsdl:LowerBound>1048576</jsdl:LowerBound>
+						<jsdl:UpperBound>1073741824</jsdl:UpperBound>
+					</jsdl:Range>
+				</jsdl:IndividualPhysicalMemory>
+				<jsdl:IndividualCPUTime xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl"
+					xmlns:idb="http://www.fz-juelich.de/unicore/xnjs/idb">
+					<jsdl:Exact>3600</jsdl:Exact>
+					<jsdl:Range>
+						<jsdl:LowerBound>1</jsdl:LowerBound>
+						<jsdl:UpperBound>86400</jsdl:UpperBound>
+					</jsdl:Range>
+				</jsdl:IndividualCPUTime>
+				<jsdl:IndividualCPUCount xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl"
+					xmlns:idb="http://www.fz-juelich.de/unicore/xnjs/idb">
+					<jsdl:Exact>1.0</jsdl:Exact>
+					<jsdl:Range>
+						<jsdl:LowerBound>1.0</jsdl:LowerBound>
+						<jsdl:UpperBound>1.0</jsdl:UpperBound>
+					</jsdl:Range>
+				</jsdl:IndividualCPUCount>
+				<jsdl:TotalResourceCount xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl"
+					xmlns:idb="http://www.fz-juelich.de/unicore/xnjs/idb">
+					<jsdl:Exact>1.0</jsdl:Exact>
+					<jsdl:Range>
+						<jsdl:LowerBound>1.0</jsdl:LowerBound>
+						<jsdl:UpperBound>1.0</jsdl:UpperBound>
+					</jsdl:Range>
+				</jsdl:TotalResourceCount>
+				<jsdl:OperatingSystem xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">
+					<jsdl:OperatingSystemType>
+						<jsdl:OperatingSystemName>Unknown</jsdl:OperatingSystemName>
+					</jsdl:OperatingSystemType>
+				</jsdl:OperatingSystem>
+				<tss:ApplicationResource>
+					<jsdl:ApplicationName xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">Date
+					</jsdl:ApplicationName>
+					<jsdl:ApplicationVersion xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">1.0
+					</jsdl:ApplicationVersion>
+				</tss:ApplicationResource>
+				<tss:ApplicationResource>
+					<jsdl:ApplicationName xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">POVRay
+					</jsdl:ApplicationName>
+					<jsdl:ApplicationVersion xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">3.5
+					</jsdl:ApplicationVersion>
+				</tss:ApplicationResource>
+				<tss:ApplicationResource>
+					<jsdl:ApplicationName xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">Bash shell
+					</jsdl:ApplicationName>
+					<jsdl:ApplicationVersion xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">3.1.16
+					</jsdl:ApplicationVersion>
+				</tss:ApplicationResource>
+				<tss:ApplicationResource>
+					<jsdl:ApplicationName xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">C shell
+					</jsdl:ApplicationName>
+					<jsdl:ApplicationVersion xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">6.14.00
+					</jsdl:ApplicationVersion>
+				</tss:ApplicationResource>
+				<tss:ApplicationResource>
+					<jsdl:ApplicationName xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">Korn shell
+					</jsdl:ApplicationName>
+					<jsdl:ApplicationVersion xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">Version
+						M 1993-12-28 q</jsdl:ApplicationVersion>
+				</tss:ApplicationResource>
+				<tss:ApplicationResource>
+					<jsdl:ApplicationName xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">Perl
+					</jsdl:ApplicationName>
+					<jsdl:ApplicationVersion xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">5.8.8
+					</jsdl:ApplicationVersion>
+				</tss:ApplicationResource>
+				<tss:ApplicationResource>
+					<jsdl:ApplicationName xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">Python Script
+					</jsdl:ApplicationName>
+					<jsdl:ApplicationVersion xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">2.4.2
+					</jsdl:ApplicationVersion>
+				</tss:ApplicationResource>
+				<tss:Xlogin>golbi</tss:Xlogin>
+				<tss:SupportsReservation>false</tss:SupportsReservation>
+				<typ:StorageReference xmlns:typ="http://unigrids.org/2006/04/types">
+					<typ:Type>Home</typ:Type>
+					<typ:StorageEndpointReference>
+						<add:Address xmlns:add="http://www.w3.org/2005/08/addressing">https://localhost:8080/DEMO-SITE/services/StorageManagement?res=a03285c1-590f-47d4-8801-f9d865f3fa77
+						</add:Address>
+						<add:ReferenceParameters xmlns:add="http://www.w3.org/2005/08/addressing">
+							<unic:ResourceId xmlns:unic="http://www.unicore.eu/unicore6">a03285c1-590f-47d4-8801-f9d865f3fa77
+							</unic:ResourceId>
+						</add:ReferenceParameters>
+						<add:Metadata xmlns:add="http://www.w3.org/2005/08/addressing">
+							<met:InterfaceName xmlns:x="http://unigrids.org/2006/04/services/sms"
+								xmlns:met="http://www.w3.org/2005/08/addressing/metadata">x:StorageManagement</met:InterfaceName>
+							<unic:ServerIdentity xmlns:unic="http://www.unicore.eu/unicore6">EMAILADDRESS=unicore-support@lists.sf.net,
+								C=DE, O=unicore.eu, OU=Testing, CN=UNICORE demo unicorex
+							</unic:ServerIdentity>
+						</add:Metadata>
+					</typ:StorageEndpointReference>
+				</typ:StorageReference>
+				<bprp4:ResourcePropertyNames
+					xmlns:bprp1="http://unigrids.org/2006/04/types" xmlns:bprp2="http://unigrids.org/2006/04/services/tss"
+					xmlns:bprp3="http://docs.oasis-open.org/wsrf/rl-2" xmlns:bprp4="http://schemas.ggf.org/ogsa/2006/05/wsrf-bp"
+					xmlns:bprp5="http://schemas.ggf.org/jsdl/2005/11/jsdl"> bprp1:SiteResource bprp2:ApplicationResource
+					bprp2:JobReference bprp1:UpSince bprp3:CurrentTime bprp2:Xlogin
+					bprp4:WSResourceInterfaces bprp1:Processor
+					bprp2:SupportsReservation bprp5:IndividualPhysicalMemory
+					bprp2:ReservationReference bprp5:IndividualCPUCount
+					bprp4:FinalWSResourceInterface bprp1:StorageReference
+					bprp1:TextInfo bprp5:OperatingSystem bprp5:TotalResourceCount
+					bprp4:ResourcePropertyNames bprp5:IndividualCPUTime bprp2:Name
+					bprp2:TotalNumberOfJobs bprp3:TerminationTime
+				</bprp4:ResourcePropertyNames>
+				<wsrf:FinalWSResourceInterface
+					xmlns:bprp1="http://unigrids.org/2006/04/services/tss" xmlns:wsrf="http://schemas.ggf.org/ogsa/2006/05/wsrf-bp">
+					bprp1:TargetSystem</wsrf:FinalWSResourceInterface>
+				<wsrf:WSResourceInterfaces xmlns:bpri1="http://docs.oasis-open.org/wsrf/rlw-2"
+					xmlns:bpri2="http://docs.oasis-open.org/wsrf/rpw-2" xmlns:bpri3="http://unigrids.org/2006/04/services/reservation"
+					xmlns:bpri4="http://unigrids.org/2006/04/services/tss" xmlns:wsrf="http://schemas.ggf.org/ogsa/2006/05/wsrf-bp">
+					bpri1:ScheduledResourceTermination bpri2:GetResourceProperty
+					bpri3:ResourceReservation bpri4:TargetSystem
+					bpri2:GetResourcePropertyDocument
+					bpri1:ImmediateResourceTermination bpri2:QueryResourceProperties
+				</wsrf:WSResourceInterfaces>
+				<rl:CurrentTime xmlns:rl="http://docs.oasis-open.org/wsrf/rl-2">2009-08-20T18:41:19.580+02:00
+				</rl:CurrentTime>
+				<rl:TerminationTime xmlns:rl="http://docs.oasis-open.org/wsrf/rl-2">2009-08-21T18:40:52.044+02:00
+				</rl:TerminationTime>
+			</tss:TargetSystemProperties>
+		</rp:GetResourcePropertyDocumentResponse>
+	</soap:Body>
+</soap:Envelope>

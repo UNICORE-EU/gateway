@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>eu.unicore</groupId>
+  <artifactId>gateway</artifactId>
+  <packaging>jar</packaging>
+  <description>UNICORE web services gateway</description>
+  <inceptionYear>2004</inceptionYear>
+  <version>1.6.3-SNAPSHOT</version>
+  <name>UNICORE Gateway</name>
+  <parent>
+    <groupId>eu.unicore</groupId>
+    <artifactId>unicore-parent</artifactId>
+    <version>1.22</version>
+  </parent>
+
+  <properties>
+    <!-- release version numbers (for the Linux packaging) -->
+    <package.version>8.0.4</package.version>
+    <package.release>1</package.release>
+    <specification.version>${package.version}</specification.version>
+    <seclib.version>4.5.10</seclib.version>
+    <httpclient.version>4.5.3</httpclient.version>
+    <jetty.version>9.4.28.v20200408</jetty.version>
+    <!-- this activates asciidoc usage -->
+    <docman.enabled />
+    <doc.version>${package.version}</doc.version>
+    <doc.includeBundle>file:src/main/doc/gw-documentation.properties</doc.includeBundle>
+  </properties>
+
+  <scm>
+    <connection>scm:svn:https://svn.code.sf.net/p/unicore/svn/gateway/trunk</connection>
+    <developerConnection>scm:svn:https://svn.code.sf.net/p/unicore/svn/gateway/trunk</developerConnection>
+  </scm>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- core dependencies -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.16</version>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.stax-utils</groupId>
+      <artifactId>stax-utils</artifactId>
+      <version>20040917</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${httpclient.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlet</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlets</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-rewrite</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>eu.unicore.security</groupId>
+      <artifactId>securityLibrary</artifactId>
+      <version>${seclib.version}</version>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <id>unicore.eu</id>
+      <name>UNICORE repo</name>
+      <url>https://unicore-dev.zam.kfa-juelich.de/maven</url>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <!-- where the website is deployed -->
+    <site>
+      <id>unicore.eu</id>
+      <url>dav:https://unicore-dev.zam.kfa-juelich.de/documentation/gateway-${version}</url>
+    </site>
+  </distributionManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-site-plugin</artifactId>
+	<version>2.2</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+	  <forkCount>1</forkCount>
+	  <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>initialize</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <doCheck>false</doCheck>
+          <doUpdate>false</doUpdate>
+          <timestampFormat>{0, date, d MMM yyyy}</timestampFormat>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

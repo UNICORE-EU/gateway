@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FindBugsFilter>
+  <LastVersion value="-1" relOp="NEQ"/>
+  <And>
+    <Class name="eu.unicore.gateway.client.AuthSSLProtocolSocketFactory"/>
+    <Method name="createSSLContext"/>
+    <Bug pattern="REC_CATCH_EXCEPTION"/>
+  </And>
+  <And>
+    <Class name="eu.unicore.gateway.util.CharArrayWriterExt"/>
+    <Bug pattern="EI_EXPOSE_REP"/>
+  </And>
+  <And>
+    <Or>
+      <Class name="eu.unicore.gateway.BaseSiteOrganiser"/>
+      <Class name="eu.unicore.gateway.StaticSiteOrganiser"/>
+    </Or>
+    <Field name="sites"/>
+    <Bug category="MT_CORRECTNESS"/>
+  </And>
+  <And>
+    <Class name="eu.unicore.gateway.base.Servlet"/>
+    <Or>
+      <Method name="doGet"/>
+      <Method name="doPut"/>
+    </Or>
+    <Bug pattern="DE_MIGHT_IGNORE"/>
+  </And>
+  <And>
+    <Class name="eu.unicore.gateway.base.JettyServer"/>
+    <Or>
+      <Method name="createNIOConnector"/>
+      <Method name="initServer"/>
+    </Or>
+    <Bug pattern="DE_MIGHT_IGNORE"/>
+  </And>
+  <And>
+    <Class name="eu.unicore.gateway.properties.RProperties"/>
+    <Method name="loadProperties"/>
+    <Or>
+      <Bug pattern="OBL_UNSATISFIED_OBLIGATION"/>
+      <Bug pattern="UI_INHERITANCE_UNSAFE_GETRESOURCE"/>
+    </Or>
+  </And>
+</FindBugsFilter>

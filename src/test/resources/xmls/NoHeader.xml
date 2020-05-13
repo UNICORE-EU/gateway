@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope
+	xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:wsa="http://www.w3.org/2005/08/addressing">
+	<soapenv:Body>
+		<GetResourceProperty
+			xmlns="http://docs.oasis-open.org/wsrf/rp-1"
+			xmlns:ns1="http://www.ggf.org/namespaces/OGSABasicProfile-1.0.xsd">
+			ns1:ResourceEndpointReference
+			</GetResourceProperty>
+	</soapenv:Body>
+</soapenv:Envelope>

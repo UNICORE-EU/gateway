@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wsa="http://www.w3.org/2005/08/addressing">
+	<soapenv:Header>
+		<urn:Wrapping xmlns:urn="urn:blah">
+			<Inside xmlns="urn:blah">fddblah</Inside>
+		</urn:Wrapping>
+	</soapenv:Header>
+	<soapenv:Body>
+	</soapenv:Body>
+</soapenv:Envelope>

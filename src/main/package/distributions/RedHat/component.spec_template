@@ -1,0 +1,96 @@
+%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
+Buildroot: %{_builddir}/%{name}-root
+Name: unicore-@component-name@@component-suffix@
+Obsoletes: unicore-@component-name@
+Provides: unicore-@component-name@
+Version: @component-version@
+Release: @component-release@@component-disttag@
+Summary: UNICORE Gateway
+License: BSD
+Distribution: RedHat
+Group: System Environment/Daemons
+URL: http://www.unicore.eu
+Requires: java-1.@java-main-version@.0-openjdk
+AutoReqProv: no
+BuildArch: @component-architecture@
+Packager: Björn Hagemeier unicore-support@lists.sourceforge.net
+@preamble@
+
+%description
+UNICORE (Uniform Interface to Computing Resources) offers a
+ready-to-run Grid system including client and server software.
+UNICORE makes distributed computing and data resources available
+in a seamless and secure way in intranets and the internet.
+
+This package contains the UNICORE Gateway, the single entry point 
+to a grid site.
+
+
+%changelog
+* Fri Dec 17 2013 Bernd Schuller <unicore-support@lists.sourceforge.net> 
+-updated Java dependency to Java 7
+* Sun Nov 13 2011 Krzysztof Benedyczak <unicore-support@lists.sourceforge.net>
+-changed name to unicore-gateway6
+* Fri Sep 30 2011 Bernd Schuller <unicore-support@lists.sourceforge.net> 
+-updates for v6.4.2, introduce startup.properties file
+* Sat Jun 18 2011 Krzysztof Benedyczak <unicore-support@lists.sourceforge.net> 
+-File perms fixes
+* Sun Feb 20 2011 Krzysztof Benedyczak <unicore-support@lists.sourceforge.net> 
+-Packaging fixes
+* Wed Oct 06 2010 Andre Giesler <unicore-support@lists.sourceforge.net> 
+-Initial rpm package
+
+@install_command@
+
+%files
+%defattr(640, unicore, unicore, 755)
+
+#
+# Config files and bash-completion
+#
+%dir %attr(750 unicore unicore) "/etc/unicore/gateway/"
+%config(noreplace) %attr(640 unicore unicore) "/etc/unicore/gateway/startup.properties"
+%config(noreplace) %attr(640 unicore unicore) "/etc/unicore/gateway/connections.properties"
+%config(noreplace) %attr(640 unicore unicore) "/etc/unicore/gateway/gateway.properties"
+%config(noreplace) %attr(640 unicore unicore) "/etc/unicore/gateway/logging.properties"
+
+%attr(644 root root) "/usr/lib/systemd/system/unicore-gateway.service"
+
+%attr(755 root root) "/usr/sbin/unicore-gateway-start.sh"
+%attr(755 root root) "/usr/sbin/unicore-gateway-stop.sh"
+%attr(755 root root) "/usr/sbin/unicore-gateway-status.sh"
+
+
+#
+# Documentation and samples
+#
+%docdir %attr(755 root root) "/usr/share/doc/unicore/gateway/"
+%attr(644 root root) "/usr/share/doc/unicore/gateway/*"
+
+#
+# jar files
+#
+%dir %attr(755 root root) "/usr/share/unicore/gateway/lib"
+%attr(644 root root) "/usr/share/unicore/gateway/lib/*.jar"
+
+#
+# logs
+#
+%dir %attr(755 unicore unicore) "/var/log/unicore"
+%dir %attr(755 unicore unicore) "/var/log/unicore/gateway"
+%dir %attr(755 unicore unicore) "/var/run/unicore"
+
+
+%pre
+/usr/sbin/groupadd -r unicore 2>/dev/null || :
+/usr/sbin/useradd -c "UNICORE" -g unicore \
+    -s /sbin/nologin -r -d /usr/share/unicore unicore 2>/dev/null || :
+    
+%post
+/usr/bin/systemctl enable unicore-gateway.service
+
+%preun
+if [ "$1" = "0" ]; then
+    /usr/bin/systemctl stop unicore-gateway.service  >/dev/null 2>&1
+    /usr/bin/systemctl disable unicore-gateway.service
+fi

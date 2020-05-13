@@ -1,0 +1,287 @@
+Change log for the UNICORE Gateway
+==================================
+The issue tracker is at https://sourceforge.net/p/unicore/issues
+
+
+8.0.3
+-----
+ - update Jetty to 9.4.28
+
+8.0.2
+------
+ - remove separate security.properties and merge properties into
+   gateway.properties
+
+ 
+8.0.1
+------
+ - fix: allow to use a single file for all configuration
+ - fix: Gateway does not forward client DN info in non-SOAP POST (#259)
+
+8.0.0
+------
+ - fix: forward any backend response also when the backend reports an error
+ - dynamic registration requires a secret, which is configured in gateway.properties
+   parameter "gateway.registration.secret"
+ - update Jetty version to 9.4.20
+ - remove 'java.endorsed.dir' (#244)
+
+7.12.0
+------
+ - update securityLibrary, this disables the HTTP TRACE method,
+   which is marked as a security risk by some scanners (#235)
+
+7.11.0
+------
+ - forward HTTP "Host" header as sent by the client to the VSite
+   in a new custom header "X-UNICORE-Gateway"
+ - update to Jetty 9.4.11
+
+7.9.0
+-----
+ - CORS support (#163)
+ - remove duplicate headers (date, x-frame-options, etc)
+ - fix: NPE handling POST response with no content (#168)
+ - add systemd support (#165)
+
+7.8.0
+-----
+ - update to securityLibrary 4.4.0, Jetty 9.4.2,
+   HttpClient 4.5.1
+ - fix: error logging for non-SOAP POST requests
+   (https://sourceforge.net/p/unicore/issues/145)
+ 
+7.7.0
+-----
+ - update to securityLibrary 4.3.4, Jetty 9.3.7
+ - fix: Content-Type header to returned to client for non-SOAP requests
+   (https://sourceforge.net/p/unicore/issues/122)
+
+7.6.0
+-----
+ - update to securityLibrary 4.3.0, Jetty 9, HttpClient 4.5.1
+ - NOTE: the property "gateway.httpServer.useNIO" is now obsolete
+ - NOTE: support for the UPGRADE protocol change has been dropped
+   If you need this, let us know, so we can re-introduce it
+ - NOTE: support for AJP has been dropped from Jetty 9, so
+   we don't support it any more. If you run Apache in front of the
+   Gateway, you will not be able to forward any client certificate
+   to UNICORE
+
+7.5.0
+-----
+ - fix: multipart POST did not work properly
+ - fix: update to securityLibrary 4.2.2
+ - fix: NPE when signConsigorToken=false
+   (https://sourceforge.net/p/unicore/issues/62)
+ 
+7.3.0
+-----
+ - new feature: pass on signed Consigner info for non-SOAP HTTP requests
+   (https://sourceforge.net/p/unicore/feature-requests/356)
+ - fix: forwarding path with encoded characters did not work
+   (https://sourceforge.net/p/unicore/bugs/790)
+
+7.2.0
+-----
+ - New feature: initial support for SOAP attachments, i.e. 
+   Multipart/Related content where the first part is SOAP
+ - Update to latest security libs (including fix for POODLE)
+
+7.1.0
+-----
+ - Fix: duplicate HTTP headers, better performance for 
+   non-SOAP requests
+
+7.0.4
+-----
+ - Fix: forward request headers for POST
+ - Fix: HEAD and OPTIONS were not implemented
+
+7.0.3
+-----
+ - Basic support for non-SOAP HTTP POST requests
+ - Support for HTTP methods GET, PUT, HEAD, OPTIONS and DELETE
+
+7.0.0
+-----
+ - Fixed minor bug with IndexOutOfBounds Exception occurring on same requests (SF bug #629)
+ - General updates: HTTPClient 4.x, securityLib 4.0, CANL 2.0
+ - Fix: updating connection.properties at runtime lead to exception (SF bug #626)
+
+6.5.0
+-----
+ - General code cleaned up
+ - Integrated the EMI Common authentication library, what provides the following features:
+ - Support for Openssl-style trust store with namespace constraints
+ - Improved directory keystore
+ - Improved CRL support
+ - Authentication of clients with proxy certificates is supported
+ - Forward HTTP headers to VSite for the GET and PUT methods
+ - Update to Jetty 8
+ - Fully reworked configuration handling. Among others configuration errors are
+ reported early and syntax is much more carefully checked.
+
+6.4.3
+-----
+ - fix: reconfiguration of logging system was not done properly when using "file://" URLs
+   (SF bug #3474470) 
+ - improvement: consignor IP is forwarded using a HTTP header "X-UNICORE-Consignor-IP"
+
+6.4.2
+-----
+ - Fixed logging of connection errors (more details in case of failures, clear expiration
+ messages) (SF improvement #3435470)
+ - MDC context used in default log configuration (SF improvement #3435470)
+ - Enhancement: publish version on monkey page (SF feature# 3368939) 
+ - fix: throw fault if vsite returns an HTTP error (SF bug #3314648)
+ - improvement: auto-detect keystore/truststore type, use util class from securityLibrary
+ - Added a possibility to configure the maximum SOAP header size. (SF improvement #3435467)
+
+6.4.1
+-----
+ - fix: content-type header should match the incoming one
+
+6.4.0
+-----
+ - Check keystore and truststore settings (fix SF bugs 3006856, 3025126)
+ - fix wrong Content-type header in reply (SF bug #3191145)
+ - update to Jetty 6.1.26
+ 
+6.3.2
+-----
+ - use UTF-8 charset (fix SF bug 3010480)
+ - support clustering/load balancing of VSites (experimental) (SF I #3163902)
+ - added verification of keystore and truststore on startup (SF B #3025126)
+
+6.3.1
+-----
+
+ - fix "ping" to https VSites, avoiding the (harmless) "close notify" exceptions on the VSite
+ - convert documentation (and change log) to asciidoc format
+ - fix use of pem file or directory as truststore for outgoing calls (fix sf bug 2959000)
+ - use fast Jetty session ID generator to avoid slow startup on some systems
+ 
+6.3.0
+-----
+
+  - a new implementation of POST method processing, faster and less error prone, fixed bug 2547272
+  - SOAP faults are now standard complaint.
+  - Chunked HTTP dispatch is really configurable now (config option was ignored up to now, and 
+  	chunked mode was always on)
+  - Some of the configuration file option names were changed:
+  		chunked -> http.connection.chunked
+  		httpclient.socket.timeout -> http.socket.timeout
+  - Two new configuration properties were added:
+  		http.connection.maxTotal
+		http.connection.maxPerService
+ - major code cleanup
+ - configuration files need not be in "conf/" any more (fix sf bug 2883175)
+ - update to Jetty 6.1.22
+ - put client name and IP into Log4j diagnostic context. This allows to add client info to all the
+   log messages by using %X{clientName} and %X{clientIP} in the log pattern
+ - new truststore types "file" and "directory", allowing to directly load pem files as trusted certs.
+   The "truststore" parameter is interpreted as the file/directory path.
+ - bugfix: vsites can be removed from connections.properties now without requiring a gateway restart
+ 
+6.2.2
+-----
+
+  - allow to configure HTTP protocol details ("connection: close" and
+    "Expect: continue")
+
+6.2.1
+-----
+
+  - forward VSite HTTP error code to the client when doing HTTP PUT 
+  - log all connection attempts (client IPs) at debug level 
+  - allow to disable site details on the web page ("monkey page")
+  - improved monkey page, will show connection error details
+  - minor code cleanup 
+
+6.2.0
+-----
+
+ - improved logging. All loggers have prefix "unicore.gateway", and the logging file 
+   config is periodically checked for changes. Exceptions are logged in a nicer fashion.
+   The connecting client is logged at DEBUG level.   
+ - bugfix: gateway will now listen only on the specified network interface, or, 
+   if "0.0.0.0" is used as host, on all interfaces
+ - documentation on AJP/httpd configuration (contributed by Xavier Delaruelle)
+ - remove link to registration HTML form if registration is disabled
+ - bugfix in keystore handling: use case-insensitive comparison of aliases 
+ - update to Jetty 6.1.15
+
+6.1.3
+-----
+
+ - experimental support for "gateway plugins", for tunneling other protocols through the 
+   established SSL connection to the gateway 
+ - update to httpclient 3.1 final
+ - initial support for CRL checking (through new version of securityLibrary)
+
+6.1.2 p1
+--------
+
+ - fix IllegalStateException
+ - log everything to gateway.log (through log4j)
+ - simplify Vsite resolution (now only checks the site name)
+
+6.1.2
+-----
+
+- package renaming to eu.unicore.gateway
+- AJP support
+- bind to specified interface only
+- handle character encoding properly 
+- send 404 if GET request cannot be resolved, or is not for the GW web page ("/")
+
+6.1.1
+-----
+
+- pluggable proxy validation
+- update Jetty to 6.1.8
+- fixes in HTTP PUT and GET implementations
+- add optional NIO connector (activate using "jetty.useNIO=true" in gateway.properties)
+
+6.1
+---
+
+ - move to Jetty 6
+ - remove code that is not strictly necessary
+ - clean up dependencies (e.g. activesoap, commons-io, etc)
+ - standardise directory structure and build procedures
+ - registration of Vsites
+ - connections.properties modifications take effect at runtime
+ - use log4j logging framework
+
+6.0.0 rc1:
+----------
+
+ - fix bugs in parsing security headers
+ - accept more credentials in security header
+ - SAML Consignor token is inserted as the 1st child of SOAP Header. For unauthenticated
+  connections such assertion DOESN'T include Subject.
+ - old-style Unigrids security tokens (U/E/C) are now not mandatory and warning is
+  issued when they are found at log level info.
+ - stop.sh and start.sh can be invoked from any directory
+ - there is possibility to configure if the consignor assertion should be signed 
+  (and it's time thereshold). 
+ - add Maven build
+
+
+6.0.0 beta1:
+------------
+
+ - use latest codebase
+ - fix concurrency problems
+ - add dynamic registration
+ - fix missing "xmls" dir in distribution which led to "500 internal server error"
+
+6.0.0 alpha7:
+-------------
+
+ - change default config dir from etc/ to conf/
+ - replace hardcoded "/" by File.separator
+ - make logging properties configurable
+

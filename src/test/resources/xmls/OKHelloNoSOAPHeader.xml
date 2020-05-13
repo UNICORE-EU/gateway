@@ -1,0 +1,4 @@
+<env:Envelope xmlns:env='http://schemas.xmlsoap.org/soap/envelope/'><env:Body>
+    <h:hello xmlns:h='http://www.ringo.org/hello'>world !</h:hello>
+  </env:Body>
+</env:Envelope>

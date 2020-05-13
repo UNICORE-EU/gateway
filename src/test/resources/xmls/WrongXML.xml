@@ -1,0 +1,10 @@
+<env:Envelope xmlns:env='http://schemas.xmlsoap.org/soap/envelope/'>
+  <envv:Header>
+    <wsa:To xmlns:wsa='http://www.w3.org/2005/08/addressing'>http://localhost:8080/s1/services/hello</wsa:To>
+    <wsa:MessageID xmlns:wsa='http://www.w3.org/2005/08/addressing'>09bb04a884dc4e</wsa:MessageID>
+    <wsa:Action xmlns:wsa='http://www.w3.org/2005/08/addressing'>http://hello.com/test</wsa:Action>
+  </env:Header>
+  <env:Body>
+    <h:hello xmlns:h='http://www.ringo.org/hello'>world !</h:hello>
+  </env:Body>
+</env:Envelope>

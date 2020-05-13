@@ -1,0 +1,12 @@
+[Unit]
+Description=UNICORE Gateway
+
+[Service]
+Type=forking
+User=unicore
+ExecStart=/usr/sbin/unicore-gateway-start.sh
+ExecStop=/usr/sbin/unicore-gateway-stop.sh
+PIDFile=/var/run/unicore/gateway.pid
+
+[Install]
+WantedBy=multi-user.target

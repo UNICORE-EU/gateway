@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Body xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+		<GetResourceProperty
+			xmlns="http://docs.oasis-open.org/wsrf/rp-1"
+			xmlns:ns1="http://www.ggf.org/namespaces/OGSABasicProfile-1.0.xsd">
+			ns1:ResourceEndpointReference
+			</GetResourceProperty>
+</soapenv:Body>

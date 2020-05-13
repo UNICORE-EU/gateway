@@ -1,0 +1,16 @@
+UNICORE Gateway
+
+* Overview
+ 
+ The Gateway is the entry point into a UNICORE site. It is installed in
+front of any networking firewall. It authenticates incoming messages
+and forwards them to their intended destination. 
+The gateway receives the reply and sends it back to the client.
+ 
+ For more information about UNICORE visit {{http://www.unicore.eu}}
+
+* User manual
+
+   * {{{./manual.html}HTML format}} 
+   
+   * {{{./manual.pdf}PDF format}} 

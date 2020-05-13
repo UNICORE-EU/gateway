@@ -1,0 +1,20 @@
+--MIME_boundary
+Content-Type: text/xml; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Content-ID: <foo@foo.com>
+
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+<soap:Header>
+<wsa:To xmlns:wsa="http://www.w3.org/2005/08/addressing">http://localhost:64433/FAKE1/foo/bar</wsa:To>
+<soap:Body>
+<theBinaryData href="cid:foo2@foo.com"/>
+</soap:Body>
+</soap:Envelope>
+
+--MIME_boundary
+Content-Type: image/tiff
+Content-Transfer-Encoding: binary
+Content-ID: <foo2@foo.com>
+
+some binary stuff here
+--MIME_boundary--
