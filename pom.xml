@@ -6,7 +6,7 @@
   <packaging>jar</packaging>
   <description>UNICORE web services gateway</description>
   <inceptionYear>2004</inceptionYear>
-  <version>1.6.3-SNAPSHOT</version>
+  <version>1.6.3</version>
   <name>UNICORE Gateway</name>
   <parent>
     <groupId>eu.unicore</groupId>
@@ -21,7 +21,7 @@
     <specification.version>${package.version}</specification.version>
     <seclib.version>4.5.10</seclib.version>
     <httpclient.version>4.5.3</httpclient.version>
-    <jetty.version>9.4.28.v20200408</jetty.version>
+    <jetty.version>9.4.31.v20200723</jetty.version>
     <!-- this activates asciidoc usage -->
     <docman.enabled />
     <doc.version>${package.version}</doc.version>
@@ -37,7 +37,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
     <!-- core dependencies -->
@@ -75,6 +75,32 @@
       <groupId>eu.unicore.security</groupId>
       <artifactId>securityLibrary</artifactId>
       <version>${seclib.version}</version>
+      <exclusions>
+	  <exclusion>
+	    <groupId>net.sf.saxon</groupId>
+	    <artifactId>Saxon-HE</artifactId>
+	  </exclusion>
+	  <exclusion>
+	    <groupId>com.sun.xml.ws</groupId>
+	    <artifactId>jaxws-eclipselink-plugin</artifactId>
+	  </exclusion>
+	  <exclusion>
+	    <groupId>com.sun.xml.ws</groupId>
+	    <artifactId>sdo-eclipselink-plugin</artifactId>
+	  </exclusion>
+	  <exclusion>
+	    <groupId>com.sun.xml.ws</groupId>
+	    <artifactId>jaxws-tools</artifactId>
+	  </exclusion>
+	  <exclusion>
+	    <groupId>org.glassfish.gmbal</groupId>
+	    <artifactId>gmbal</artifactId>
+	  </exclusion>
+	  <exclusion>
+	    <groupId>xalan</groupId>
+	    <artifactId>xalan</artifactId>
+	  </exclusion>
+	</exclusions>
     </dependency>
   </dependencies>
 
