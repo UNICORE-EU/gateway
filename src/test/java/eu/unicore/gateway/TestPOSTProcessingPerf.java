@@ -12,7 +12,6 @@ import java.nio.charset.Charset;
 
 import org.apache.log4j.Logger;
 
-import eu.unicore.gateway.ConsignorProducer;
 import eu.unicore.gateway.base.RawMessageExchange;
 import eu.unicore.gateway.properties.GatewayProperties;
 import eu.unicore.gateway.util.StopWatch;

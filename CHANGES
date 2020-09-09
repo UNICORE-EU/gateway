@@ -3,6 +3,11 @@ Change log for the UNICORE Gateway
 The issue tracker is at https://sourceforge.net/p/unicore/issues
 
 
+8.0.4
+-----
+ - update Jetty to 9.4.31
+ - remove unnecessary 3rd party dependencies
+
 8.0.3
 -----
  - update Jetty to 9.4.28

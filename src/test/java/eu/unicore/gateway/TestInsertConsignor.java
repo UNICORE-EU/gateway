@@ -4,12 +4,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.StringWriter;
-
 import java.security.cert.X509Certificate;
 
 import org.apache.log4j.Logger;
 
-import eu.unicore.gateway.ConsignorProducer;
 import eu.unicore.gateway.base.RawMessageExchange;
 import eu.unicore.gateway.properties.GatewayProperties;
 import eu.unicore.security.canl.AuthnAndTrustProperties;

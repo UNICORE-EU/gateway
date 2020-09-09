@@ -81,9 +81,7 @@ public class Gateway
 	private void configureGateway(File mainProperties, File connections, File secProperties) 
 		throws Exception
 	{
-		String version=Gateway.class.getPackage().getImplementationVersion();
-		if(version==null)version="(SNAPSHOT version)";
-		String message="UNICORE Gateway "+version+" starting.";
+		String message="UNICORE Gateway "+RELEASE_VERSION+" starting.";
 		log.info(message);
 		System.out.println(message);
 

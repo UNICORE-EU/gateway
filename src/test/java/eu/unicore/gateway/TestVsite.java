@@ -2,7 +2,6 @@ package eu.unicore.gateway;
 
 import java.net.URI;
 
-import eu.unicore.gateway.VSite;
 import junit.framework.TestCase;
 
 public class TestVsite extends TestCase {

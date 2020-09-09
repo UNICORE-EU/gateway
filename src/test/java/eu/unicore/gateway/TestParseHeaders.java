@@ -7,14 +7,10 @@ import java.io.FileReader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 
-
 import org.apache.log4j.Logger;
 
-
-import eu.unicore.gateway.POSTHandler;
 import eu.unicore.gateway.base.RawMessageExchange;
 import eu.unicore.gateway.properties.GatewayProperties;
-
 import junit.framework.TestCase;
 
 public class TestParseHeaders extends TestCase {

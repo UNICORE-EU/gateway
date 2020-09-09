@@ -207,7 +207,7 @@ public class MultiSite implements Site {
 				//else interpret as class name
 				try{
 					Class<?>clazz=Class.forName(strategyDesc);
-					selectionStrategy=(SelectionStrategy)clazz.newInstance();
+					selectionStrategy = (SelectionStrategy)clazz.getConstructor().newInstance();
 					log.info("Configured selection strategy <"+strategyDesc+">");
 				}catch(Exception ex){
 					throw new IllegalArgumentException(ex);
