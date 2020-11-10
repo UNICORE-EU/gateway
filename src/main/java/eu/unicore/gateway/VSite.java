@@ -48,7 +48,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.http.client.HttpClient;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import eu.emi.security.authn.x509.impl.SocketFactoryCreator;
 import eu.unicore.gateway.util.LogUtil;

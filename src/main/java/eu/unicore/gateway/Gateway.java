@@ -30,25 +30,18 @@
 package eu.unicore.gateway;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.Logger;
 
 import eu.unicore.gateway.base.GatewayJettyServer;
 import eu.unicore.gateway.client.HttpClientFactory;
 import eu.unicore.gateway.properties.ConnectionsProperties;
 import eu.unicore.gateway.properties.GatewayHttpServerProperties;
 import eu.unicore.gateway.properties.GatewayProperties;
-import eu.unicore.gateway.util.FileWatcher;
 import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.security.canl.AuthnAndTrustProperties;
 import eu.unicore.security.canl.CredentialProperties;
@@ -203,7 +196,6 @@ public class Gateway
 		log.info(message);
 		System.out.println(message);
 		
-		startLogConfigWatcher();
 		jetty = new GatewayJettyServer(this);
 		jetty.start();
 		upSince = new Date().toString();
@@ -227,58 +219,23 @@ public class Gateway
 	}
 	
 	/**
-	 * sets up a watchdog that checks for changes to the log4j configuration file,
-	 * and re-configures log4j if that file has changed
+	 * check if a log4j2 config is set
+	 * if not, setup a very conservative default
 	 */
-	private void startLogConfigWatcher()
-	{
-		final String logConfig = System.getProperty("log4j.configuration");
-		if (logConfig == null)
-		{
-			log.warn("No log configuration file set.");
-			return;
-		}
-		try
-		{
-			Runnable r = new Runnable()
-			{
-				public void run()
-				{
-					try{
-						reConfigureLog4j(logConfig);
-					}
-					catch(MalformedURLException me){
-						throw new RuntimeException(me);
-					}
-				}
-			};
-			File logProperties=logConfig.startsWith("file:")?new File(new URI(logConfig)):new File(logConfig);
-			FileWatcher fw = new FileWatcher(logProperties,r);
-			executorService.scheduleWithFixedDelay(fw, 5, 5, TimeUnit.SECONDS);
-		} catch(FileNotFoundException fex)
-		{
-			log.warn("Log configuration file <"+logConfig+"> not found.");
-		}
-		catch(URISyntaxException use)
-		{
-			log.warn("Not a valid URI: <"+logConfig+">");
+	static void checkLogSystem() {
+		if(System.getProperty("log4j.configurationFile")==null) {
+			System.err.println("***");
+			System.err.println("*** NO log4j configuration set - will use defaults.");
+			System.err.println("*** please configure log4j with -Dlog4j.configurationFile=file:/path/to/config");
+			System.err.println("***");
+			
+			LogUtil.configureDefaultLogging();
 		}
 	}
 
-	/**
-	 * re-configure log4j from the named properties file
-	 */
-	public static void reConfigureLog4j(String logConfig)throws MalformedURLException{
-		log.info("LOG CONFIG MODIFIED, re-configuring.");
-		if(logConfig.startsWith("file:")){
-			PropertyConfigurator.configure(new URL(logConfig));	
-		}else{
-			PropertyConfigurator.configure(logConfig);
-		}
-	}
-	
 	public static void main(String[] args) throws Exception
 	{
+		checkLogSystem();
 		File gwProperties = GatewayProperties.FILE_GATEWAY_PROPERTIES;
 		File connProperties = ConnectionsProperties.FILE_CONNECTIONS_PROPERTIES;
 		File secProperties = null;

@@ -7,15 +7,16 @@ import java.io.FileReader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import eu.unicore.gateway.base.RawMessageExchange;
 import eu.unicore.gateway.properties.GatewayProperties;
+import eu.unicore.gateway.util.LogUtil;
 import junit.framework.TestCase;
 
 public class TestParseHeaders extends TestCase {
 
-	public static final Logger log = Logger.getLogger(TestParseHeaders.class.getName());
+	public static final Logger log = LogUtil.getLogger("gateway", TestParseHeaders.class);
 	private File f1 = new File("src/test/resources/xmls/OKFirstHello.xml");
 	private File f2 = new File("src/test/resources/xmls/OKFirstHelloWithDefaultNamespace.xml");
 	private File f3 = new File("src/test/resources/xmls/OKFirstHelloWithTwoDefaultNamespaces.xml");

@@ -7,11 +7,10 @@ Homepage: http://www.unicore.eu
 
 Package: @component-prefix@@component-name@@component-suffix@
 Architecture: @component-architecture@
-Depends: openjdk-@java-main-version@-jre
-Description:UNICORE (Uniform Interface to Computing Resources) offers a 
- ready-to-run Grid system including client and server software.
- UNICORE makes distributed computing and data resources available
- in a seamless and secure way in intranets and the internet.
- .
- This package contains the UNICORE Gateway.
-
+Depends: default-jre-headless
+Description:UNICORE (UNiform Interface to COmputing REsources) is
+a software suite for building federated systems, providing secure and
+seamless access to high-performance compute and data resources
+.
+This package contains the UNICORE Gateway, a reverse HTTPS proxy for
+accessing multiple UNICORE components via a single entry point

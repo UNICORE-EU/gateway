@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import eu.unicore.util.Log;
 import eu.unicore.util.configuration.ConfigurationException;

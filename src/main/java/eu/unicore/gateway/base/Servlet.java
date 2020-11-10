@@ -69,8 +69,8 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.protocol.HTTP;
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 import eu.unicore.gateway.Gateway;
 import eu.unicore.gateway.POSTHandler;
@@ -106,17 +106,15 @@ public class Servlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException{
 		String clientIP=req.getRemoteAddr();
-		String clientName=null;
+		String clientName="n/a";
 		try{
 			X509Certificate[] certPath = (X509Certificate[]) req.getAttribute("javax.servlet.request.X509Certificate");
 			if (certPath != null){
 				clientName=certPath[0].getSubjectDN().getName();
 			}
-		}catch(Exception ex){
-			LogUtil.logException("Error getting client information.", ex, logger);
-		}
-		MDC.put(LogUtil.MDC_IP, clientIP);
-		if(clientName!=null)MDC.put(LogUtil.MDC_DN, clientName);
+		}catch(Exception ex){}
+		ThreadContext.put(LogUtil.MDC_IP, clientIP);
+		ThreadContext.put(LogUtil.MDC_DN, clientName);
 
 		if(logger.isDebugEnabled()){
 			StringBuilder sb=new StringBuilder();
@@ -129,8 +127,8 @@ public class Servlet extends HttpServlet {
 		try{
 			super.service(req, res);
 		}finally{
-			MDC.remove(LogUtil.MDC_DN);
-			MDC.remove(LogUtil.MDC_IP);
+			ThreadContext.remove(LogUtil.MDC_DN);
+			ThreadContext.remove(LogUtil.MDC_IP);
 		}
 	}
 

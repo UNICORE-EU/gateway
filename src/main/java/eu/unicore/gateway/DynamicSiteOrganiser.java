@@ -1,7 +1,7 @@
 package eu.unicore.gateway;
 
 import java.net.URI;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import eu.unicore.gateway.cluster.MultiSite;
 import eu.unicore.gateway.util.LogUtil;

@@ -13,7 +13,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.CharBuffer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Proxy over a given Reader implementation. Basic rules are that:

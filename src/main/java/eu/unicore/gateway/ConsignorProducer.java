@@ -32,7 +32,7 @@ import javax.xml.stream.events.XMLEvent;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 import org.codehaus.stax2.evt.XMLEventFactory2;
 

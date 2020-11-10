@@ -6,10 +6,11 @@ import java.io.FileReader;
 import java.io.StringWriter;
 import java.security.cert.X509Certificate;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import eu.unicore.gateway.base.RawMessageExchange;
 import eu.unicore.gateway.properties.GatewayProperties;
+import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.security.canl.AuthnAndTrustProperties;
 import eu.unicore.security.canl.CredentialProperties;
 import eu.unicore.security.canl.TruststoreProperties;
@@ -17,7 +18,7 @@ import junit.framework.TestCase;
 
 public class TestInsertConsignor extends TestCase
 {
-	public static final Logger log = Logger.getLogger(TestInsertConsignor.class.getName());
+	public static final Logger log = LogUtil.getLogger("gateway", TestInsertConsignor.class);
 	private File secProps = new File("src/test/resources/security.properties");
 
 	public static String checkResult(String result, String input, String insertionPointAfter)

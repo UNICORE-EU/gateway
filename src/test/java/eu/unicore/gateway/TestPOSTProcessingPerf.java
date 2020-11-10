@@ -10,10 +10,11 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import eu.unicore.gateway.base.RawMessageExchange;
 import eu.unicore.gateway.properties.GatewayProperties;
+import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.gateway.util.StopWatch;
 import eu.unicore.security.canl.AuthnAndTrustProperties;
 import eu.unicore.security.canl.CredentialProperties;
@@ -22,7 +23,7 @@ import junit.framework.TestCase;
 
 public class TestPOSTProcessingPerf extends TestCase
 {
-	private static final Logger log = Logger.getLogger(TestPOSTProcessingPerf.class.getName());
+	private static final Logger log = LogUtil.getLogger("gateway", TestPOSTProcessingPerf.class);
 	private File secProps = new File("src/test/resources/security.properties");
 	private static final int ITERATIONS = 10000;
 		

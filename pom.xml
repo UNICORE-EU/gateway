@@ -6,8 +6,9 @@
   <packaging>jar</packaging>
   <description>UNICORE web services gateway</description>
   <inceptionYear>2004</inceptionYear>
-  <version>1.6.4</version>
+  <version>1.7.0</version>
   <name>UNICORE Gateway</name>
+  
   <parent>
     <groupId>eu.unicore</groupId>
     <artifactId>unicore-parent</artifactId>
@@ -16,10 +17,10 @@
 
   <properties>
     <!-- release version numbers (for the Linux packaging) -->
-    <package.version>8.0.5</package.version>
+    <package.version>8.1.0</package.version>
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
-    <seclib.version>4.5.10</seclib.version>
+    <seclib.version>5.1.0</seclib.version>
     <httpclient.version>4.5.3</httpclient.version>
     <jetty.version>9.4.31.v20200723</jetty.version>
     <!-- this activates asciidoc usage -->
@@ -29,8 +30,10 @@
   </properties>
 
   <scm>
-    <connection>scm:svn:https://svn.code.sf.net/p/unicore/svn/gateway/trunk</connection>
-    <developerConnection>scm:svn:https://svn.code.sf.net/p/unicore/svn/gateway/trunk</developerConnection>
+    <connection>scm:git:git://github.com/UNICORE-EU/gateway.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/UNICORE-EU/gateway.git</developerConnection>
+    <url>https://github.com/UNICORE-EU/gateway</url>
+    <tag>HEAD</tag>
   </scm>
 
   <dependencies>
@@ -41,11 +44,6 @@
       <scope>test</scope>
     </dependency>
     <!-- core dependencies -->
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.16</version>
-    </dependency>
     <dependency>
       <groupId>net.java.dev.stax-utils</groupId>
       <artifactId>stax-utils</artifactId>
@@ -76,21 +74,25 @@
       <artifactId>securityLibrary</artifactId>
       <version>${seclib.version}</version>
       <exclusions>
-	  <exclusion>
-	    <groupId>net.sf.saxon</groupId>
-	    <artifactId>Saxon-HE</artifactId>
-	  </exclusion>
-	  <exclusion>
-	    <groupId>com.sun.xml.ws</groupId>
-	    <artifactId>jaxws-eclipselink-plugin</artifactId>
-	  </exclusion>
-	  <exclusion>
-	    <groupId>com.sun.xml.ws</groupId>
-	    <artifactId>sdo-eclipselink-plugin</artifactId>
-	  </exclusion>
-	  <exclusion>
-	    <groupId>com.sun.xml.ws</groupId>
-	    <artifactId>jaxws-tools</artifactId>
+	<exclusion>
+	  <groupId>net.sf.saxon</groupId>
+	  <artifactId>Saxon-HE</artifactId>
+	</exclusion>
+	<exclusion>
+	  <groupId>com.sun.xml.ws</groupId>
+	  <artifactId>jaxws-rt</artifactId>
+	</exclusion>
+	<exclusion>
+	  <groupId>com.sun.xml.ws</groupId>
+	  <artifactId>jaxws-eclipselink-plugin</artifactId>
+	</exclusion>
+	<exclusion>
+	  <groupId>com.sun.xml.ws</groupId>
+	  <artifactId>sdo-eclipselink-plugin</artifactId>
+	</exclusion>
+	<exclusion>
+	  <groupId>com.sun.xml.ws</groupId>
+	  <artifactId>jaxws-tools</artifactId>
 	  </exclusion>
 	  <exclusion>
 	    <groupId>org.glassfish.gmbal</groupId>
@@ -100,7 +102,7 @@
 	    <groupId>xalan</groupId>
 	    <artifactId>xalan</artifactId>
 	  </exclusion>
-	</exclusions>
+      </exclusions>
     </dependency>
   </dependencies>
 
@@ -133,23 +135,6 @@
         <configuration>
 	  <forkCount>1</forkCount>
 	  <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>buildnumber-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>initialize</phase>
-            <goals>
-              <goal>create</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <doCheck>false</doCheck>
-          <doUpdate>false</doUpdate>
-          <timestampFormat>{0, date, d MMM yyyy}</timestampFormat>
         </configuration>
       </plugin>
     </plugins>

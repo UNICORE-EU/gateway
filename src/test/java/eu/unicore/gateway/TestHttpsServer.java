@@ -73,7 +73,8 @@ public class TestHttpsServer extends TestCase {
 			int status=response.getStatusLine().getStatusCode();
 			assertEquals(HttpStatus.SC_OK, status);
 			assertFalse(resp.contains("Fault"));
-			assertTrue(resp.contains("CN=Gateway"));
+			System.out.println(resp);
+			assertTrue(resp.contains("Gateway"));
 		} catch(Exception ex){
 			ex.printStackTrace();
 			fail();

@@ -33,18 +33,14 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 import eu.unicore.bugsreporter.annotation.FunctionalTest;
 import eu.unicore.bugsreporter.annotation.RegressionTest;
 import eu.unicore.gateway.base.RawMessageExchange;
-import eu.unicore.gateway.base.Servlet;
 import eu.unicore.gateway.properties.GatewayProperties;
 import eu.unicore.gateway.soap.Soap11;
 import eu.unicore.gateway.soap.Soap12;
 import eu.unicore.gateway.soap.SoapVersion;
-import eu.unicore.gateway.util.LogUtil;
 import junit.framework.TestCase;
 
 public class TestServer extends TestCase {
@@ -255,7 +251,6 @@ public class TestServer extends TestCase {
 	}
 
 	public void testPostNoSOAP()throws Exception{
-		Logger.getLogger("unicore.gateway.Servlet").setLevel(Level.DEBUG);
 		FakeServer s1=new FakeServer();
 		s1.start();
 		String s1Url=s1.getURI();
@@ -349,8 +344,6 @@ public class TestServer extends TestCase {
 		String url="http://localhost:64433/FAKE1"+queryPath;
 		String originalQuery = "GET "+queryPath+" HTTP/1.1";
 
-		LogUtil.getLogger(LogUtil.GATEWAY,Servlet.class).setLevel(Level.TRACE);
-
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpGet get=new HttpGet(url);
 		get.addHeader("X-testHeader", "test123");
@@ -370,8 +363,6 @@ public class TestServer extends TestCase {
 			assertTrue("GW Host Header not present", 
 					filteredHeadersForwarded.contains(RawMessageExchange.GATEWAY_EXTERNAL_URL+": http://localhost:64433/FAKE1"));
 			assertTrue("Headers were not forwarded", filteredHeadersForwarded.contains("X-testHeader: test123"));
-
-			LogUtil.getLogger(LogUtil.GATEWAY,Servlet.class).setLevel(Level.INFO);	
 
 			System.out.println(getStatusDesc(response));
 			status=response.getStatusLine().getStatusCode();
@@ -502,7 +493,6 @@ public class TestServer extends TestCase {
 
 	@FunctionalTest(id="gw_fwPutReq", description="Tests whether the gateway properly forwards PUT requests to the backend site.")
 	public void testPut()throws Exception{
-		LogUtil.getLogger(LogUtil.GATEWAY,Servlet.class).setLevel(Level.TRACE);
 		FakeServer s1=new FakeServer();
 		s1.start();
 		String s1Url=s1.getURI();

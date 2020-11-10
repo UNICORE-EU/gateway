@@ -36,7 +36,7 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import eu.unicore.gateway.properties.ConnectionsProperties;
 import eu.unicore.gateway.util.LogUtil;
