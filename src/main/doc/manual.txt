@@ -15,24 +15,25 @@ Support list: unicore-support@lists.sf.net
 
 Developer's list: unicore-devel@lists.sf.net
 
+GitHub page: https://github.com/UNICORE-EU/gateway
+
 Introduction
 ------------
 
 The Gateway is the entry point into a UNICORE site, routing HTTPS
-traffic to servers like UNICORE/X. It is installed in front of any
-networking firewall. It (optionally) authenticates incoming messages
-and forwards them to their intended destination. The Gateway receives
-the reply and sends it back to the client. In this way, only a single
-open port in a site's firewall has to be configured.
+traffic to servers like UNICORE/X. It forwards client traffic to the
+intended destination, optionally authenticating the client. The
+Gateway receives the reply and sends it back to the client. In this
+way, only a single open port in a site's firewall has to be
+configured.
 
 [NOTE]
 .LIMITATIONS
 ============
-This forwarding process only works for “most” HTTP requests, and is
-not a complete HTTP reverse proxy implementation. For example, it is
-not possible to run a full, complex web application like the UNICORE
-Portal "behind" the Gateway. Check the respective components's manual
-whether it can be run behind the Gateway.
+The Gateway is not a complete HTTP reverse proxy implementation. For
+example, it is not possible to run a full, complex web application
+"behind" the Gateway, especially not if protocols like WebSocket are
+used.
 =========================================================
 
 
@@ -77,7 +78,7 @@ is a directory where the Gateway was installed:
 
   CONF=INST/conf
   BIN=INST/bin
-  LOG=INST/log
+  LOG=INST/logs
 
 The above variables (CONF, BIN and LOG) are used throughout the rest of 
 this manual.
@@ -89,27 +90,29 @@ Installation
 
 The UNICORE Gateway is distributed in the following formats:
 
- 1. As a part of platform independent installation bundle called UNICORE core server bundle.
- The UNICORE core server bundle is provided in two forms: one with a graphical installer and 
- one with a command line installer.
+ 1. As a part of platform independent installation bundle called
+ UNICORE Server bundle.  The UNICORE Server bundle is
+ provided as a tar package and includes a command line installer.
  2. As a binary, platform-specific package available currently for
  RedHat (Centos) and Debian platforms. Those packages are not tested
  on all possible platforms, but should work without any problems with
- other versions of similar distributions, e.g. SL6, Centos, or Fedora.
+ other versions of similar distributions, e.g. SL, Centos, or Fedora.
 
+To run, the Gateway requires Java (JRE headless is sufficient) in
+version 8 or later. We recommend using OpenJDK.
 
-Installation from the core server bundle
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Installation from the Server bundle
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Download the core server bundle from the UNICORE project website. 
+Download the server bundle from the UNICORE project website. 
 
-If you use the graphical installer, follow the on-screen instructions and do not forget 
-to enable the Gateway checkbox when prompted.
+Please review the README file available after extracting the
+bundle. You don't have to change any defaults as the Gateway is
+installed by default.
 
-If you use the console installer, please review the README file available after 
-extracting the bundle. You don't have to change any defaults as the Gateway is installed 
-by default.
-
+You should create and use a system user (e.g. 'unicore') to install
+and run the gateway. For security reasons, do not run the Gateway as
+the 'root' user.
 
 Installation from a Linux package (rpm or deb)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -237,7 +240,7 @@ Dynamic registration is controlled by three properties in +CONF/gateway.properti
 
 ----
 gateway.registration.enable=true
-gateway.registration.secret=<your key>
+gateway.registration.secret=<your secret>
 ----
 
 If set to true, the Gateway will accept dynamic registrations which are made by 
@@ -299,10 +302,10 @@ include::sec-ref-jettyProperties.txt[]
 Require end-user certificates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In older versions of UNICORE, end-users were required to have client
-certificates.  Since version 7, client certificates are optional.
-If you want to require end-user certificates, the Gateway can be configured accordingly.
-Set following in +gateway.properties+
+Since UNICORE v7, client certificates are optional and not
+recommended. If you want to setup authentication based on end-user
+certificates, the Gateway can be configured accordingly.  Set
+the following in +gateway.properties+
 
 ------------
 gateway.httpServer.requireClientAuthn=true
@@ -312,30 +315,17 @@ gateway.httpServer.requireClientAuthn=true
 Logging
 ^^^^^^^
 
+UNICORE uses Log4j (version 2) as it's logging framework, and
+comes with an example configuration file (CONF/logging.properties)
+
 The most important, root log categories used by the Gateway's logging are:
 
 [width="75%",grid="all",frame="topbot"]
 |=====================================================================================
 | unicore.gateway 	    | General Gateway logging
-| unicore.connections 	| Log IPs of clients, and the DN after the SSL handshake
-| unicore.httpserver	| HTTP processing, Jetty server
-| unicore.security		| Certificate details and other security
+| unicore.security	    | Certificate details and other security
+| org.apache.http           | Outgoing HTTP to the backend services
 |======================================================================================
-
-The Gateway uses the so called MDC (Mapped Diagnostic Context) to provide
-additional information on the client which is served. In the MDC the client's IP address and 
-client's Distinguished Name is stored. You can control whether to attach MDC to each
-line by the +%X\{entry\}+ log4j pattern entry. As the +entry+ you can use: +clientIP+ or +clientName+.
-For example:
-
-----
-log4j.appender.A1.layout.ConversionPattern=%d [%t] [%X{clientIP} %X{clientName}] %-5p %c{1} - %m%n
-----
-
-
-:leveloffset: 1
-include::sec-logging.txt[]
-:leveloffset: 0
 
 
 [[apache]]
@@ -520,7 +510,8 @@ Building the Gateway from source
 To checkout the latest version of the Gateway source code, do
 
 ----
-svn co http://svn.code.sf.net/p/unicore/svn/gateway/trunk gateway
+git clone https://github.com/UNICORE-EU/gateway.git
+cd gateway
 ----
 
 You will need to install Maven from http://maven.apache.org
