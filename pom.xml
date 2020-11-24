@@ -12,7 +12,7 @@
   <parent>
     <groupId>eu.unicore</groupId>
     <artifactId>unicore-parent</artifactId>
-    <version>1.22</version>
+    <version>1.23</version>
   </parent>
 
   <properties>
@@ -22,7 +22,7 @@
     <specification.version>${package.version}</specification.version>
     <seclib.version>5.1.0</seclib.version>
     <httpclient.version>4.5.3</httpclient.version>
-    <jetty.version>9.4.31.v20200723</jetty.version>
+    <jetty.version>9.4.34.v20201102</jetty.version>
     <!-- this activates asciidoc usage -->
     <docman.enabled />
     <doc.version>${package.version}</doc.version>

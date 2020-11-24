@@ -19,11 +19,6 @@ set -e
 
 case "$1" in
     remove)
-	/etc/init.d/unicore-gateway stop
-	if [ -e /sbin/insserv ]
-    then
-     /sbin/insserv -r unicore-gateway
-    fi 
     ;;
     upgrade|deconfigure)
     ;;

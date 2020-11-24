@@ -35,7 +35,6 @@ case "$1" in
  	chown unicore:unicore /etc/unicore/gateway/logging.properties
 	chmod 640 /etc/unicore/gateway/logging.properties
 
-        chmod 755 /etc/init.d/unicore-gateway
 	chmod 755 /usr/sbin/unicore-gateway-start.sh
 	chmod 755 /usr/sbin/unicore-gateway-stop.sh
 	chmod 755 /usr/sbin/unicore-gateway-status.sh
