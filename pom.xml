@@ -22,7 +22,7 @@
     <specification.version>${package.version}</specification.version>
     <seclib.version>5.1.0</seclib.version>
     <httpclient.version>4.5.3</httpclient.version>
-    <jetty.version>9.4.34.v20201102</jetty.version>
+    <jetty.version>9.4.35.v20201120</jetty.version>
     <!-- this activates asciidoc usage -->
     <docman.enabled />
     <doc.version>${package.version}</doc.version>

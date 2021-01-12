@@ -228,8 +228,6 @@ public class Gateway
 			System.err.println("*** NO log4j configuration set - will use defaults.");
 			System.err.println("*** please configure log4j with -Dlog4j.configurationFile=file:/path/to/config");
 			System.err.println("***");
-			
-			LogUtil.configureDefaultLogging();
 		}
 	}
 
@@ -251,9 +249,10 @@ public class Gateway
 			instance.startGateway();
 		} catch(Exception e)
 		{
-			log.fatal("FATAL ERROR starting the Gateway, exiting: " + e.toString());
-			System.err.println("FATAL ERROR starting the Gateway, exiting: " + e.toString());
-			System.exit(-1);
+			log.fatal("FATAL ERROR starting the Gateway, exiting", e);
+			System.err.println("FATAL ERROR starting the Gateway, exiting");
+			e.printStackTrace();
+			System.exit(1);
 		}
 	}	
 }
