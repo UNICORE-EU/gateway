@@ -302,10 +302,10 @@ include::sec-ref-jettyProperties.txt[]
 Require end-user certificates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Since UNICORE v7, client certificates are optional and not
-recommended. If you want to setup authentication based on end-user
-certificates, the Gateway can be configured accordingly.  Set
-the following in +gateway.properties+
+Using client certificates for end-user authentication are not required
+or recommended.  If you still want to require end-users to have a
+certificate, end-user certificates, the Gateway can be configured
+accordingly.  Set the following in +gateway.properties+
 
 ------------
 gateway.httpServer.requireClientAuthn=true
@@ -315,8 +315,11 @@ gateway.httpServer.requireClientAuthn=true
 Logging
 ^^^^^^^
 
-UNICORE uses Log4j (version 2) as it's logging framework, and
+UNICORE uses Log4j (version 2) as its logging framework, and
 comes with an example configuration file (CONF/logging.properties)
+
+Please refer to the Log4j documentation for more information
+https://logging.apache.org/log4j/2.x/manual/configuration.html
 
 The most important, root log categories used by the Gateway's logging are:
 
@@ -410,7 +413,7 @@ vsites=https://localhost:7788 https://localhost:7789
 strategy.healthcheck.interval=5000
 ----
 
-Available Strategies
+Available strategies
 ~~~~~~~~~~~~~~~~~~~~
 
 A selection strategy is used to decide where a client request will

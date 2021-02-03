@@ -219,14 +219,21 @@ public class Gateway
 	}
 	
 	/**
-	 * check if a log4j2 config is set
-	 * if not, setup a very conservative default
+	 * warn if no log4j2 config is set
 	 */
 	static void checkLogSystem() {
 		if(System.getProperty("log4j.configurationFile")==null) {
 			System.err.println("***");
-			System.err.println("*** NO log4j configuration set - will use defaults.");
-			System.err.println("*** please configure log4j with -Dlog4j.configurationFile=file:/path/to/config");
+			if(System.getProperty("log4j.configuration")!=null) {
+				System.err.println("*** Outdated log4j configuration - logging might not work as expected.");
+				System.err.println("*** Please remove -Dlog4j.configuration=...");
+			}
+			else {
+				System.err.println("*** NO log4j configuration set - will use defaults.");
+			}
+			System.err.println("***");
+			System.err.println("*** Please configure log4j with -Dlog4j.configurationFile=file:/path/to/config");
+			System.err.println("*** and check the manual or server distribution for example configurations.");
 			System.err.println("***");
 		}
 	}

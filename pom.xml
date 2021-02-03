@@ -20,7 +20,7 @@
     <package.version>8.1.0</package.version>
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
-    <seclib.version>5.1.0</seclib.version>
+    <seclib.version>5.2.0</seclib.version>
     <httpclient.version>4.5.3</httpclient.version>
     <jetty.version>9.4.35.v20201120</jetty.version>
     <!-- this activates asciidoc usage -->
