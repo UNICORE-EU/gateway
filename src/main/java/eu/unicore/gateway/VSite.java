@@ -50,11 +50,13 @@ import javax.net.ssl.SSLSocketFactory;
 import org.apache.http.client.HttpClient;
 import org.apache.logging.log4j.Logger;
 
-import eu.emi.security.authn.x509.impl.SocketFactoryCreator;
+import eu.emi.security.authn.x509.impl.SocketFactoryCreator2;
 import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.gateway.util.XURI;
 import eu.unicore.security.canl.AuthnAndTrustProperties;
 import eu.unicore.util.Log;
+import eu.unicore.util.httpclient.HostnameMismatchCallbackImpl;
+import eu.unicore.util.httpclient.ServerHostnameCheckingMode;
 
 public class VSite implements Site {
 
@@ -154,8 +156,10 @@ public class VSite implements Site {
 	
 	private synchronized SSLSocketFactory getSocketFactory() {
 		if(socketFactory==null) {
-			socketFactory = SocketFactoryCreator.getSocketFactory(
-					securityCfg.getCredential(), securityCfg.getValidator()); 
+			socketFactory = new SocketFactoryCreator2(
+					securityCfg.getCredential(), securityCfg.getValidator(),
+					new HostnameMismatchCallbackImpl(ServerHostnameCheckingMode.NONE))
+					.getSocketFactory();
 		}
 		return socketFactory;
 	}

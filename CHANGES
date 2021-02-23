@@ -5,8 +5,8 @@ The issue tracker is at https://sourceforge.net/p/unicore/issues
 
 8.1.0
 -----
- - update to Log4j 2
- - update Jetty to 9.4.34
+ - update to Log4j/2 (logging config update is recommended)
+ - update to Jetty 9.4.35, CAnL 2.7.0 
 
 8.0.4
 -----
