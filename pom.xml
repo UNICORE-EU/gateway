@@ -6,7 +6,7 @@
   <packaging>jar</packaging>
   <description>UNICORE web services gateway</description>
   <inceptionYear>2004</inceptionYear>
-  <version>1.7.1-SNAPSHOT</version>
+  <version>1.7.1</version>
   <name>UNICORE Gateway</name>
   
   <parent>
@@ -17,12 +17,12 @@
 
   <properties>
     <!-- release version numbers (for the Linux packaging) -->
-    <package.version>8.1.1</package.version>
+    <package.version>8.2.0</package.version>
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
-    <seclib.version>5.2.0</seclib.version>
-    <httpclient.version>4.5.3</httpclient.version>
-    <jetty.version>9.4.35.v20201120</jetty.version>
+    <seclib.version>5.3.1</seclib.version>
+    <httpclient.version>4.5.13</httpclient.version>
+    <jetty.version>9.4.41.v20210516</jetty.version>
     <!-- this activates asciidoc usage -->
     <docman.enabled />
     <doc.version>${package.version}</doc.version>
