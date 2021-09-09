@@ -6,7 +6,7 @@
   <packaging>jar</packaging>
   <description>UNICORE web services gateway</description>
   <inceptionYear>2004</inceptionYear>
-  <version>1.7.2-SNAPSHOT</version>
+  <version>1.7.2</version>
   <name>UNICORE Gateway</name>
   
   <parent>
@@ -21,6 +21,7 @@
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
     <seclib.version>5.3.1</seclib.version>
+    <xmlsec.version>2.2.2</xmlsec.version>
     <httpclient.version>4.5.13</httpclient.version>
     <jetty.version>9.4.41.v20210516</jetty.version>
     <!-- this activates asciidoc usage -->
@@ -68,6 +69,11 @@
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-rewrite</artifactId>
       <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.santuario</groupId>
+      <artifactId>xmlsec</artifactId>
+      <version>${xmlsec.version}</version>
     </dependency>
     <dependency>
       <groupId>eu.unicore.security</groupId>

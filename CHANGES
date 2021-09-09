@@ -2,6 +2,12 @@ Change log for the UNICORE Gateway
 ==================================
 The issue tracker is at https://sourceforge.net/p/unicore/issues
 
+8.2.0-p1
+-----
+ - update to Jetty 9.4.41
+ - update to CXF 3.4.4
+ - update to HTTPClient 4.5.13
+ - update xmlsec to 2.2.2
 
 8.1.0
 -----
