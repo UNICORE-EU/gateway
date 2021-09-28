@@ -21,7 +21,7 @@
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
     <seclib.version>5.3.1</seclib.version>
-    <xmlsec.version>2.2.2</xmlsec.version>
+    <xmlsec.version>2.2.3</xmlsec.version>
     <httpclient.version>4.5.13</httpclient.version>
     <jetty.version>9.4.41.v20210516</jetty.version>
     <!-- this activates asciidoc usage -->
