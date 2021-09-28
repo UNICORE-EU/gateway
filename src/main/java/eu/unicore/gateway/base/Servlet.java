@@ -253,7 +253,6 @@ public class Servlet extends HttpServlet {
 				}
 			}
 		}
-		OutputStream os=res.getOutputStream();
 		try
 		{
 			HttpClient client =null;
@@ -278,16 +277,15 @@ public class Servlet extends HttpServlet {
 			int result = statusL.getStatusCode();
 			copyResponseHeaders(response, res);
 			res.setStatus(result);
+			OutputStream os = res.getOutputStream();
 			writeResponseContent(response, os);
-			
+			os.flush();
 		}catch(Exception e){
 			LogUtil.logException("Error performing "+http.getMethod()+" request.", e, logger);
-			res.sendError(500, "Could not perform request.");
-		}
-		finally{
+			res.sendError(503, Log.createFaultMessage("Could not perform request", e));
+		}finally{
 			try{http.releaseConnection();}catch(Exception e){}
 		}
-		os.flush();
 	}
 	
 	private void writeResponseContent(HttpResponse response, OutputStream os) throws IOException {

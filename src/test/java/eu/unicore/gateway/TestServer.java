@@ -34,8 +34,6 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import eu.unicore.bugsreporter.annotation.FunctionalTest;
-import eu.unicore.bugsreporter.annotation.RegressionTest;
 import eu.unicore.gateway.base.RawMessageExchange;
 import eu.unicore.gateway.properties.GatewayProperties;
 import eu.unicore.gateway.soap.Soap11;
@@ -67,8 +65,6 @@ public class TestServer extends TestCase {
 		System.out.println("HEAD got reply: "+resp.getStatusLine());
 	}
 
-
-	@FunctionalTest(id="gw_dynReg", description="Tests whether dynamic registration is possible and if can be disabled.")
 	public void testDynamicRegistration()throws Exception{
 		gw.getProperties().setProperty(GatewayProperties.KEY_REG_ENABLED, "false");
 		int status=doRegister("test","http://localhost:12345");
@@ -123,9 +119,6 @@ public class TestServer extends TestCase {
 		s1.stop();
 	}
 
-	@FunctionalTest(id="gw_fwPostReq", 
-			description="Tests whether the gateway properly forwards POST/SOAP requests to the backend site; "
-					+ "requests are of application/xml mimetype.")
 	public void testPostSOAP11Content()throws Exception{
 		FakeServer s1=new FakeServer();
 		s1.start();
@@ -187,9 +180,6 @@ public class TestServer extends TestCase {
 		s1.stop();
 	}
 
-	@FunctionalTest(id="gw_fwPostReq", 
-			description="Tests whether the gateway properly forwards POST/SOAP requests to the backend site; "
-					+ "requests are of text/xml mimetype.")
 	public void testPostSOAP11ContentText()throws Exception{
 		FakeServer s1=new FakeServer();
 		s1.start();
@@ -274,9 +264,6 @@ public class TestServer extends TestCase {
 		s1.stop();
 	}
 
-	@FunctionalTest(id="gw_fwPostNonSOAPReq", 
-			description="Tests whether the gateway properly forwards non-SOAP POST requests " +
-			"to the backend site; requests are of text/json mimetype.")
 	public void testNonSOAPPost()throws Exception{
 		FakeServer s1=new FakeServer();
 		s1.start();
@@ -332,7 +319,6 @@ public class TestServer extends TestCase {
 		assertTrue("Header "+headerName+" was not forwarded",false);
 	}
 	
-	@FunctionalTest(id="gw_fwGetReq", description="Tests whether the gateway properly forwards GET requests to the backend site.")
 	public void testGet()throws Exception{
 		FakeServer s1=new FakeServer();
 		s1.start();
@@ -393,7 +379,6 @@ public class TestServer extends TestCase {
 		s1.stop();
 	}
 
-	@RegressionTest(id=3314648, url="http://sourceforge.net/tracker/?func=detail&aid=3314648&group_id=102081&atid=633902")
 	public void testGetWrongAddress()throws Exception{
 
 		String queryPath = "/test";
@@ -415,7 +400,6 @@ public class TestServer extends TestCase {
 	}
 
 	
-	@RegressionTest(id=790, url="http://sourceforge.net/p/unicore/bugs/790/")
 	public void testGetPathWithSpaces()throws Exception{
 		FakeServer s1=new FakeServer();
 		s1.start();
@@ -473,7 +457,28 @@ public class TestServer extends TestCase {
 		}
 	}
 	
-	@FunctionalTest(id="gw_showVersion", description="Tests whether the gateway shows its version on the default page.")
+	public void testGetWithVSiteOffline()throws Exception{
+		int status=doRegister("FAKE1","http://some_offline_site");
+		assertEquals(HttpStatus.SC_CREATED,status);
+	
+		String url="http://localhost:64433/FAKE1/rest/core";
+		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+		HttpGet get=new HttpGet(url);
+
+		try{
+			HttpResponse response = hc.execute(get);
+			System.out.println(getStatusDesc(response));
+			status=response.getStatusLine().getStatusCode();
+			String errorBody = EntityUtils.toString(response.getEntity());
+			System.out.println(errorBody);
+			assertEquals(HttpStatus.SC_SERVICE_UNAVAILABLE, status);
+		}
+		catch(Exception ex){
+			ex.printStackTrace();
+			fail();
+		}
+	}
+	
 	public void testShowVersion()throws Exception{
 		String url="http://localhost:64433/";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
@@ -491,7 +496,6 @@ public class TestServer extends TestCase {
 		}
 	}
 
-	@FunctionalTest(id="gw_fwPutReq", description="Tests whether the gateway properly forwards PUT requests to the backend site.")
 	public void testPut()throws Exception{
 		FakeServer s1=new FakeServer();
 		s1.start();
@@ -520,9 +524,6 @@ public class TestServer extends TestCase {
 
 	}
 
-	@FunctionalTest(id="gw_fwPostMultipartReq", 
-			description="Tests whether the gateway properly forwards multipart POST requests " +
-			"to the backend site.")
 	public void testMultipartPost()throws Exception{
 		FakeServer s1=new FakeServer();
 		s1.start();

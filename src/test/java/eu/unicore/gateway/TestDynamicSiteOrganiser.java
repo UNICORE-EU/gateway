@@ -1,6 +1,5 @@
 package eu.unicore.gateway;
 
-import eu.unicore.bugsreporter.annotation.FunctionalTest;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -47,8 +46,6 @@ public class TestDynamicSiteOrganiser extends TestCase{
 		assertTrue(html.contains("http://localhost:6789"));
 	}
 
-	@FunctionalTest(id="gw_secDyn",
-		description="Verify that the dynamic registration filters configured with registration.deny and registration.allow work correctly")
 	public void testExclusionInclusionPatterns()throws URISyntaxException{
 		String excl="bad.org  some.thing   veryevil.COM   evil.good.org";
 		String incl="good.org";

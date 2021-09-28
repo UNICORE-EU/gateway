@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
 
-import eu.unicore.bugsreporter.annotation.FunctionalTest;
 import eu.unicore.gateway.base.RawMessageExchange;
 import eu.unicore.gateway.properties.GatewayProperties;
 import eu.unicore.gateway.soap.SoapFault;
@@ -41,7 +40,6 @@ public class TestParseWrongHeaders extends TestCase
 		}
 	}
 
-	@FunctionalTest(id="gw_wrongHdr", description="Tests request without SOAP envelope")
 	public void test1()
 	{
 		try
@@ -53,7 +51,6 @@ public class TestParseWrongHeaders extends TestCase
 		}
 	}
 
-	@FunctionalTest(id="gw_wrongHdr", description="Tests request with invalid XML")
 	public void test2()
 	{
 		try
@@ -65,7 +62,6 @@ public class TestParseWrongHeaders extends TestCase
 		}
 	}
 
-	@FunctionalTest(id="gw_wrongHdr", description="Tests request with wrong SOAP version")
 	public void test3()
 	{
 		try
@@ -77,7 +73,6 @@ public class TestParseWrongHeaders extends TestCase
 		}
 	}
 
-	@FunctionalTest(id="gw_wrongHdr", description="Tests request with large SOAP header")
 	public void test4()
 	{
 		final char[] START = ("<env:Envelope xmlns:env='http://schemas.xmlsoap.org/soap/envelope/'><env:Header>   " +

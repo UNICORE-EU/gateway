@@ -3,19 +3,12 @@ package eu.unicore.gateway;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import eu.unicore.bugsreporter.annotation.RegressionTest;
-import eu.unicore.bugsreporter.annotation.RegressionTests;
 import eu.unicore.util.configuration.ConfigurationException;
 
 import junit.framework.TestCase;
 
 public class TestInvalidSettings extends TestCase {
 
-	@RegressionTests({
-		@RegressionTest(url="https://sourceforge.net/tracker/index.php?func=detail&aid=3025126&group_id=102081&atid=633902", 
-		description="This test verifies that gateway won't start at all with invalid security settings"),
-		@RegressionTest(url="https://sourceforge.net/tracker/index.php?func=detail&aid=3006856&group_id=102081&atid=633902")
-	})
 	public void testInvalidSecuritySettings()
 			throws Exception {
 		File gp = new File("src/test/resources/gateway.properties");
