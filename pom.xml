@@ -6,7 +6,7 @@
   <packaging>jar</packaging>
   <description>UNICORE web services gateway</description>
   <inceptionYear>2004</inceptionYear>
-  <version>1.7.3</version>
+  <version>1.7.4-SNAPSHOT</version>
   <name>UNICORE Gateway</name>
   
   <parent>
