@@ -8,7 +8,7 @@ Summary: UNICORE Gateway
 License: BSD
 Distribution: RedHat
 Group: System Environment/Daemons
-URL: http://www.unicore.eu
+URL: https://www.unicore.eu
 Requires: java-1.@java-main-version@.0-openjdk
 AutoReqProv: no
 BuildArch: @component-architecture@
@@ -25,10 +25,8 @@ accessing multiple UNICORE components via a single entry point
 
 
 %changelog
-* Tue Nov 20 2020 Bernd Schuller <unicore-support@lists.sourceforge.net> 
--updates
-* Sun Feb 20 2011 Krzysztof Benedyczak <unicore-support@lists.sourceforge.net> 
--Packaging fixes
+* @release-timestamp@ Bernd Schuller <unicore-support@lists.sourceforge.net> 
+-Latest
 * Wed Oct 06 2010 Andre Giesler <unicore-support@lists.sourceforge.net> 
 -Initial rpm package
 

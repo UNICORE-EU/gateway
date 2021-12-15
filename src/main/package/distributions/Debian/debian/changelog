@@ -1,5 +1,5 @@
 @component-prefix@@component-name@@component-suffix@ (@component-version@-@component-release@@component-disttag@) unstable; urgency=low
 
-  * Initial release
+  * Latest release
 
- -- Piotr Piernik <unicore-support@lists.sourceforge.net>  Tue, 03 Sep 2011 11:51:33 +0100
+ -- Bernd Schuller <unicore-support@lists.sourceforge.net>  @release-timestamp@

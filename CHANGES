@@ -8,6 +8,8 @@ The issue tracker is at https://sourceforge.net/p/unicore/issues
  - fix: send decent error response to client in case a VSite
    is down or misconfigured (status 503 and with the reason in the
    response body)
+ - update to Log4j 2.16
+ - update to Jetty 9.4.44, CXF 3.4.5, xmlsec 2.2.3
 
 8.2.0-p1
 -----
