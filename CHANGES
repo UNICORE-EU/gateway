@@ -2,6 +2,9 @@ Change log for the UNICORE Gateway
 ==================================
 The issue tracker is at https://sourceforge.net/p/unicore/issues
 
+9.0.0
+-----
+ - require Java 11 as minimum
 
 8.3.0
 -----

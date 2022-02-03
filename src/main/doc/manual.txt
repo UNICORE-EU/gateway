@@ -99,7 +99,7 @@ The UNICORE Gateway is distributed in the following formats:
  other versions of similar distributions, e.g. SL, Centos, or Fedora.
 
 To run, the Gateway requires Java (JRE headless is sufficient) in
-version 8 or later. We recommend using OpenJDK.
+version 11 or later. We recommend using OpenJDK.
 
 Installation from the Server bundle
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
