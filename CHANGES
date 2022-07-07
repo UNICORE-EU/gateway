@@ -5,6 +5,7 @@ The issue tracker is at https://sourceforge.net/p/unicore/issues
 9.0.0
 -----
  - require Java 11 as minimum
+ - cleanup and update dependencies: Jetty 9.4.48, log4j 2.17, ...
 
 8.3.0
 -----
@@ -12,7 +13,7 @@ The issue tracker is at https://sourceforge.net/p/unicore/issues
    is down or misconfigured (status 503 and with the reason in the
    response body)
  - update to Log4j 2.16
- - update to Jetty 9.4.44, CXF 3.4.5, xmlsec 2.2.3
+ - update to Jetty 9.4.44, xmlsec 2.2.3
 
 8.2.0-p1
 -----

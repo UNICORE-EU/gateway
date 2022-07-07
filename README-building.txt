@@ -2,12 +2,7 @@
 # Building the UNICORE Gateway
 #
 
-You need Java 7 and Apache Maven.
-
-** NOTE: 
-for packaging, you'll need maven2, while for other 
-tasks both 2 and 3 should work.
-
+You need Java and Apache Maven.
 
 The Java code is built and unit tested using
 
@@ -27,11 +22,6 @@ To build the docs:
 
 You can check them by pointing a web browser at 
 "target/site/index.html"
-
-To upload the docs to the unicore-dev documentation server:
-
-  mvn site:deploy
-
 
 #
 # Creating distribution packages

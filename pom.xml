@@ -6,7 +6,7 @@
   <packaging>jar</packaging>
   <description>UNICORE web services gateway</description>
   <inceptionYear>2004</inceptionYear>
-  <version>1.7.4-SNAPSHOT</version>
+  <version>1.8.0</version>
   <name>UNICORE Gateway</name>
   
   <parent>
@@ -20,10 +20,10 @@
     <package.version>9.0.0</package.version>
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
-    <seclib.version>5.3.4</seclib.version>
+    <seclib.version>5.3.6</seclib.version>
     <xmlsec.version>2.2.3</xmlsec.version>
     <httpclient.version>4.5.13</httpclient.version>
-    <jetty.version>9.4.44.v20210927</jetty.version>
+    <jetty.version>9.4.48.v20220622</jetty.version>
     <!-- this activates asciidoc usage -->
     <docman.enabled />
     <doc.version>${package.version}</doc.version>
@@ -37,19 +37,44 @@
     <tag>HEAD</tag>
   </scm>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+	<groupId>commons-io</groupId>
+	<artifactId>commons-io</artifactId>
+	<version>2.11.0</version>
+      </dependency>
+      <dependency>
+	<groupId>commons-codec</groupId>
+	<artifactId>commons-codec</artifactId>
+	<version>1.15</version>
+      </dependency>
+      <dependency>
+	<groupId>org.bouncycastle</groupId>
+	<artifactId>bcprov-jdk15on</artifactId>
+	<version>1.70</version>
+      </dependency>
+      <dependency>
+	<groupId>org.bouncycastle</groupId>
+	<artifactId>bcpkix-jdk15on</artifactId>
+	<version>1.70</version>
+      </dependency>
+      <dependency>
+	<groupId>com.fasterxml.woodstox</groupId>
+	<artifactId>woodstox-core</artifactId>
+	<version>6.3.0</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.13.1</version>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
     <!-- core dependencies -->
-    <dependency>
-      <groupId>net.java.dev.stax-utils</groupId>
-      <artifactId>stax-utils</artifactId>
-      <version>20040917</version>
-    </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
@@ -76,8 +101,16 @@
       <version>${seclib.version}</version>
       <exclusions>
 	<exclusion>
+	  <groupId>stax</groupId>
+	  <artifactId>stax-api</artifactId>
+	</exclusion>
+	<exclusion>
 	  <groupId>net.sf.saxon</groupId>
 	  <artifactId>Saxon-HE</artifactId>
+	</exclusion>
+	<exclusion>
+	  <groupId>com.sun.xml.ws</groupId>
+	  <artifactId>jaxws-ri</artifactId>
 	</exclusion>
 	<exclusion>
 	  <groupId>com.sun.xml.ws</groupId>

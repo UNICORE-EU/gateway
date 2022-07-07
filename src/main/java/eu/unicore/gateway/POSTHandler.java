@@ -52,9 +52,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.io.input.ReaderInputStream;
@@ -69,7 +67,9 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.protocol.HTTP;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.stax2.XMLOutputFactory2;
+import org.codehaus.stax2.XMLStreamWriter2;
 import org.codehaus.stax2.evt.XMLEventFactory2;
+import org.codehaus.stax2.ri.Stax2EventWriterImpl;
 
 import com.ctc.wstx.stax.WstxEventFactory;
 
@@ -83,7 +83,7 @@ import eu.unicore.gateway.util.AbstractStreamReaderRequestEntity;
 import eu.unicore.gateway.util.BufferingProxyReader;
 import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.util.Log;
-import javanet.staxutils.XMLStreamEventWriter;
+//import javanet.staxutils.XMLStreamEventWriter;
 
 /**
  * Main entry point for SOAP processing.
@@ -459,10 +459,10 @@ public class POSTHandler
 		X509Certificate consignorCC[], String ip, SoapVersion soapVersion, 
 		IConsignorProducer consignorProducer, Logger log) throws XMLStreamException
 	{
-		XMLOutputFactory xof = XMLOutputFactory2.newInstance();
+		XMLOutputFactory2 xof = (XMLOutputFactory2)XMLOutputFactory2.newInstance();
 		xof.setProperty(XMLOutputFactory2.IS_REPAIRING_NAMESPACES, false);
-		XMLStreamWriter xsw = xof.createXMLStreamWriter(baos);
-		XMLEventWriter xew = new XMLStreamEventWriter(xsw);
+		XMLStreamWriter2 xsw = xof.createXMLStreamWriter(new OutputStreamWriter(baos), "UTF-8");
+		XMLEventWriter xew = new Stax2EventWriterImpl(xsw);
 		writeConsignorAssertion(xew, createHeader, consignorCC, ip, soapVersion, consignorProducer, log);
 		xsw.close();
 	}
