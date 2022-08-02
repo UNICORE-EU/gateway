@@ -20,10 +20,10 @@
     <package.version>9.0.0</package.version>
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
-    <seclib.version>5.3.6</seclib.version>
+    <seclib.version>5.4.0</seclib.version>
     <xmlsec.version>2.2.3</xmlsec.version>
     <httpclient.version>4.5.13</httpclient.version>
-    <jetty.version>9.4.48.v20220622</jetty.version>
+    <jetty.version>10.0.11</jetty.version>
     <!-- this activates asciidoc usage -->
     <docman.enabled />
     <doc.version>${package.version}</doc.version>
@@ -40,9 +40,9 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-	<groupId>commons-io</groupId>
-	<artifactId>commons-io</artifactId>
-	<version>2.11.0</version>
+	<groupId>org.slf4j</groupId>
+	<artifactId>slf4j</artifactId>
+	<version>1.7.36</version>
       </dependency>
       <dependency>
 	<groupId>commons-codec</groupId>
