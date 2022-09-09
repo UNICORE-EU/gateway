@@ -20,14 +20,9 @@
     <package.version>9.0.0</package.version>
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
-    <seclib.version>5.4.0</seclib.version>
-    <xmlsec.version>2.2.3</xmlsec.version>
+    <seclib.version>5.4.1</seclib.version>
     <httpclient.version>4.5.13</httpclient.version>
     <jetty.version>10.0.11</jetty.version>
-    <!-- this activates asciidoc usage -->
-    <docman.enabled />
-    <doc.version>${package.version}</doc.version>
-    <doc.includeBundle>file:src/main/doc/gw-documentation.properties</doc.includeBundle>
   </properties>
 
   <scm>
@@ -43,21 +38,6 @@
 	<groupId>commons-codec</groupId>
 	<artifactId>commons-codec</artifactId>
 	<version>1.15</version>
-      </dependency>
-      <dependency>
-	<groupId>org.bouncycastle</groupId>
-	<artifactId>bcprov-jdk15on</artifactId>
-	<version>1.70</version>
-      </dependency>
-      <dependency>
-	<groupId>org.bouncycastle</groupId>
-	<artifactId>bcpkix-jdk15on</artifactId>
-	<version>1.70</version>
-      </dependency>
-      <dependency>
-	<groupId>com.fasterxml.woodstox</groupId>
-	<artifactId>woodstox-core</artifactId>
-	<version>6.3.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
