@@ -20,7 +20,7 @@
     <package.version>9.0.0</package.version>
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
-    <seclib.version>5.4.1</seclib.version>
+    <seclib.version>5.4.3</seclib.version>
     <httpclient.version>4.5.13</httpclient.version>
     <jetty.version>10.0.11</jetty.version>
   </properties>

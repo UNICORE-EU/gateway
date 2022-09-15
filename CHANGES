@@ -5,7 +5,8 @@ The issue tracker is at https://sourceforge.net/p/unicore/issues
 9.0.0
 -----
  - require Java 11 as minimum
- - cleanup and update dependencies: Jetty 9.4.48, log4j 2.17, ...
+ - cleanup and update dependencies: Jetty 10.0.11, log4j 2.18,
+   CAnL 2.8.2 ...
 
 8.3.0
 -----
