@@ -51,15 +51,7 @@ case "$1" in
 	chown unicore:unicore /var/log/unicore/gateway
 	chmod 755 /var/log/unicore/gateway
 
-	chown unicore:unicore /var/run/unicore
-	chmod 755 /var/run/unicore
-
-    	
-	if [ -e /sbin/insserv ]
-    then
-     /sbin/insserv unicore-gateway
-    fi 
-	;;
+    ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
     ;;
