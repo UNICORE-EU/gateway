@@ -9,7 +9,7 @@ License: BSD
 Distribution: RedHat
 Group: System Environment/Daemons
 URL: https://www.unicore.eu
-Requires: java-1.@java-main-version@.0-openjdk
+Requires: java-11-openjdk-headless
 AutoReqProv: no
 BuildArch: @component-architecture@
 Packager: Björn Hagemeier unicore-support@lists.sourceforge.net
@@ -68,7 +68,6 @@ accessing multiple UNICORE components via a single entry point
 #
 %dir %attr(755 unicore unicore) "/var/log/unicore"
 %dir %attr(755 unicore unicore) "/var/log/unicore/gateway"
-%dir %attr(755 unicore unicore) "/var/run/unicore"
 
 
 %pre

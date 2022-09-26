@@ -2,7 +2,7 @@ Source: @component-prefix@@component-name@@component-suffix@
 Section: contrib/misc
 Priority: extra
 Maintainer: Piotr Piernik <unicore-support@lists.sourceforge.net> 
-Homepage: http://www.unicore.eu
+Homepage: https://www.unicore.eu
 @build_depends@
 
 Package: @component-prefix@@component-name@@component-suffix@
