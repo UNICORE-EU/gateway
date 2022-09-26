@@ -14,14 +14,12 @@ act as a reverse proxy, such as Apache httpd or nginx)
 ## Download
 
 
-The Gateway is distributed as part of the "Core Server" bundle,
-which can be downloaded from SourceForge:
-https://sourceforge.net/projects/unicore/files/Servers/Core/
+The Gateway is distributed as part of the "Core Server" bundle, which can be 
+[downloaded from SourceForge](https://sourceforge.net/projects/unicore/files/Servers/Core)
 
 ## Documentation
 
-See the [Gateway manual] 
-(https://unicore-docs.readthedocs.io/en/latest/admin-docs/gateway/index.html)
+See the [Gateway manual](https://unicore-docs.readthedocs.io/en/latest/admin-docs/gateway/index.html)
 
 ## Building from source
 
