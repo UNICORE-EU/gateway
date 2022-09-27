@@ -32,16 +32,6 @@
     <tag>HEAD</tag>
   </scm>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-	<groupId>commons-codec</groupId>
-	<artifactId>commons-codec</artifactId>
-	<version>1.15</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -53,6 +43,11 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>1.7.36</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+	<artifactId>commons-codec</artifactId>
+	<version>1.15</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -83,6 +78,10 @@
 	    <groupId>xalan</groupId>
 	    <artifactId>xalan</artifactId>
 	  </exclusion>
+	  <exclusion>
+	    <groupId>stax</groupId>
+	    <artifactId>stax-api</artifactId>
+	  </exclusion>
       </exclusions>
     </dependency>
   </dependencies>
@@ -94,24 +93,5 @@
       <url>https://unicore-dev.zam.kfa-juelich.de/maven</url>
     </repository>
   </repositories>
-
-  <distributionManagement>
-    <!-- where the website is deployed -->
-    <site>
-      <id>unicore.eu</id>
-      <url>dav:https://unicore-dev.zam.kfa-juelich.de/documentation/gateway-${version}</url>
-    </site>
-  </distributionManagement>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>
