@@ -19,20 +19,23 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpHead;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.io.entity.AbstractHttpEntity;
+import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.http.message.StatusLine;
 
 import eu.unicore.gateway.base.RawMessageExchange;
 import eu.unicore.gateway.properties.GatewayProperties;
@@ -58,11 +61,12 @@ public class TestServer extends TestCase {
 		gw.stopGateway();
 	}
 
-	public void testHead()throws Exception{
+	public void testHead() throws Exception{
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL("http://localhost:64433/DEMO-SITE"));
 		HttpHead head = new HttpHead("http://localhost:64433/DEMO-SITE");
-		HttpResponse resp=hc.execute(head);
-		System.out.println("HEAD got reply: "+resp.getStatusLine());
+		try(ClassicHttpResponse response = hc.executeOpen(null, head, HttpClientContext.create())){
+			System.out.println("HEAD got reply: " + new StatusLine(response));
+		}
 	}
 
 	public void testDynamicRegistration()throws Exception{
@@ -84,37 +88,23 @@ public class TestServer extends TestCase {
 		String url="http://localhost:64433/FAKE1/test";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpPost post=new HttpPost(url);
-		post.setEntity(new ByteArrayEntity(getBody(url)));
-		try{
-			HttpResponse response = hc.execute(post);
+		post.setEntity(new ByteArrayEntity(getBody(url), ContentType.TEXT_XML));
+		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			status=response.getStatusLine().getStatusCode();
-			assertEquals(HttpStatus.SC_OK, status);
+			assertEquals(HttpStatus.SC_OK, response.getCode());
 			assertNotNull(response.getFirstHeader("Content-type"));
 			assertTrue(response.getFirstHeader("Content-type").getValue().contains("text/xml"));
-			post.reset();
-		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
 		}
 
 		int expectedCode=503;
 		s1.setStatusCode(expectedCode);
 		
 		post=new HttpPost(url);
-		post.setEntity(new ByteArrayEntity(getBody(url)));
-		try{
-			HttpResponse response = hc.execute(post);
+		post.setEntity(new ByteArrayEntity(getBody(url), ContentType.APPLICATION_SOAP_XML));
+		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			status=response.getStatusLine().getStatusCode();
-			assertEquals(expectedCode, status);
+			assertEquals(expectedCode, response.getCode());
 		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
-		}
-
 
 		s1.stop();
 	}
@@ -130,32 +120,21 @@ public class TestServer extends TestCase {
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpPost post=new HttpPost(url);
 		byte[] originalRequestBody = getBody(url);
-		post.setEntity(new ByteArrayEntity(originalRequestBody));
-		post.setHeader("Content-type", "application/xml; charset=UTF-8");
-
-		try{
-			HttpResponse response = hc.execute(post);
+		post.setEntity(new ByteArrayEntity(originalRequestBody, ContentType.APPLICATION_XML));
+		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			status=response.getStatusLine().getStatusCode();
-			assertEquals(HttpStatus.SC_OK, status);
-			assertTrue(post.getFirstHeader("Content-type").getValue().contains("application/xml"));
-
+			assertEquals(HttpStatus.SC_OK, response.getCode());
 			String forwardedRequestBody = s1.getLatestRequestBody();
 			byte[] responseBody = EntityUtils.toByteArray(response.getEntity());
 			assertTrue("Server response was not properly forwarded",
 					Arrays.equals(s1.getAnswer(), responseBody));
 
-			Set<String> forwardedSoapHeaders = new HashSet<String>();
+			Set<String> forwardedSoapHeaders = new HashSet<>();
 			String forwardedSoapBody = parseSoap(forwardedRequestBody, forwardedSoapHeaders);
 			Set<String> originalSoapHeaders = new HashSet<String>();
-			String originalSoapBody = parseSoap(new String(originalRequestBody,"ISO-8859-1"), originalSoapHeaders);
-
+			String originalSoapBody = parseSoap(new String(originalRequestBody,"UTF-8"), originalSoapHeaders);
 			assertEquals("SOAP body was not properly forwarded", originalSoapBody, forwardedSoapBody);
 			assertTrue("Some SOAP headers were not forwarded", forwardedSoapHeaders.containsAll(originalSoapHeaders));
-		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
 		}
 
 		int expectedCode=503;
@@ -164,18 +143,11 @@ public class TestServer extends TestCase {
 
 		post=new HttpPost(url);
 		originalRequestBody = getBody(url);
-		post.setEntity(new ByteArrayEntity(originalRequestBody));
-		try{
-			HttpResponse response = hc.execute(post);
+		post.setEntity(new ByteArrayEntity(originalRequestBody, ContentType.APPLICATION_XML));
+		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			status=response.getStatusLine().getStatusCode();
-			assertEquals(expectedCode, status);
+			assertEquals(expectedCode, response.getCode());
 		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
-		}
-
 
 		s1.stop();
 	}
@@ -191,32 +163,23 @@ public class TestServer extends TestCase {
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpPost post=new HttpPost(url);
 		byte[] originalRequestBody = getBody(url);
-		post.setEntity(new ByteArrayEntity(originalRequestBody));
-		post.setHeader("Content-type", "text/xml; charset=UTF-8");
-
-		try{
-			HttpResponse response = hc.execute(post);
+		post.setEntity(new ByteArrayEntity(originalRequestBody, ContentType.APPLICATION_XML));
+		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			status=response.getStatusLine().getStatusCode();
-			assertEquals(HttpStatus.SC_OK, status);
-			assertTrue(post.getFirstHeader("Content-type").getValue().contains("text/xml"));
+			assertEquals(HttpStatus.SC_OK, response.getCode());
 
 			String forwardedRequestBody = s1.getLatestRequestBody();
 			byte[] responseBody = EntityUtils.toByteArray(response.getEntity());
 			assertTrue("Server response was not properly forwarded",
 					Arrays.equals(s1.getAnswer(), responseBody));
 
-			Set<String> forwardedSoapHeaders = new HashSet<String>();
+			Set<String> forwardedSoapHeaders = new HashSet<>();
 			String forwardedSoapBody = parseSoap(forwardedRequestBody, forwardedSoapHeaders);
-			Set<String> originalSoapHeaders = new HashSet<String>();
-			String originalSoapBody = parseSoap(new String(originalRequestBody,"ISO-8859-1"), originalSoapHeaders);
+			Set<String> originalSoapHeaders = new HashSet<>();
+			String originalSoapBody = parseSoap(new String(originalRequestBody,"UTF-8"), originalSoapHeaders);
 
 			assertEquals("SOAP body was not properly forwarded", originalSoapBody, forwardedSoapBody);
 			assertTrue("Some SOAP headers were not forwarded", forwardedSoapHeaders.containsAll(originalSoapHeaders));
-		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
 		}
 
 		int expectedCode=503;
@@ -224,19 +187,11 @@ public class TestServer extends TestCase {
 		s1.setStatusCode(expectedCode);
 
 		post=new HttpPost(url);
-		post.setEntity(new ByteArrayEntity(getBody(url)));
-		try{
-			HttpResponse response = hc.execute(post);
+		post.setEntity(new ByteArrayEntity(getBody(url), ContentType.APPLICATION_XML));
+		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			status=response.getStatusLine().getStatusCode();
-			assertEquals(expectedCode, status);
+			assertEquals(expectedCode, response.getCode());
 		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
-		}
-
-
 		s1.stop();
 	}
 
@@ -250,16 +205,10 @@ public class TestServer extends TestCase {
 		String url="http://localhost:64433/FAKE1/test";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpPost post=new HttpPost(url);
-		post.setEntity(new ByteArrayEntity(getBodyNoSOAP(url)));
-		try{
-			HttpResponse response = hc.execute(post);
+		post.setEntity(new ByteArrayEntity(getBodyNoSOAP(url), ContentType.APPLICATION_SOAP_XML));
+		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			status=response.getStatusLine().getStatusCode();
-			assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, status);
-		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
+			assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getCode());
 		}
 		s1.stop();
 	}
@@ -275,19 +224,15 @@ public class TestServer extends TestCase {
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpPost post=new HttpPost(url);
 		byte[] originalRequestBody = getNonSOAPPostBody();
-		post.setEntity(new ByteArrayEntity(originalRequestBody));
-		post.setHeader("Content-type", "application/json; charset=UTF-8");
+		post.setEntity(new ByteArrayEntity(originalRequestBody, ContentType.APPLICATION_JSON));
 		String userName = "demouser";
 		String password = "test123";
 		
 		post.addHeader(Utils.getBasicAuth(userName, password));
 
-		try{
-			HttpResponse response = hc.execute(post);
+		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			status=response.getStatusLine().getStatusCode();
-			assertEquals(HttpStatus.SC_OK, status);
-			assertTrue(post.getFirstHeader("Content-type").getValue().contains("application/json"));
+			assertEquals(HttpStatus.SC_OK, response.getCode());
 
 			String forwardedRequestBody = s1.getLatestRequestBody();
 			System.out.println(forwardedRequestBody);
@@ -304,11 +249,6 @@ public class TestServer extends TestCase {
 			checkHeader(RawMessageExchange.CONSIGNOR_IP_HEADER, lastHeaders);
 			checkHeader(RawMessageExchange.GATEWAY_EXTERNAL_URL+": http://localhost:64433/FAKE1", lastHeaders);
 		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
-		}
-
 		s1.stop();
 	}
 
@@ -333,69 +273,48 @@ public class TestServer extends TestCase {
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpGet get=new HttpGet(url);
 		get.addHeader("X-testHeader", "test123");
-
-		try{
-			HttpResponse response = hc.execute(get);
-			List<String> filteredHeadersForwarded=new ArrayList<String>();
+		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
+			System.out.println(getStatusDesc(response));
+			assertEquals(HttpStatus.SC_OK, response.getCode());
+	
+			List<String> filteredHeadersForwarded=new ArrayList<>();
 			for(String h: s1.getLatestRequestHeaders()){
 				String string=h.trim();
 				if(!string.startsWith("Host:")){
 					filteredHeadersForwarded.add(string);
 				}
 			}
-
 			assertEquals("Client query was not properly forwarded", originalQuery, s1.getLatestQuery());
 			assertTrue("Consignor IP Header not present", filteredHeadersForwarded.contains(RawMessageExchange.CONSIGNOR_IP_HEADER+": 127.0.0.1"));
 			assertTrue("GW Host Header not present", 
 					filteredHeadersForwarded.contains(RawMessageExchange.GATEWAY_EXTERNAL_URL+": http://localhost:64433/FAKE1"));
 			assertTrue("Headers were not forwarded", filteredHeadersForwarded.contains("X-testHeader: test123"));
 
-			System.out.println(getStatusDesc(response));
-			status=response.getStatusLine().getStatusCode();
-			assertEquals(HttpStatus.SC_OK, status);
 			assertTrue("Server response was not properly forwarded",
 					Arrays.equals(s1.getAnswer(), EntityUtils.toByteArray(response.getEntity())));
-		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
 		}
 
 		int expectedCode=503;
 		s1.setStatusCode(expectedCode);
 		get=new HttpGet(url);
-		try{
-			HttpResponse response = hc.execute(get);
+		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			status=response.getStatusLine().getStatusCode();
-			assertEquals(expectedCode, status);
+			assertEquals(expectedCode, response.getCode());
 			assertTrue("Server response was not properly forwarded for status code <"+status+">",
 					Arrays.equals(s1.getAnswer(), EntityUtils.toByteArray(response.getEntity())));
-		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
 		}
 		s1.stop();
 	}
 
 	public void testGetWrongAddress()throws Exception{
-
 		String queryPath = "/test";
 		String url="http://localhost:64433/DOESNOTEXIST"+queryPath;
 
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpGet get=new HttpGet(url);
-
-		try{
-			HttpResponse response = hc.execute(get);
+		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			int status=response.getStatusLine().getStatusCode();
-			assertEquals(404, status);
-		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
+			assertEquals(404, response.getCode());
 		}
 	}
 
@@ -413,19 +332,11 @@ public class TestServer extends TestCase {
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpGet get=new HttpGet(url);
 
-		try{
-			HttpResponse response = hc.execute(get);
+		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			status=response.getStatusLine().getStatusCode();
-			assertEquals(200, status);
+			assertEquals(200, response.getCode());
 		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
-		}
-		finally{
-			s1.stop();
-		}
+		s1.stop();
 	}
 	
 	public void testGetPathWithQuery()throws Exception{
@@ -441,20 +352,12 @@ public class TestServer extends TestCase {
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpGet get=new HttpGet(url);
 
-		try{
-			HttpResponse response = hc.execute(get);
+		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			status=response.getStatusLine().getStatusCode();
-			assertEquals(200, status);
+			assertEquals(200, response.getCode());
 			assertTrue(s1.getLatestQuery().contains("?xyz=foo"));
 		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
-		}
-		finally{
-			s1.stop();
-		}
+		s1.stop();
 	}
 	
 	public void testGetWithVSiteOffline()throws Exception{
@@ -465,17 +368,11 @@ public class TestServer extends TestCase {
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpGet get=new HttpGet(url);
 
-		try{
-			HttpResponse response = hc.execute(get);
+		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			status=response.getStatusLine().getStatusCode();
 			String errorBody = EntityUtils.toString(response.getEntity());
 			System.out.println(errorBody);
-			assertEquals(HttpStatus.SC_SERVICE_UNAVAILABLE, status);
-		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
+			assertEquals(HttpStatus.SC_SERVICE_UNAVAILABLE, response.getCode());
 		}
 	}
 	
@@ -483,16 +380,9 @@ public class TestServer extends TestCase {
 		String url="http://localhost:64433/";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpGet get=new HttpGet(url);
-		try{
-			HttpResponse response = hc.execute(get);
-			System.out.println(getStatusDesc(response));
-			int status=response.getStatusLine().getStatusCode();
-			assertEquals(HttpStatus.SC_OK, status);
+		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
+			assertEquals(HttpStatus.SC_OK, response.getCode());
 			assert(EntityUtils.toString(response.getEntity()).contains("Version: "+Gateway.VERSION));
-		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
 		}
 	}
 
@@ -506,22 +396,14 @@ public class TestServer extends TestCase {
 		String url="http://localhost:64433/FAKE1/test";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpPut put=new HttpPut(s1Url);
-		AbstractHttpEntity entity=new ByteArrayEntity(getBody(url));
-		entity.setChunked(true); // 'false' does not work?!
+		AbstractHttpEntity entity = new ByteArrayEntity(getBody(url), ContentType.WILDCARD, true);
 		put.setEntity(entity);
-		try{
-			s1.setStatusCode(HttpStatus.SC_NO_CONTENT);
-			HttpResponse response = hc.execute(put);
+		s1.setStatusCode(HttpStatus.SC_NO_CONTENT);
+		try(ClassicHttpResponse response = hc.executeOpen(null, put, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			status=response.getStatusLine().getStatusCode();
-			assertEquals(HttpStatus.SC_NO_CONTENT, status);
-			s1.stop();
+			assertEquals(HttpStatus.SC_NO_CONTENT, response.getCode());
 		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
-		}
-
+		s1.stop();
 	}
 
 	public void testMultipartPost()throws Exception{
@@ -535,22 +417,16 @@ public class TestServer extends TestCase {
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpPost post=new HttpPost(url);
 		byte[] originalRequestBody = getMultipartBody(url);
-		post.setEntity(new ByteArrayEntity(originalRequestBody));
+		post.setEntity(new ByteArrayEntity(originalRequestBody, ContentType.WILDCARD));
 		post.setHeader("MIME-Version", "1.0");
 		post.setHeader("Content-type", "Multipart/Related; " +
 				"boundary=MIME_boundary; " +
 				"type=text/xml; " +
 				"start=<foo@foo.com>");
 
-		try{
-			HttpResponse response = hc.execute(post);
+		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			status=response.getStatusLine().getStatusCode();
-			assertEquals(HttpStatus.SC_OK, status);
-		}
-		catch(Exception ex){
-			ex.printStackTrace();
-			fail();
+			assertEquals(HttpStatus.SC_OK, response.getCode());
 		}
 		//check that SOAP part arrived OK
 		String request = s1.getLatestRequestBody();
@@ -627,22 +503,19 @@ public class TestServer extends TestCase {
 		String url="http://localhost:64433/VSITE_REGISTRATION_REQUEST";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpPost post=new HttpPost(url);
-		try{
-			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-			parameters.add(new BasicNameValuePair("name", name));
-			parameters.add(new BasicNameValuePair("address", address));
-			parameters.add(new BasicNameValuePair("secret", "super-secret-password"));
-			
-			UrlEncodedFormEntity postEntity = new UrlEncodedFormEntity(parameters);
-			post.setEntity(postEntity);
-			System.out.println("Time before starting: " + System.currentTimeMillis());
-			HttpResponse response = hc.execute(post);
+		List<NameValuePair> parameters = new ArrayList<>();
+		parameters.add(new BasicNameValuePair("name", name));
+		parameters.add(new BasicNameValuePair("address", address));
+		parameters.add(new BasicNameValuePair("secret", "super-secret-password"));
+		UrlEncodedFormEntity postEntity = new UrlEncodedFormEntity(parameters);
+		post.setEntity(postEntity);
+		System.out.println("Time before starting: " + System.currentTimeMillis());
+		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
-			return response.getStatusLine().getStatusCode();
+			return response.getCode();
 		}
 		finally{
 			System.out.println("Time after call: " + System.currentTimeMillis());
-			post.releaseConnection();
 		}
 	}
 
@@ -719,7 +592,6 @@ public class TestServer extends TestCase {
 
 	private static String getStatusDesc(HttpResponse response)
 	{
-		StatusLine sl = response.getStatusLine();
-		return sl.getStatusCode() + " " + sl.getReasonPhrase();
+		return response.getCode() + " " + response.getReasonPhrase();
 	}
 }

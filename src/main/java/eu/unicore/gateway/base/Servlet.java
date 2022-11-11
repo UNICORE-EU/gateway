@@ -41,6 +41,7 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -50,25 +51,25 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.AbstractDocument.Content;
 
-import org.apache.http.Consts;
-import org.apache.http.Header;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.protocol.HTTP;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpHead;
+import org.apache.hc.client5.http.classic.methods.HttpOptions;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntityContainer;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.io.entity.InputStreamEntity;
+import org.apache.hc.core5.net.URIBuilder;
+import org.apache.hc.core5.net.URLEncodedUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 
@@ -207,7 +208,7 @@ public class Servlet extends HttpServlet {
 			throws ServletException, IOException, URISyntaxException {
 		URI u = URI.create(vsite.resolve(url));
 		URI uWithQuery = addQueryToURI(u, req.getQueryString());
-		HttpRequestBase http=null;
+		HttpUriRequestBase http=null;
 		if("GET".equals(request)){
 			http = new HttpGet(uWithQuery);
 		}
@@ -234,7 +235,7 @@ public class Servlet extends HttpServlet {
 	/**
 	 * forward the HTTP request to the selected VSite
 	 */
-	private void forwardRequestToVSite(HttpRequestBase http, URI uri, VSite vsite,
+	private void forwardRequestToVSite(HttpUriRequestBase http, URI uri, VSite vsite,
 			HttpServletRequest req, HttpServletResponse res, String clientIP)
 			throws ServletException, IOException{
 		copyHeaders(req, http);
@@ -263,32 +264,31 @@ public class Servlet extends HttpServlet {
 					vsite.setClient(client);	
 				}
 			}
-			if(http instanceof HttpEntityEnclosingRequest){
-				HttpEntityEnclosingRequest httpWithEntity = (HttpEntityEnclosingRequest)http;
-				boolean chunked="chunked".equalsIgnoreCase(req.getHeader(HTTP.TRANSFER_ENCODING));
-				int contentLength = req.getContentLength();
-				InputStreamEntity requestEntity = new InputStreamEntity(req.getInputStream(), contentLength);
-				requestEntity.setChunked(chunked);
+			if(http instanceof HttpEntityContainer){
+				HttpEntityContainer httpWithEntity = (HttpEntityContainer)http;
+				//boolean chunked = "chunked".equalsIgnoreCase(req.getHeader(HttpHeaders.TRANSFER_ENCODING));
+				long contentLength = req.getContentLength();
+				ContentType contentType = req.getContentType()!=null ?
+					ContentType.create(req.getContentType()) : ContentType.WILDCARD;
+				InputStreamEntity requestEntity = new InputStreamEntity(
+						req.getInputStream(), contentLength, contentType);
 				httpWithEntity.setEntity(requestEntity);
 			}
 			
-			HttpResponse response = client.execute(http);
-			StatusLine statusL = response.getStatusLine();
-			int result = statusL.getStatusCode();
-			copyResponseHeaders(response, res);
-			res.setStatus(result);
-			OutputStream os = res.getOutputStream();
-			writeResponseContent(response, os);
-			os.flush();
+			try(ClassicHttpResponse response = client.executeOpen(null, http, HttpClientContext.create())){
+				copyResponseHeaders(response, res);
+				res.setStatus(response.getCode());
+				OutputStream os = res.getOutputStream();
+				writeResponseContent(response, os);
+				os.flush();
+			}
 		}catch(Exception e){
 			LogUtil.logException("Error performing "+http.getMethod()+" request.", e, logger);
 			res.sendError(503, Log.createFaultMessage("Could not perform request", e));
-		}finally{
-			try{http.releaseConnection();}catch(Exception e){}
 		}
 	}
 	
-	private void writeResponseContent(HttpResponse response, OutputStream os) throws IOException {
+	private void writeResponseContent(ClassicHttpResponse response, OutputStream os) throws IOException {
 		if(response.getEntity()!=null && response.getEntity().getContent()!=null){
 			InputStream is=response.getEntity().getContent();
 			byte[] buf=new byte[1024];
@@ -303,8 +303,8 @@ public class Servlet extends HttpServlet {
 			"x-frame-options", "date",
 	});
 	
-	private void copyResponseHeaders(HttpResponse fromSite, HttpServletResponse toClient){
-		for (Header h: fromSite.getAllHeaders()){
+	private void copyResponseHeaders(ClassicHttpResponse fromSite, HttpServletResponse toClient){
+		for (Header h: fromSite.getHeaders()){
 			if(!excludedHeaders.contains(h.getName().toLowerCase())){
 				toClient.addHeader(h.getName(), h.getValue());
 			}
@@ -319,7 +319,7 @@ public class Servlet extends HttpServlet {
 				return u;
 			}
 			else{
-				List <NameValuePair> qp =  URLEncodedUtils.parse(query, Consts.UTF_8);
+				List <NameValuePair> qp =  URLEncodedUtils.parse(query, Charset.forName("UTF-8"));
 				return new URIBuilder(u).addParameters(qp).build();
 			}
 		} catch (URISyntaxException e1)
@@ -328,7 +328,7 @@ public class Servlet extends HttpServlet {
 		}
 	}
 
-	private void copyHeaders(HttpServletRequest req, HttpRequest method){
+	private void copyHeaders(HttpServletRequest req, HttpUriRequestBase method){
 		Enumeration<String> e=req.getHeaderNames();
 		while(e.hasMoreElements()){
 			String name=e.nextElement();
@@ -338,8 +338,8 @@ public class Servlet extends HttpServlet {
 				method.addHeader(name, hdr.nextElement());
 			}
 		}
-		method.removeHeaders(HTTP.TRANSFER_ENCODING);
-		method.removeHeaders(HTTP.CONTENT_LEN);
+		method.removeHeaders(HttpHeaders.TRANSFER_ENCODING);
+		method.removeHeaders(HttpHeaders.CONTENT_LENGTH);
 		// prevent clients from sending these headers to the site
 		method.removeHeaders(RawMessageExchange.CONSIGNOR_IP_HEADER);
 		method.removeHeaders(RawMessageExchange.CONSIGNOR_HEADER);

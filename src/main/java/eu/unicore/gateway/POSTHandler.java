@@ -55,16 +55,17 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ReaderInputStream;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.ContentType;
-import org.apache.http.protocol.HTTP;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.io.entity.AbstractHttpEntity;
+import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.stax2.XMLOutputFactory2;
 import org.codehaus.stax2.XMLStreamWriter2;
@@ -83,7 +84,6 @@ import eu.unicore.gateway.util.AbstractStreamReaderRequestEntity;
 import eu.unicore.gateway.util.BufferingProxyReader;
 import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.util.Log;
-//import javanet.staxutils.XMLStreamEventWriter;
 
 /**
  * Main entry point for SOAP processing.
@@ -162,7 +162,7 @@ public class POSTHandler
 			AbstractHttpEntity requestentity = null;
 			if (chunked)
 			{
-				requestentity = new AbstractStreamReaderRequestEntity()
+				requestentity = new AbstractStreamReaderRequestEntity(chunked)
 				{
 					@Override
 					public void writeTo(OutputStream os) throws IOException
@@ -187,19 +187,24 @@ public class POSTHandler
 						Reader r = exchange.getReader();
 						return new ReaderInputStream(r, "UTF-8"); 
 					}
+					
+					@Override
+					public void close() throws IOException{
+						// NOP, I guess
+					}
 				};
 			}
 			else
 			{
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				writeToOutputStream(exchange, baos, certs, clientIP, consignorProducer, log);
-				requestentity = new ByteArrayEntity(baos.toByteArray());
+				requestentity = new ByteArrayEntity(baos.toByteArray(), ContentType.APPLICATION_SOAP_XML);
 			}
 
-			if(log.isDebugEnabled())log.debug("Dispatching to: " + destination);
+			log.debug("Dispatching to: {}", destination);
 			HttpPost post = prepareForwardedPOST(uri, exchange, requestentity);
 			callServiceAndForwardResponse(post, uri, exchange, site);
-			if(log.isDebugEnabled())log.debug("Exchange with " + destination + " completed");
+			log.debug("Exchange with {} completed", destination);
 		} catch (SoapFault e)
 		{
 			Throwable cause = e.getCause() == null ? e : e.getCause();
@@ -219,9 +224,9 @@ public class POSTHandler
 
 		String contentType = (String)exchange.getProperty(RawMessageExchange.CONTENT_TYPE);
 		if (contentType != null)
-			post.setHeader(HTTP.CONTENT_TYPE, contentType);
+			post.setHeader(HttpHeaders.CONTENT_TYPE, contentType);
 		else
-			post.setHeader(HTTP.CONTENT_TYPE, "text/xml; charset=UTF-8");
+			post.setHeader(HttpHeaders.CONTENT_TYPE, "text/xml; charset=UTF-8");
 		
 		String soapAction = (String)exchange.getProperty(RawMessageExchange.SOAP_ACTION);
 		if (soapAction!=null)
@@ -268,9 +273,9 @@ public class POSTHandler
 	private void callServiceAndForwardResponse(HttpPost post, URI serviceUri, 
 		RawMessageExchange exchange, VSite site) throws Exception
 	{
+		ClassicHttpResponse response = null;
 		try
 		{
-			HttpResponse response;
 			try
 			{
 				HttpClient client =null;
@@ -281,7 +286,7 @@ public class POSTHandler
 						site.setClient(client);	
 					}
 				}
-				response = client.execute(post);
+				response = client.executeOpen(null, post, HttpClientContext.create());
 			} catch (Exception e)
 			{
 				String reason= "Problem when forwarding a client request to a VSite: "
@@ -292,31 +297,21 @@ public class POSTHandler
 					throw new ServletException(reason, e);
 				}
 			}
-			
-			StatusLine statusL = response.getStatusLine();
-			int status = statusL.getStatusCode();
-			if(log.isDebugEnabled())log.debug("Status of dispatch to service: " + status + " " + statusL.getReasonPhrase());
-			if(status>=400 && status < 600 && log.isDebugEnabled()){
-				String reason= "Vsite returned error: "+status+" "+statusL.getReasonPhrase();
-				log.debug("Got error when forwarding a client request to the Vsite " + serviceUri + ": " + reason);
-			}
-			
+			log.debug("Status of dispatch to service: {} {}", response.getCode(), response.getReasonPhrase());
 			try 
 			{
 				Header contentEnc = response.getFirstHeader("Content-Encoding");
 				String contentEncoding = (contentEnc != null) ?	contentEnc.getValue() : null;
-				exchange.getServletResponse().setStatus(status);
+				exchange.getServletResponse().setStatus(response.getCode());
 				copyResponseHeaders(response, exchange.getServletResponse());
 				
 				if(response.getEntity()!=null && response.getEntity().getContent()!=null){
 					InputStream ris = "gzip".equalsIgnoreCase(contentEncoding) ? 
 							new GZIPInputStream(response.getEntity().getContent()) : 
 								response.getEntity().getContent();
-					ContentType contentType = ContentType.get(response.getEntity());
-					Charset charset = contentType == null ? Charset.forName("utf8") : 
-								contentType.getCharset();
-					if(charset==null)charset=Charset.forName("utf8");
-
+					Charset charset = response.getEntity().getContentEncoding() == null ? 
+							Charset.forName("utf8") :
+							Charset.forName(response.getEntity().getContentEncoding());
 					forwardResponse(ris, charset, exchange, log);
 				}
 			
@@ -333,7 +328,7 @@ public class POSTHandler
 			}
 		} finally
 		{
-			post.releaseConnection();
+			IOUtils.closeQuietly(response);
 		}
 	}
 
@@ -345,8 +340,8 @@ public class POSTHandler
 	});
 	
 	
-	private void copyResponseHeaders(HttpResponse fromSite, HttpServletResponse toClient){
-		for (Header h: fromSite.getAllHeaders()){
+	private void copyResponseHeaders(ClassicHttpResponse fromSite, HttpServletResponse toClient){
+		for (Header h: fromSite.getHeaders()){
 			if(!excludedResponseHeaders.contains(h.getName().toLowerCase())){
 				toClient.addHeader(h.getName(), h.getValue());
 			}

@@ -37,7 +37,7 @@ public class RawMessageExchange
 	public final static String X509 = "cert";	
 	public final static String REMOTE_IP = "peer";
 	public final static String SOAP_ACTION = "soapaction";
-	public final static String CONTENT_TYPE= "Content-type";
+	public final static String CONTENT_TYPE= "Content-Type";
 
 	// special header for forwarding the client's IP address to the VSite
 	public final static String CONSIGNOR_IP_HEADER = "X-UNICORE-Consignor-IP";

@@ -6,7 +6,7 @@
   <packaging>jar</packaging>
   <description>UNICORE web services gateway</description>
   <inceptionYear>2004</inceptionYear>
-  <version>1.8.0</version>
+  <version>1.9.0</version>
   <name>UNICORE Gateway</name>
   
   <parent>
@@ -17,12 +17,12 @@
 
   <properties>
     <!-- release version numbers (for the Linux packaging) -->
-    <package.version>9.0.0</package.version>
+    <package.version>9.1.0</package.version>
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
-    <seclib.version>5.4.3</seclib.version>
-    <httpclient.version>4.5.13</httpclient.version>
-    <jetty.version>10.0.11</jetty.version>
+    <seclib.version>6.0.0</seclib.version>
+    <httpclient.version>5.2</httpclient.version>
+    <jetty.version>10.0.12</jetty.version>
   </properties>
 
   <scm>
@@ -50,8 +50,8 @@
 	<version>1.15</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
       <version>${httpclient.version}</version>
     </dependency>
     <dependency>

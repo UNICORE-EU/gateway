@@ -32,10 +32,10 @@ package eu.unicore.gateway.client;
 import java.net.URL;
 import java.util.Properties;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.core5.http.io.entity.AbstractHttpEntity;
 import org.apache.logging.log4j.Logger;
 
 import eu.unicore.gateway.properties.GatewayProperties;
@@ -91,6 +91,10 @@ public class HttpClientFactory
 		log.debug("Configured Gateway's client factory: [ssl=" + clientCfg.isSslEnabled() + " sslAuthn=" + 
 				clientCfg.doSSLAuthn() + "]");
 	}
+	
+	public boolean isChunked() {
+		return chunked;
+	}
 
 	public HttpClient makeHttpClient(URL url) throws Exception {
 		
@@ -107,14 +111,16 @@ public class HttpClientFactory
 
 	public HttpPost makePostMethod(String path, AbstractHttpEntity requestentity) {
 		HttpPost post = new HttpPost(path);
-		RequestConfig c = RequestConfig.custom().setExpectContinueEnabled(useExpectContinue).build();
+		RequestConfig c = RequestConfig.custom().
+				setExpectContinueEnabled(useExpectContinue).
+				build();
 		post.setConfig(c);
 		post.setEntity(requestentity);
 		if (enableGzip)
 			post.setHeader("Accept-Encoding", "gzip");
 		if (!keepAlive)
 			post.setHeader("Connection", "close");
-		requestentity.setChunked(chunked);
+		//requestentity.setChunked(chunked);
 		return post;
 	}
 }

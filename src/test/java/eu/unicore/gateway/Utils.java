@@ -14,8 +14,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Base64;
 
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.message.BasicHeader;
 
 public class Utils
 {

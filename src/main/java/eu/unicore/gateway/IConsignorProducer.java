@@ -13,7 +13,7 @@ import java.util.List;
 
 import javax.xml.stream.events.XMLEvent;
 
-import org.apache.http.Header;
+import org.apache.hc.core5.http.Header;
 
 import eu.unicore.gateway.soap.SoapVersion;
 

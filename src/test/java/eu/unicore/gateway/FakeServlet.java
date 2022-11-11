@@ -12,8 +12,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicHeaderValueParser;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicHeaderValueParser;
+import org.apache.hc.core5.http.message.ParserCursor;
 
 import eu.unicore.gateway.base.RawMessageExchange;
 
@@ -30,7 +31,7 @@ public class FakeServlet extends HttpServlet {
 			throws ServletException, IOException {
 		// reply with consignor header
 		String consignor = req.getHeader(RawMessageExchange.CONSIGNOR_HEADER);
-		NameValuePair[] parsed = BasicHeaderValueParser.parseParameters(consignor, new BasicHeaderValueParser());
+		NameValuePair[] parsed = new BasicHeaderValueParser().parseParameters(consignor, new ParserCursor(0, consignor.length()));
 		for(NameValuePair p: parsed){
 			write(p.getName()+"="+p.getValue()+"\n",resp);
 		}

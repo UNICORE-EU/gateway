@@ -47,7 +47,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
-import org.apache.http.client.HttpClient;
+import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.logging.log4j.Logger;
 
 import eu.emi.security.authn.x509.impl.SocketFactoryCreator2;

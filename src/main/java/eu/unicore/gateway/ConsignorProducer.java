@@ -30,13 +30,11 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.logging.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 import org.codehaus.stax2.evt.XMLEventFactory2;
-
-import xmlbeans.org.oasis.saml2.assertion.AssertionDocument;
 
 import com.ctc.wstx.stax.WstxEventFactory;
 
@@ -44,11 +42,12 @@ import eu.emi.security.authn.x509.X509Credential;
 import eu.unicore.gateway.soap.SoapVersion;
 import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.samly2.SAMLConstants.AuthNClasses;
-import eu.unicore.security.UnicoreSecurityFactory;
 import eu.unicore.security.canl.AuthnAndTrustProperties;
 import eu.unicore.security.consignor.ConsignorAPI;
 import eu.unicore.security.consignor.ConsignorAssertion;
+import eu.unicore.security.consignor.ConsignorImpl;
 import eu.unicore.security.dsig.DSigException;
+import xmlbeans.org.oasis.saml2.assertion.AssertionDocument;
 
 /**
  * Registry and producer of consignor assertions. Assertions are returned as
@@ -156,7 +155,7 @@ public class ConsignorProducer implements IConsignorProducer
 	}
 	
 	private AssertionDocument generateAssertion(X509Certificate []cert, String ip) throws DSigException {
-		ConsignorAPI engine = UnicoreSecurityFactory.getConsignorAPI();
+		ConsignorAPI engine = new ConsignorImpl();
 		ConsignorAssertion assertion;
 		if (cert != null) 
 		{

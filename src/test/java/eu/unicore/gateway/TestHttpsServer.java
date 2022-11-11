@@ -7,13 +7,16 @@ package eu.unicore.gateway;
 import java.io.File;
 import java.net.URL;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.message.StatusLine;
 
 import junit.framework.TestCase;
 
@@ -39,45 +42,36 @@ public class TestHttpsServer extends TestCase {
 		gw.stopGateway();
 	}
 
-	public void testWithSSL() {
+	public void testWithSSL() throws Exception {
 		String url="https://localhost:64433/SSL-SITE/service";
-		try{
-			HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
-			HttpPost post= gw.getClientFactory().makePostMethod(url, 
-					new ByteArrayEntity(TestServer.getBody(url)));
-
-			HttpResponse response = hc.execute(post);
-			System.out.println(response.getStatusLine());
+		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+		HttpPost post= gw.getClientFactory().makePostMethod(url, 
+				new ByteArrayEntity(TestServer.getBody(url), ContentType.APPLICATION_SOAP_XML));
+		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
+			System.out.println(new StatusLine(response));
 			String resp = EntityUtils.toString(response.getEntity());
 			System.out.println(resp);
-			int status=response.getStatusLine().getStatusCode();
+			int status=response.getCode();
 			assertEquals(HttpStatus.SC_OK, status);
 			assertFalse(resp.contains("Fault"));
 			assertTrue(resp.contains("OKOKOK"));
-		} catch(Exception ex){
-			ex.printStackTrace();
-			fail();
 		}
 	}
 	
 
-	public void testGetWithSignedAssertionForwarding() {
+	public void testGetWithSignedAssertionForwarding() throws Exception {
 		String url="https://localhost:64433/SSL-SITE/service";
-		try{
-			HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
-			HttpGet get= new HttpGet(url);
-			HttpResponse response = hc.execute(get);
-			System.out.println(response.getStatusLine());
+		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+		HttpGet get= new HttpGet(url);
+		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
+			System.out.println(new StatusLine(response));
 			String resp = EntityUtils.toString(response.getEntity());
 			System.out.println(resp);
-			int status=response.getStatusLine().getStatusCode();
+			int status=response.getCode();
 			assertEquals(HttpStatus.SC_OK, status);
 			assertFalse(resp.contains("Fault"));
 			System.out.println(resp);
 			assertTrue(resp.contains("Gateway"));
-		} catch(Exception ex){
-			ex.printStackTrace();
-			fail();
 		}
 	}
 }
