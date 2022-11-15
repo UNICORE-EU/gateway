@@ -80,7 +80,7 @@ public class GatewayJettyServer extends JettyServerBase {
 
 		URL u=getClass().getResource("/eu/unicore/gateway");
 		root.setResourceBase(u.toString());
-		logger.debug("Adding resources servlet, base="+u.toString());
+		logger.debug("Adding resources servlet, base={}", u);
 		root.addServlet(DefaultServlet.class,"/resources/*");
 		return root;
 	}
