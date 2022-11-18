@@ -1,18 +1,24 @@
 package eu.unicore.gateway;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import org.junit.Test;
 
 import eu.unicore.gateway.cluster.MultiSite;
 import eu.unicore.gateway.properties.GatewayProperties;
 import eu.unicore.security.canl.AuthnAndTrustProperties;
 import eu.unicore.security.canl.CredentialProperties;
 import eu.unicore.security.canl.TruststoreProperties;
-import junit.framework.TestCase;
 
-public class TestDynamicSiteOrganiser extends TestCase{
+public class TestDynamicSiteOrganiser {
 	
+	@Test
 	public void testDynamicRegistration()throws Exception{
 		File gpFile = new File("src/test/resources/gateway.properties");
 		File spFile = new File("src/test/resources/security.properties");
@@ -46,6 +52,7 @@ public class TestDynamicSiteOrganiser extends TestCase{
 		assertTrue(html.contains("http://localhost:6789"));
 	}
 
+	@Test
 	public void testExclusionInclusionPatterns()throws URISyntaxException{
 		String excl="bad.org  some.thing   veryevil.COM   evil.good.org";
 		String incl="good.org";

@@ -1,16 +1,20 @@
 package eu.unicore.gateway;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 
+import org.junit.Test;
+
 import eu.unicore.gateway.properties.GatewayProperties;
 import eu.unicore.gateway.util.BufferingProxyReader;
-import junit.framework.TestCase;
 
-public class TestBufferingProxyReader extends TestCase 
+public class TestBufferingProxyReader 
 {
+	@Test
 	public void test1()throws Exception
 	{
 		StringReader sr = new StringReader("1234567890abcde");
@@ -39,13 +43,12 @@ public class TestBufferingProxyReader extends TestCase
 		proxy.close();
 	}
 	
-	
+	@Test
 	public void test2()throws Exception
 	{
 		String f1 = Utils.readFile(new File("src/test/resources/f1"));
 		String f2 = Utils.readFile(new File("src/test/resources/f2"));
 		String f3 = Utils.readFile(new File("src/test/resources/f3"));
-		
 		StringReader sr = new StringReader(f1+f2+f3);
 		BufferingProxyReader proxy = new BufferingProxyReader(sr, null, 
 				GatewayProperties.DEFAULT_MAX_HDR);

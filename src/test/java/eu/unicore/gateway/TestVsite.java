@@ -1,11 +1,16 @@
 package eu.unicore.gateway;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
 import java.net.URI;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class TestVsite extends TestCase {
+public class TestVsite {
 
+	@Test
 	public void test1()throws Exception{
 		VSite v0 = new VSite(new URI("http://localhost:8080"),
 			"test", "http://localhost:1234", null);
@@ -22,6 +27,7 @@ public class TestVsite extends TestCase {
 		assertEquals("http://localhost:1234/index.html",v1.resolve("http://localhost/foo/test/index.html"));
 	}
 	
+	@Test
 	public void testVSiteEquals()throws Exception{
 		URI gw=new URI("http://localhost");
 		Site s1=new VSite(gw,"FOO","http://localhost:1234", null);
@@ -29,6 +35,7 @@ public class TestVsite extends TestCase {
 		assertEquals(s1,s2);
 	}
 	
+	@Test
 	public void testVSiteNotEquals()throws Exception{
 		URI gw=new URI("http://localhost");
 		Site s1=new VSite(gw,"FOO","http://localhost:3456", null);
@@ -36,6 +43,7 @@ public class TestVsite extends TestCase {
 		assertNotSame(s1,s2);
 	}
 
+	@Test
 	public void test2() throws Exception {
 		VSite v0 = new VSite(new URI("http://0.0.0.0:8080"),
 				"test", "http://localhost:1234", null);

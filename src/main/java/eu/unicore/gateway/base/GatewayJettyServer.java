@@ -42,6 +42,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import eu.unicore.gateway.Gateway;
+import eu.unicore.gateway.forwarding.ProtocolUpgradeFilter;
 import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.util.Log;
 import eu.unicore.util.configuration.ConfigurationException;
@@ -74,11 +75,10 @@ public class GatewayJettyServer extends JettyServerBase {
 	{
 		ServletContextHandler root = new ServletContextHandler(getServer(), "/", 
 				ServletContextHandler.SESSIONS);
-		
+		ProtocolUpgradeFilter.ensureFilter(root.getServletContext(), gateway);
 		ServletHolder servletHolder = new ServletHolder(new Servlet(gateway));
 		root.addServlet(servletHolder, "/*");
-
-		URL u=getClass().getResource("/eu/unicore/gateway");
+		URL u = getClass().getResource("/eu/unicore/gateway");
 		root.setResourceBase(u.toString());
 		logger.debug("Adding resources servlet, base={}", u);
 		root.addServlet(DefaultServlet.class,"/resources/*");

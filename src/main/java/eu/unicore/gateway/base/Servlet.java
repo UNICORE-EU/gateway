@@ -41,7 +41,6 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -65,10 +64,8 @@ import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntityContainer;
 import org.apache.hc.core5.http.HttpHeaders;
-import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.io.entity.InputStreamEntity;
 import org.apache.hc.core5.net.URIBuilder;
-import org.apache.hc.core5.net.URLEncodedUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 
@@ -180,15 +177,12 @@ public class Servlet extends HttpServlet {
 	{
 		SiteOrganiser so = gateway.getSiteOrganiser();     
 		String url=fullRequestURL(req);
-
 		debugRequest(method, req, url);
-		String clientIP=req.getRemoteAddr();
-
 		//check if we can map the request to a virtual site
-		VSite vsite=so.match(url,clientIP);
+		VSite vsite=so.match(url, req.getRemoteAddr());
 		if(vsite!=null){
 			try{
-				performRequestForwarding(method,vsite, url, req, res, clientIP);
+				performRequestForwarding(method,vsite, url, req, res);
 			}catch(URISyntaxException ue){
 				String msg = Log.createFaultMessage("URI syntax", ue);
 				res.sendError(HttpServletResponse.SC_BAD_REQUEST,msg);
@@ -203,7 +197,7 @@ public class Servlet extends HttpServlet {
 	 * forward the named HTTP request to the selected VSite
 	 */
 	private void performRequestForwarding(String request, VSite vsite, String url, 
-			HttpServletRequest req, HttpServletResponse res, String clientIP)
+			HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException, URISyntaxException {
 		URI u = URI.create(vsite.resolve(url));
 		URI uWithQuery = addQueryToURI(u, req.getQueryString());
@@ -224,23 +218,21 @@ public class Servlet extends HttpServlet {
 			http = new HttpOptions(uWithQuery);
 		}
 		if(http!=null){
-			forwardRequestToVSite(http, u, vsite, req, res, clientIP);
+			forwardRequestToVSite(http, u, vsite, req, res);
 		}
 		else{
 			throw new IllegalStateException("Not implemented: "+request);
 		}
 	}
 
-	/**
-	 * forward the HTTP request to the selected VSite
-	 */
-	private void forwardRequestToVSite(HttpUriRequestBase http, URI uri, VSite vsite,
-			HttpServletRequest req, HttpServletResponse res, String clientIP)
-			throws ServletException, IOException{
+	public static void prepareRequest(HttpUriRequestBase http, URI uri, VSite vsite,
+			HttpServletRequest req, Gateway gateway) {
 		copyHeaders(req, http);
-		if(clientIP!=null)http.addHeader(RawMessageExchange.CONSIGNOR_IP_HEADER, clientIP);
+		String clientIP = req.getRemoteAddr();
+		if(clientIP!=null) {
+			http.addHeader(RawMessageExchange.CONSIGNOR_IP_HEADER, req.getRemoteAddr());
+		}
 		http.addHeader(RawMessageExchange.GATEWAY_EXTERNAL_URL, extractGatewayURL(req, vsite.getName()));
-		
 		if(gateway.getConsignorProducer()!=null){
 			X509Certificate[] certPath = (X509Certificate[]) req.getAttribute("javax.servlet.request.X509Certificate");
 			if (certPath != null)
@@ -253,6 +245,14 @@ public class Servlet extends HttpServlet {
 				}
 			}
 		}
+	}
+	/**
+	 * forward the HTTP request to the selected VSite
+	 */
+	private void forwardRequestToVSite(HttpUriRequestBase http, URI uri, VSite vsite,
+			HttpServletRequest req, HttpServletResponse res)
+			throws ServletException, IOException{
+		prepareRequest(http, uri, vsite, req, gateway);
 		try
 		{
 			HttpClient client =null;
@@ -310,7 +310,7 @@ public class Servlet extends HttpServlet {
 		}
 	}
 
-	private URI addQueryToURI(URI u, String query) throws IOException
+	public static URI addQueryToURI(URI u, String query) throws IOException
 	{
 		try 
 		{
@@ -318,8 +318,7 @@ public class Servlet extends HttpServlet {
 				return u;
 			}
 			else{
-				List <NameValuePair> qp =  URLEncodedUtils.parse(query, Charset.forName("UTF-8"));
-				return new URIBuilder(u).addParameters(qp).build();
+				return new URIBuilder(u).setCustomQuery(query).build();
 			}
 		} catch (URISyntaxException e1)
 		{
@@ -327,7 +326,7 @@ public class Servlet extends HttpServlet {
 		}
 	}
 
-	private void copyHeaders(HttpServletRequest req, HttpUriRequestBase method){
+	private static void copyHeaders(HttpServletRequest req, HttpUriRequestBase method){
 		Enumeration<String> e=req.getHeaderNames();
 		while(e.hasMoreElements()){
 			String name=e.nextElement();
@@ -497,7 +496,7 @@ public class Servlet extends HttpServlet {
 	 * reconstructs and returns the full request URL
 	 * @param req - a {@link HttpServletRequest}
 	 */
-	private String fullRequestURL(HttpServletRequest req){
+	public static String fullRequestURL(HttpServletRequest req){
 		String query=req.getQueryString();
 		StringBuffer requestURL=req.getRequestURL();
 		if(query!=null){

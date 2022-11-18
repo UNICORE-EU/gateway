@@ -4,6 +4,10 @@
  */
 package eu.unicore.gateway;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.net.URL;
 
@@ -17,15 +21,16 @@ import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.StatusLine;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import junit.framework.TestCase;
-
-public class TestHttpsServer extends TestCase {
+public class TestHttpsServer {
 	protected Gateway gw;
 	protected FakeHttpsServer backend;
 	
-	@Override
-	protected void setUp() throws Exception {
+	@Before
+	public void setUp() throws Exception {
 		File gp = new File("src/test/resources/gateway-ssl.properties");
 		File sp = new File("src/test/resources/security.properties");
 		File cp = new File("src/test/resources/connection.properties");
@@ -35,13 +40,14 @@ public class TestHttpsServer extends TestCase {
 		backend.start();
 	}
 	
-	@Override
-	protected void tearDown()throws Exception{
+	@After
+	public void tearDown()throws Exception{
 		Thread.sleep(1000);
 		backend.stop();
 		gw.stopGateway();
 	}
 
+	@Test
 	public void testWithSSL() throws Exception {
 		String url="https://localhost:64433/SSL-SITE/service";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
@@ -58,7 +64,7 @@ public class TestHttpsServer extends TestCase {
 		}
 	}
 	
-
+	@Test
 	public void testGetWithSignedAssertionForwarding() throws Exception {
 		String url="https://localhost:64433/SSL-SITE/service";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));

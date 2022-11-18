@@ -1,14 +1,18 @@
 package eu.unicore.gateway;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import org.junit.Test;
+
 import eu.unicore.util.configuration.ConfigurationException;
 
-import junit.framework.TestCase;
+public class TestInvalidSettings {
 
-public class TestInvalidSettings extends TestCase {
-
+	@Test
 	public void testInvalidSecuritySettings()
 			throws Exception {
 		File gp = new File("src/test/resources/gateway.properties");

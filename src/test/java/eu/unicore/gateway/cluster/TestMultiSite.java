@@ -1,11 +1,16 @@
 package eu.unicore.gateway.cluster;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
 import eu.unicore.gateway.FakeServer;
 import eu.unicore.gateway.VSite;
 import eu.unicore.gateway.properties.GatewayProperties;
@@ -13,8 +18,9 @@ import eu.unicore.security.canl.AuthnAndTrustProperties;
 import eu.unicore.security.canl.CredentialProperties;
 import eu.unicore.security.canl.TruststoreProperties;
 
-public class TestMultiSite extends TestCase{
+public class TestMultiSite {
 
+	@Test
 	public void testBasicConfig()throws Exception{
 		String desc="foo=bar;spam=ham";
 		File spFile = new File("src/test/resources/security.properties");
@@ -28,6 +34,7 @@ public class TestMultiSite extends TestCase{
 		assertEquals("ham",p.get("spam"));	
 	}
 
+	@Test
 	public void testSetupSites()throws Exception{
 		String desc="vsites=http://localhost:8000 http://localhost:8010;spam=ham";
 		File spFile = new File("src/test/resources/security.properties");
@@ -39,6 +46,7 @@ public class TestMultiSite extends TestCase{
 		assertEquals(2, sites.size());
 	}
 
+	@Test
 	public void testReadConfig()throws Exception{
 		String desc="config=src/test/resources/cluster.config";
 		File spFile = new File("src/test/resources/security.properties");
@@ -50,6 +58,7 @@ public class TestMultiSite extends TestCase{
 		assertEquals(2, sites.size());
 	}
 	
+	@Test
 	public void testCreateStrategy()throws Exception{
 		String desc="config=src/test/resources/cluster.config";
 		File spFile = new File("src/test/resources/security.properties");
@@ -64,6 +73,7 @@ public class TestMultiSite extends TestCase{
 		assertTrue(s instanceof PrimaryWithFallBack);
 	}
 	
+	@Test
 	public void testMultiSitePing()throws Exception{
 		File spFile = new File("src/test/resources/security.properties");
 		AuthnAndTrustProperties sp=new AuthnAndTrustProperties(spFile,
@@ -88,6 +98,7 @@ public class TestMultiSite extends TestCase{
 		v2.stop();
 	}
 		
+	@Test
 	public void testDynamicRegistration()throws Exception{
 		File spFile = new File("src/test/resources/security.properties");
 		AuthnAndTrustProperties sp=new AuthnAndTrustProperties(spFile,
@@ -122,6 +133,7 @@ public class TestMultiSite extends TestCase{
 		s2.stop();
 	}
 	
+	@Test
 	public void testDefaultSelectionStrategy()throws Exception{
 		File spFile = new File("src/test/resources/security.properties");
 		AuthnAndTrustProperties sp=new AuthnAndTrustProperties(spFile,

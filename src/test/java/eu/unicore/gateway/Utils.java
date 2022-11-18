@@ -8,12 +8,11 @@
 
 package eu.unicore.gateway;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Base64;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.message.BasicHeader;
 
@@ -21,11 +20,7 @@ public class Utils
 {
 	public static String readFile(File f) throws IOException
 	{
-		BufferedReader r = new BufferedReader(new FileReader(f));
-		char[] buf = new char[102400];
-		int len = r.read(buf);
-		r.close();
-		return new String(buf, 0, len);
+		return FileUtils.readFileToString(f, "UTF-8");
 	}
 
 	public static Header getBasicAuth(String user, String passwd) {

@@ -509,13 +509,9 @@ public class TestServer extends TestCase {
 		parameters.add(new BasicNameValuePair("secret", "super-secret-password"));
 		UrlEncodedFormEntity postEntity = new UrlEncodedFormEntity(parameters);
 		post.setEntity(postEntity);
-		System.out.println("Time before starting: " + System.currentTimeMillis());
 		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
 			return response.getCode();
-		}
-		finally{
-			System.out.println("Time after call: " + System.currentTimeMillis());
 		}
 	}
 

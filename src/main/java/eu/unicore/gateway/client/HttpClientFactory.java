@@ -35,6 +35,8 @@ import java.util.Properties;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.core5.http.io.entity.AbstractHttpEntity;
 import org.apache.logging.log4j.Logger;
 
@@ -120,7 +122,12 @@ public class HttpClientFactory
 			post.setHeader("Accept-Encoding", "gzip");
 		if (!keepAlive)
 			post.setHeader("Connection", "close");
-		//requestentity.setChunked(chunked);
 		return post;
+	}
+
+	public HttpClientBuilder getClientBuilder() throws Exception {
+		PoolingHttpClientConnectionManager connMan = 
+				HttpUtils.getSSLConnectionManager(clientCfg);
+		return HttpUtils.createClientBuilder(clientCfg.getHttpClientProperties(), connMan);
 	}
 }

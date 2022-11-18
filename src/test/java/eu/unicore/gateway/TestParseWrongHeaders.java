@@ -1,21 +1,22 @@
 package eu.unicore.gateway;
 
-import java.io.BufferedReader;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
+
+import org.junit.Test;
 
 import eu.unicore.gateway.base.RawMessageExchange;
 import eu.unicore.gateway.properties.GatewayProperties;
 import eu.unicore.gateway.soap.SoapFault;
 import eu.unicore.gateway.soap.SoapFault.FaultCode;
 
-import junit.framework.TestCase;
-
-public class TestParseWrongHeaders extends TestCase
+public class TestParseWrongHeaders
 {
 	private File f1 = new File("src/test/resources/xmls/NoSoapEnv.xml");
 	private File f2 = new File("src/test/resources/xmls/WrongXML.xml");
@@ -40,40 +41,27 @@ public class TestParseWrongHeaders extends TestCase
 		}
 	}
 
-	public void test1()
+
+	@Test
+	public void test1() throws Exception
 	{
-		try
-		{
 			gwParse(new FileReader(f1), FaultCode.VERSION_MISMATCH);
-		} catch (FileNotFoundException e)
-		{
-			fail("can't read test input file");
-		}
 	}
 
-	public void test2()
+	@Test
+	public void test2() throws Exception
 	{
-		try
-		{
 			gwParse(new FileReader(f2), FaultCode.SENDER);
-		} catch (FileNotFoundException e)
-		{
-			fail("can't read test input file");
-		}
 	}
 
-	public void test3()
+	@Test
+	public void test3() throws Exception
 	{
-		try
-		{
 			gwParse(new FileReader(f3), FaultCode.VERSION_MISMATCH);
-		} catch (FileNotFoundException e)
-		{
-			fail("can't read test input file");
-		}
 	}
 
-	public void test4()
+	@Test
+	public void test4() throws Exception
 	{
 		final char[] START = ("<env:Envelope xmlns:env='http://schemas.xmlsoap.org/soap/envelope/'><env:Header>   " +
 				"                                             ").toCharArray();
@@ -106,12 +94,4 @@ public class TestParseWrongHeaders extends TestCase
 		}, FaultCode.SENDER);
 	}
 
-	public static String readFile(File f) throws IOException
-	{
-		BufferedReader r = new BufferedReader(new FileReader(f));
-		char[] buf = new char[102400];
-		r.read(buf);
-		r.close();
-		return new String(buf);
-	}
 }
