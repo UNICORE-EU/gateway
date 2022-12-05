@@ -7,22 +7,20 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
-import org.apache.hc.core5.http.message.StatusLine;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,24 +52,13 @@ public class TestForwarding {
 		String s1Url=s1.getURI();
 		int status=doRegister("TEST",s1Url);
 		assertEquals(HttpStatus.SC_CREATED,status);
-		HttpClientBuilder hcb = gw.getClientFactory().getClientBuilder();
-		RemoteSocketHolder socketHolder = new RemoteSocketHolder();
-		hcb.setRequestExecutor(new MyHttpRequestExec(socketHolder));
-		final HttpClient hc = hcb.build();
-		final HttpGet req = new HttpGet("http://localhost:64433/TEST/test");
+		ForwardingSetup fs = new ForwardingSetup(gw);
+		URI u = new URI("http://localhost:64433/TEST/test");
+		final HttpGet req = new HttpGet(u.toString());
 		req.addHeader("Connection", "Upgrade");
 		req.addHeader("Upgrade", ForwardingSetup.REQ_UPGRADE_HEADER_VALUE);
-
-		new Thread(new Runnable() {
-			public void run() {
-				try(ClassicHttpResponse response = hc.executeOpen(null, req, HttpClientContext.create())){
-					System.out.println("GET got reply: " + new StatusLine(response));
-				}catch(Exception e) {
-					System.out.println(e.getMessage());
-				}
-			}
-		}).start();
-		Socket remoteSocket = socketHolder.get(30, TimeUnit.SECONDS);
+		Socket remoteSocket = fs.openSocket(u);
+		fs.doHandshake(remoteSocket, u, req.getHeaders());
 		assertNotNull(remoteSocket);
 		System.out.println("Got socket connected to: "+ remoteSocket.getRemoteSocketAddress() +
 				" local address: " + remoteSocket.getLocalAddress()+":"+remoteSocket.getLocalPort());
@@ -85,9 +72,8 @@ public class TestForwarding {
 			System.out.println("<--- "+line);
 			assertEquals(out, line);
 		}
-		socketHolder.close();
 	}
-
+	
 	private int doRegister(String name, String address)throws Exception{
 		String url="http://localhost:64433/VSITE_REGISTRATION_REQUEST";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));

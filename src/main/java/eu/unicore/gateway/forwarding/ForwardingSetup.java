@@ -1,19 +1,21 @@
 package eu.unicore.gateway.forwarding;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
-import java.util.concurrent.TimeUnit;
+import java.nio.channels.SocketChannel;
 
+import javax.net.ssl.SSLContext;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.apache.hc.client5.http.protocol.HttpClientContext;
-import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpFields;
@@ -32,6 +34,9 @@ import eu.unicore.gateway.SiteOrganiser;
 import eu.unicore.gateway.VSite;
 import eu.unicore.gateway.base.Servlet;
 import eu.unicore.gateway.util.LogUtil;
+import eu.unicore.util.httpclient.CustomSSLConnectionSocketFactory;
+import eu.unicore.util.httpclient.EmptyHostnameVerifier;
+import eu.unicore.util.httpclient.HttpUtils;
 
 /**
  * establishes a ForwardingConnection to the requested back-end site,
@@ -167,30 +172,57 @@ public class ForwardingSetup {
 	
     private static final HttpField UPGRADE_HDR = new PreEncodedHttpField(HttpHeader.UPGRADE,
     		REQ_UPGRADE_HEADER_VALUE);
+
     private static final HttpField CONNECTION_HDR = new PreEncodedHttpField(HttpHeader.CONNECTION,
     		HttpHeader.UPGRADE.asString());
 
     protected Socket connectToVsite(VSite vsite, String requestURL, HttpServletRequest req) throws Exception {
-		HttpClientBuilder hcb = gateway.getClientFactory().getClientBuilder();
-		RemoteSocketHolder socketHolder = new RemoteSocketHolder();
-		hcb.setRequestExecutor(new MyHttpRequestExec(socketHolder));
-		final HttpClient hc = hcb.build();
 		URI u = URI.create(vsite.resolve(requestURL));
 		URI uWithQuery = Servlet.addQueryToURI(u, req.getQueryString());
 		final HttpGet get = new HttpGet(uWithQuery);
 		Servlet.prepareRequest(get, uWithQuery, vsite, req, gateway);
-		get.addHeader("Connection", "Upgrade");
-		get.addHeader("Upgrade", ForwardingSetup.REQ_UPGRADE_HEADER_VALUE);
-		// TODO might run out of threads - need a safer way here
-		new Thread(new Runnable() {
-			public void run() {
-				try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
-				}catch(Exception e) {
-					logger.info("Tunneling to vsite: "+e.getMessage());
-				}
+		Socket s = openSocket(u);
+		doHandshake(s, uWithQuery, get.getHeaders());
+		return s;
+    }
+    
+    public void doHandshake(Socket s, URI u, Header[] headers) throws IOException {
+    	PrintWriter out = new PrintWriter(s.getOutputStream());
+		out.print("GET "+u.getPath()+" HTTP/1.1\r\n");
+		logger.debug("--> GET {} HTTP/1.1", u.getPath());
+		out.print("Host: "+u.getHost()+"\r\n");
+		logger.debug("--> Host: {}", u.getHost());
+		for(Header h: headers) {
+			String line = h.getName()+": "+h.getValue();
+			out.print(line+"\r\n");
+			logger.debug("--> {}", line);
+		}
+		out.print("\r\n");
+		out.flush();
+		BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+		boolean first = true;
+		while(true) {
+			String line = in.readLine();
+			logger.debug("<-- {}", line);
+			if(line==null || line.length()==0)break;
+			if(first && !line.startsWith("HTTP/1.1 101")) {
+				throw new IOException("Backend site cannot handle UNICORE-Socket-Forwarding");
 			}
-		}).start();
-		return socketHolder.get(20, TimeUnit.SECONDS);
+			first = false;
+		}
+    }
+    
+    public Socket openSocket(URI u) throws IOException {
+    	Socket s = SocketChannel.open(new InetSocketAddress(u.getHost(), u.getPort())).socket();
+    	if("http".equalsIgnoreCase(u.getScheme())){
+    		return s;
+    	}
+    	else if("https".equalsIgnoreCase(u.getScheme())) {
+    		SSLContext sslc = HttpUtils.createSSLContext(gateway.getClientFactory().getClientConfiguration());
+    		CustomSSLConnectionSocketFactory ssf = new CustomSSLConnectionSocketFactory(sslc, new EmptyHostnameVerifier());
+    		return ssf.createLayeredSocket(s, u.getHost(), u.getPort(), null);
+    	}
+    	else throw new IOException();
     }
    
 }

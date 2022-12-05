@@ -36,7 +36,7 @@ public class ForwardingConnection extends AbstractConnection implements Connecti
 
 	@Override
 	public void onUpgradeTo(ByteBuffer buffer) {
-		LOG.info("**** onUpgrade with {} bytes ", buffer.position());
+		LOG.debug("**** onUpgrade with {} bytes ", buffer.position());
 		// should not have any payload here
 		assert buffer.position()==0;
 	}
@@ -59,7 +59,7 @@ public class ForwardingConnection extends AbstractConnection implements Connecti
 
 	@Override
 	public void onOpen() {
-		LOG.info("*** onOpen");
+		LOG.debug("onOpen");
 		super.onOpen();
 		fillInterested();
 	}

@@ -47,6 +47,7 @@ import eu.unicore.util.Log;
 import eu.unicore.util.httpclient.DefaultClientConfiguration;
 import eu.unicore.util.httpclient.HttpClientProperties;
 import eu.unicore.util.httpclient.HttpUtils;
+import eu.unicore.util.httpclient.IClientConfiguration;
 
 /**
  * Creates HttpClient for usage in gateway (generally when connecting to sites behind the gateway).
@@ -61,17 +62,16 @@ import eu.unicore.util.httpclient.HttpUtils;
 public class HttpClientFactory
 {
 	private static final Logger log = Log.getLogger(LogUtil.GATEWAY, HttpClientFactory.class); 
-	private boolean keepAlive;
-	private boolean useExpectContinue;
-	private boolean enableGzip;
-	private boolean chunked;
+	private final boolean keepAlive;
+	private final boolean useExpectContinue;
+	private final boolean enableGzip;
+	private final boolean chunked;
 	
-	private HttpClientProperties clientProperties;
-	private DefaultClientConfiguration clientCfg;
+	private final HttpClientProperties clientProperties;
+	private final DefaultClientConfiguration clientCfg;
 	
 	
 	public HttpClientFactory(IAuthnAndTrustConfiguration securityprops, GatewayProperties props) throws Exception {
-		
 		Properties properties = new Properties();
 		properties.setProperty(HttpClientProperties.CONNECT_TIMEOUT, ""+props.getConnectionTimeout());
 		properties.setProperty(HttpClientProperties.SO_TIMEOUT, ""+props.getSocketTimeout());
@@ -90,8 +90,8 @@ public class HttpClientFactory
 		this.chunked=props.isChunkedDispatch();
 		this.useExpectContinue=props.isExpectContinueEnabled();
 		
-		log.debug("Configured Gateway's client factory: [ssl=" + clientCfg.isSslEnabled() + " sslAuthn=" + 
-				clientCfg.doSSLAuthn() + "]");
+		log.debug("Configured Gateway's client factory: [ssl={} sslAuthn={}]",
+				clientCfg.isSslEnabled(), clientCfg.doSSLAuthn());
 	}
 	
 	public boolean isChunked() {
@@ -129,5 +129,9 @@ public class HttpClientFactory
 		PoolingHttpClientConnectionManager connMan = 
 				HttpUtils.getSSLConnectionManager(clientCfg);
 		return HttpUtils.createClientBuilder(clientCfg.getHttpClientProperties(), connMan);
+	}
+	
+	public IClientConfiguration getClientConfiguration() {
+		return clientCfg;
 	}
 }
