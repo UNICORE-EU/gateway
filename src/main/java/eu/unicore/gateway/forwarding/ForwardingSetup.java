@@ -2,14 +2,16 @@ package eu.unicore.gateway.forwarding;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.URI;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
 
-import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,9 +36,14 @@ import eu.unicore.gateway.SiteOrganiser;
 import eu.unicore.gateway.VSite;
 import eu.unicore.gateway.base.Servlet;
 import eu.unicore.gateway.util.LogUtil;
-import eu.unicore.util.httpclient.CustomSSLConnectionSocketFactory;
-import eu.unicore.util.httpclient.EmptyHostnameVerifier;
+import eu.unicore.util.ChannelUtils;
+import eu.unicore.util.SSLSocketChannel;
+import eu.unicore.util.httpclient.DefaultClientConfiguration;
 import eu.unicore.util.httpclient.HttpUtils;
+import eu.unicore.util.jetty.forwarding.Forwarder;
+import eu.unicore.util.jetty.forwarding.ForwardingConnection;
+import eu.unicore.util.jetty.forwarding.UpgradeHttpServletRequest;
+import eu.unicore.util.jetty.forwarding.UpgradeHttpServletResponse;
 
 /**
  * establishes a ForwardingConnection to the requested back-end site,
@@ -57,7 +64,7 @@ public class ForwardingSetup {
 	public ForwardingSetup(final Gateway gateway) {
 		this.gateway = gateway;
 	}
-	
+
 	public static ForwardingSetup getMappings(ServletContext servletContext)
 	{
 		return (ForwardingSetup)servletContext.getAttribute(UPGRADE_MAPPING_ATTRIBUTE);
@@ -79,7 +86,7 @@ public class ForwardingSetup {
 	{
 		if (!validateRequest(request))
 			return false;
-		
+
 		// find VSite to forward to
 		SiteOrganiser so = gateway.getSiteOrganiser();     
 		String url = Servlet.fullRequestURL(request);
@@ -89,12 +96,12 @@ public class ForwardingSetup {
 			response.sendError(404, "The requested resource could not be found");
 			return false;
 		}
-		
+
 		// protocol upgrade handshake with VSite
-		Socket vsiteSocket = null;
+		SocketChannel vsiteChannel = null;
 		try{
-			vsiteSocket = connectToVsite(vsite, url, request);
-			assert vsiteSocket!=null: "Vsite did not handle Upgrade request";
+			vsiteChannel = connectToVsite(vsite, url, request);
+			assert vsiteChannel!=null: "Vsite did not handle Upgrade request";
 		}catch(Exception e) {
 			throw new IOException(e);
 		}
@@ -114,12 +121,11 @@ public class ForwardingSetup {
 			baseRequest.setHandled(true);
 			return false;
 		}
-		
-		ForwardingConnection toClient = createForwardingConnection(baseRequest, vsiteSocket);
-		logger.debug("forwarding-connection {}", toClient);
+
+		ForwardingConnection toClient = createForwardingConnection(baseRequest, vsiteChannel);
+		logger.debug("forwarding-connection {} to vsite {}", toClient, vsiteChannel);
 		if (toClient == null)
 			throw new IOException("not upgraded: no connection");
-
 		HttpChannel httpChannel = baseRequest.getHttpChannel();
 		httpChannel.getConnector().getEventListeners().forEach(toClient::addEventListener);
 
@@ -133,11 +139,11 @@ public class ForwardingSetup {
 		// Save state from request/response and remove reference to the base request/response.
 		new UpgradeHttpServletRequest(request).upgrade();
 		new UpgradeHttpServletResponse(response).upgrade();
-		Forwarder.get(gateway).attach(vsiteSocket.getChannel(), toClient);
+		Forwarder.get().attach(toClient);
 		logger.info("Forwarding to {}, connection={}", vsite, toClient);
 		return true;
 	}
-	 
+
 	protected boolean validateRequest(HttpServletRequest request)
 	{
 		return
@@ -148,81 +154,89 @@ public class ForwardingSetup {
 				;
 	}
 
-	protected ForwardingConnection createForwardingConnection(Request baseRequest, Socket vsiteSocket)
+	protected ForwardingConnection createForwardingConnection(Request baseRequest, SocketChannel vsiteChannel)
 	{
 		HttpChannel httpChannel = baseRequest.getHttpChannel();
 		Connector connector = httpChannel.getConnector();
 		return new ForwardingConnection(httpChannel.getEndPoint(),
 				connector.getExecutor(),
-				vsiteSocket.getChannel());
+				vsiteChannel);
 	}
 
 	protected void prepareErrorResponse(Response response, int code, String message) throws IOException
-    {
-       response.sendError(code, message);
-    }
+	{
+		response.sendError(code, message);
+	}
 
 	protected void prepare101Response(Response response)
-    {
-        response.setStatus(HttpServletResponse.SC_SWITCHING_PROTOCOLS);
-        HttpFields.Mutable responseFields = response.getHttpFields();
-        responseFields.put(UPGRADE_HDR);
-        responseFields.put(CONNECTION_HDR);
-    }
-	
-    private static final HttpField UPGRADE_HDR = new PreEncodedHttpField(HttpHeader.UPGRADE,
-    		REQ_UPGRADE_HEADER_VALUE);
+	{
+		response.setStatus(HttpServletResponse.SC_SWITCHING_PROTOCOLS);
+		HttpFields.Mutable responseFields = response.getHttpFields();
+		responseFields.put(UPGRADE_HDR);
+		responseFields.put(CONNECTION_HDR);
+	}
 
-    private static final HttpField CONNECTION_HDR = new PreEncodedHttpField(HttpHeader.CONNECTION,
-    		HttpHeader.UPGRADE.asString());
+	private static final HttpField UPGRADE_HDR = new PreEncodedHttpField(HttpHeader.UPGRADE,
+			REQ_UPGRADE_HEADER_VALUE);
 
-    protected Socket connectToVsite(VSite vsite, String requestURL, HttpServletRequest req) throws Exception {
+	private static final HttpField CONNECTION_HDR = new PreEncodedHttpField(HttpHeader.CONNECTION,
+			HttpHeader.UPGRADE.asString());
+
+	protected SocketChannel connectToVsite(VSite vsite, String requestURL, HttpServletRequest req) throws Exception {
 		URI u = URI.create(vsite.resolve(requestURL));
 		URI uWithQuery = Servlet.addQueryToURI(u, req.getQueryString());
 		final HttpGet get = new HttpGet(uWithQuery);
 		Servlet.prepareRequest(get, uWithQuery, vsite, req, gateway);
-		Socket s = openSocket(u);
+		SocketChannel s = openSocketChannel(u);
 		doHandshake(s, uWithQuery, get.getHeaders());
 		return s;
-    }
-    
-    public void doHandshake(Socket s, URI u, Header[] headers) throws IOException {
-    	PrintWriter out = new PrintWriter(s.getOutputStream());
-		out.print("GET "+u.getPath()+" HTTP/1.1\r\n");
-		logger.debug("--> GET {} HTTP/1.1", u.getPath());
-		out.print("Host: "+u.getHost()+"\r\n");
+	}
+
+	@SuppressWarnings("resource")
+	public void doHandshake(SocketChannel s, URI u, Header[] headers) throws Exception {
+		OutputStream os = ChannelUtils.newOutputStream(s, 65536);
+		PrintWriter pw = new PrintWriter(os, true, Charset.forName("UTF-8"));
+		String path = u.getPath();
+		if(u.getQuery()!=null) {
+			path += "?"+u.getQuery();
+		}
+		pw.format("GET %s HTTP/1.1\r\n", path);
+		logger.debug("--> GET {} HTTP/1.1", path);
+		pw.format("Host: %s\r\n", u.getHost());
 		logger.debug("--> Host: {}", u.getHost());
 		for(Header h: headers) {
-			String line = h.getName()+": "+h.getValue();
-			out.print(line+"\r\n");
-			logger.debug("--> {}", line);
+			pw.format("%s: %s\r\n", h.getName(), h.getValue());
+			logger.debug("--> {}: {}", h.getName(), h.getValue());
 		}
-		out.print("\r\n");
-		out.flush();
-		BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+		pw.format("\r\n");
+		logger.debug("-->");
+		InputStream is = ChannelUtils.newInputStream(s, 65536);
+		BufferedReader in = new BufferedReader(new InputStreamReader(is));
 		boolean first = true;
-		while(true) {
-			String line = in.readLine();
+		String line=null;
+		while( (line=in.readLine())!=null) {
 			logger.debug("<-- {}", line);
-			if(line==null || line.length()==0)break;
-			if(first && !line.startsWith("HTTP/1.1 101")) {
+			if(line.length()==0)break;
+			if(first && line!=null && !line.startsWith("HTTP/1.1 101")) {
 				throw new IOException("Backend site cannot handle UNICORE-Socket-Forwarding");
 			}
 			first = false;
 		}
-    }
-    
-    public Socket openSocket(URI u) throws IOException {
-    	Socket s = SocketChannel.open(new InetSocketAddress(u.getHost(), u.getPort())).socket();
-    	if("http".equalsIgnoreCase(u.getScheme())){
-    		return s;
-    	}
-    	else if("https".equalsIgnoreCase(u.getScheme())) {
-    		SSLContext sslc = HttpUtils.createSSLContext(gateway.getClientFactory().getClientConfiguration());
-    		CustomSSLConnectionSocketFactory ssf = new CustomSSLConnectionSocketFactory(sslc, new EmptyHostnameVerifier());
-    		return ssf.createLayeredSocket(s, u.getHost(), u.getPort(), null);
-    	}
-    	else throw new IOException();
-    }
-   
+	}
+
+	public SocketChannel openSocketChannel(URI u) throws Exception {
+		SocketChannel s = SocketChannel.open(new InetSocketAddress(u.getHost(), u.getPort()));
+		s.configureBlocking(false);
+		if("http".equalsIgnoreCase(u.getScheme())){
+			return s;
+		}
+		else if("https".equalsIgnoreCase(u.getScheme())) {
+			DefaultClientConfiguration cc = gateway.getClientFactory().getClientConfiguration();
+			SSLEngine sslEngine = HttpUtils.createSSLContext(cc).createSSLEngine(u.getHost(), u.getPort());
+			sslEngine.setUseClientMode(true);
+			return new SSLSocketChannel(s, sslEngine, null);
+		}
+		else throw new IOException();
+	}
+
 }

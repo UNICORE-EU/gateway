@@ -47,7 +47,6 @@ import eu.unicore.util.Log;
 import eu.unicore.util.httpclient.DefaultClientConfiguration;
 import eu.unicore.util.httpclient.HttpClientProperties;
 import eu.unicore.util.httpclient.HttpUtils;
-import eu.unicore.util.httpclient.IClientConfiguration;
 
 /**
  * Creates HttpClient for usage in gateway (generally when connecting to sites behind the gateway).
@@ -131,7 +130,7 @@ public class HttpClientFactory
 		return HttpUtils.createClientBuilder(clientCfg.getHttpClientProperties(), connMan);
 	}
 	
-	public IClientConfiguration getClientConfiguration() {
+	public DefaultClientConfiguration getClientConfiguration() {
 		return clientCfg;
 	}
 }

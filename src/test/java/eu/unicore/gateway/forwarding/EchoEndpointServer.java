@@ -10,10 +10,15 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ServerSocketFactory;
+import javax.net.ssl.SSLServerSocket;
+
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.http.HttpStatus;
 
 import eu.unicore.gateway.util.LogUtil;
+import eu.unicore.util.httpclient.HttpUtils;
+import eu.unicore.util.httpclient.IClientConfiguration;
 
 /**
  * a server that can mimic the HTTP Upgrade mechanism for tunneling
@@ -32,17 +37,36 @@ public class EchoEndpointServer implements Runnable {
 
 	private volatile int statusCode=101;
 
-	private List<String> latestHeaders = new ArrayList<>();
+	private String latestQuery;
 
+	private List<String> latestHeaders = new ArrayList<>();
+	
+	private final boolean ssl;
+	
 	/**
 	 * creates a FakeServer listening on the given port
 	 * @param port
+	 * @param ssl
 	 * @throws IOException
 	 */
-	public EchoEndpointServer(int port)throws IOException{
-		serverSocket=new ServerSocket(port);
+	public EchoEndpointServer(int port, boolean ssl, IClientConfiguration secProps)throws IOException{
+		this.ssl = ssl;
+		serverSocket = ssl? createSSL(port, secProps) : createPlain(port);
 		serverSocket.setSoTimeout(5000);
 		this.port=serverSocket.getLocalPort();
+	}
+
+	private ServerSocket createPlain(int port) throws IOException {
+		return new ServerSocket(port);
+	}
+	
+	private ServerSocket createSSL(int port, IClientConfiguration secProps) throws IOException {
+		ServerSocketFactory ssf = HttpUtils.createSSLContext(secProps).getServerSocketFactory();
+		ServerSocket s = ssf.createServerSocket(port);
+		SSLServerSocket sslServer = (SSLServerSocket)s;
+		sslServer.setNeedClientAuth(secProps.doSSLAuthn());
+		sslServer.setEnableSessionCreation(true);
+		return sslServer;
 	}
 
 	/**
@@ -50,11 +74,12 @@ public class EchoEndpointServer implements Runnable {
 	 * @see getPort()
 	 */
 	public EchoEndpointServer()throws IOException{
-		this(0);
+		this(0, false, null);
 	}
 
 	public String getURI(){
-		return "http://localhost:"+port;
+		
+		return "http"+(ssl?"s":"")+"://localhost:"+port;
 	}
 
 	private static int n=0;
@@ -62,15 +87,6 @@ public class EchoEndpointServer implements Runnable {
 		Thread t=new Thread(this);
 		t.setName("FakeVSiteListenerThread"+(n++));
 		t.start();
-	}
-
-	public synchronized void restart()throws Exception{
-		if(serverSocket!=null)throw new IllegalStateException();
-
-		serverSocket=new ServerSocket(port);
-		stopping=false;
-		stopped=false;
-		start();
 	}
 
 	public void stop(){
@@ -85,6 +101,10 @@ public class EchoEndpointServer implements Runnable {
 		return latestHeaders;
 	}
 
+	public String getLatestQuery(){
+		return latestQuery;
+	}
+
 	private void parseHttp(InputStream input) throws UnsupportedEncodingException{
 		BufferedReader br=new BufferedReader(new InputStreamReader(input,"UTF-8"));
 		try{
@@ -92,6 +112,7 @@ public class EchoEndpointServer implements Runnable {
 			do {
 				line = br.readLine();
 			} while (line != null && line.length() == 0);
+			String _latestQuery = line;
 			List<String> _latestHeaders=new ArrayList<>();
 			StringBuilder sb=new StringBuilder(1024);
 			if (line != null) {
@@ -111,6 +132,7 @@ public class EchoEndpointServer implements Runnable {
 				boolean chunked =_latestHeaders.contains("Transfer-Encoding: chunked");
 
 				if((!chunked && contentLength==0) || line==null){
+					latestQuery = _latestQuery;
 					latestHeaders = _latestHeaders;
 					return;
 				}
@@ -188,7 +210,9 @@ public class EchoEndpointServer implements Runnable {
 					}
 					if(n<0)break;
 				}
-			}catch(Exception ex){ /*it's usually some unimportant timeout we wouldn't catch anyways*/ }
+			}catch(Exception ex){ 
+				ex.printStackTrace();
+				/*it's usually some unimportant timeout we wouldn't catch anyways*/ }
 		}
 		log.info("Stopped.");
 		stopped=true;

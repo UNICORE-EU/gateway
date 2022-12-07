@@ -1,14 +1,18 @@
 package eu.unicore.gateway.forwarding;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.Socket;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URL;
+import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,18 +30,38 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eu.unicore.gateway.Gateway;
+import eu.unicore.util.ChannelUtils;
 
+/**
+ * Port forwarding with plain HTTP gateway and backend
+ */
 public class TestForwarding {
 
 	protected Gateway gw;
 
+	protected EchoEndpointServer echo;
+	
+	protected String getScheme() {
+		return "http";
+	}
+
+	protected EchoEndpointServer createBackend() throws IOException {
+		return new EchoEndpointServer();
+	}
+
+	protected String getPropertiesLoc() {
+		return "src/test/resources/gateway.properties";
+	}
+
 	@Before
 	public void setUp() throws Exception{
-		File gp = new File("src/test/resources/gateway.properties");
+		File gp = new File(getPropertiesLoc());
 		File sp = new File("src/test/resources/security.properties");
 		File cp = new File("src/test/resources/connection.properties");
 		gw = new Gateway(gp, cp, sp);
 		gw.startGateway();
+		echo = createBackend();
+		echo.start();
 	}
 
 	@After
@@ -46,36 +70,35 @@ public class TestForwarding {
 	}
 
 	@Test
-	public void testGetWithUpgrade() throws Exception{
-		EchoEndpointServer s1 = new EchoEndpointServer();
-		s1.start();
-		String s1Url=s1.getURI();
+	public void testPortForwarding() throws Exception{
+		String s1Url = echo.getURI();
 		int status=doRegister("TEST",s1Url);
 		assertEquals(HttpStatus.SC_CREATED,status);
 		ForwardingSetup fs = new ForwardingSetup(gw);
-		URI u = new URI("http://localhost:64433/TEST/test");
+		URI u = new URI(getScheme()+"://localhost:64433/TEST/test?port=1234");
 		final HttpGet req = new HttpGet(u.toString());
 		req.addHeader("Connection", "Upgrade");
 		req.addHeader("Upgrade", ForwardingSetup.REQ_UPGRADE_HEADER_VALUE);
-		Socket remoteSocket = fs.openSocket(u);
-		fs.doHandshake(remoteSocket, u, req.getHeaders());
-		assertNotNull(remoteSocket);
-		System.out.println("Got socket connected to: "+ remoteSocket.getRemoteSocketAddress() +
-				" local address: " + remoteSocket.getLocalAddress()+":"+remoteSocket.getLocalPort());
-		BufferedReader r = new BufferedReader(new InputStreamReader(remoteSocket.getInputStream()));
+		SocketChannel remote = fs.openSocketChannel(u);
+		fs.doHandshake(remote, u, req.getHeaders());
+		System.out.println("Got socket connected to: "+ remote.getRemoteAddress() +
+				" local address: " + remote.getLocalAddress());
+		assertTrue(echo.getLatestQuery().contains("?port=1234"));
+		PrintWriter w = new PrintWriter(new OutputStreamWriter(ChannelUtils.newOutputStream(remote, 65536)), true);
+		Reader r = new InputStreamReader(ChannelUtils.newInputStream(remote, 65536));
+		BufferedReader br = new BufferedReader(r);
 		for(int i=0; i<10; i++) {
 			String out = "test_"+i;
-			remoteSocket.getOutputStream().write((out+"\n").getBytes());
-			remoteSocket.getOutputStream().flush();
+			w.println(out);
 			System.out.println("---> "+out);
-			String line = r.readLine();
+			String line = br.readLine();
 			System.out.println("<--- "+line);
 			assertEquals(out, line);
 		}
 	}
 	
 	private int doRegister(String name, String address)throws Exception{
-		String url="http://localhost:64433/VSITE_REGISTRATION_REQUEST";
+		String url = getScheme()+"://localhost:64433/VSITE_REGISTRATION_REQUEST";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpPost post=new HttpPost(url);
 		List<NameValuePair> parameters = new ArrayList<>();
