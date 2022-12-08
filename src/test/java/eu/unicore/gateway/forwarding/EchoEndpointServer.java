@@ -52,7 +52,7 @@ public class EchoEndpointServer implements Runnable {
 	public EchoEndpointServer(int port, boolean ssl, IClientConfiguration secProps)throws IOException{
 		this.ssl = ssl;
 		serverSocket = ssl? createSSL(port, secProps) : createPlain(port);
-		serverSocket.setSoTimeout(5000);
+		serverSocket.setSoTimeout(20000);
 		this.port=serverSocket.getLocalPort();
 	}
 
@@ -212,7 +212,8 @@ public class EchoEndpointServer implements Runnable {
 				}
 			}catch(Exception ex){ 
 				ex.printStackTrace();
-				/*it's usually some unimportant timeout we wouldn't catch anyways*/ }
+				break;
+			}
 		}
 		log.info("Stopped.");
 		stopped=true;
