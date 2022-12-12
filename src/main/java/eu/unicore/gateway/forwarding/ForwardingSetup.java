@@ -16,6 +16,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.core5.http.Header;
 import org.apache.logging.log4j.Logger;
@@ -100,47 +101,38 @@ public class ForwardingSetup {
 		// protocol upgrade handshake with VSite
 		SocketChannel vsiteChannel = null;
 		try{
-			vsiteChannel = connectToVsite(vsite, url, request);
-			assert vsiteChannel!=null: "Vsite did not handle Upgrade request";
+			vsiteChannel = connectToVsite(vsite, url, request, response);
 		}catch(Exception e) {
 			throw new IOException(e);
 		}
-		// Handle error responses
 		Request baseRequest = Request.getBaseRequest(request);
-		if (response.isCommitted())
-		{
-			logger.debug("not upgraded: response committed {}", request);
-			baseRequest.setHandled(true);
-			return false;
-		}
-		int httpStatus = response.getStatus();
-		if (httpStatus > 200)
-		{
-			logger.debug("not upgraded: invalid http code {} {}", httpStatus, request);
-			response.flushBuffer();
-			baseRequest.setHandled(true);
-			return false;
-		}
-
-		ForwardingConnection toClient = createForwardingConnection(baseRequest, vsiteChannel);
-		logger.debug("forwarding-connection {} to vsite {}", toClient, vsiteChannel);
-		if (toClient == null)
-			throw new IOException("not upgraded: no connection");
-		HttpChannel httpChannel = baseRequest.getHttpChannel();
-		httpChannel.getConnector().getEventListeners().forEach(toClient::addEventListener);
-
-		baseRequest.setHandled(true);
 		Response baseResponse = baseRequest.getResponse();
-		prepare101Response(baseResponse);
-		baseResponse.flushBuffer();
+		int httpStatus = response.getStatus();
+		if(httpStatus==101) {
+			ForwardingConnection toClient = createForwardingConnection(baseRequest, vsiteChannel);
+			logger.debug("forwarding-connection {} to vsite {}", toClient, vsiteChannel);
+			if (toClient == null)
+				throw new IOException("not upgraded: no connection");
+			HttpChannel httpChannel = baseRequest.getHttpChannel();
+			httpChannel.getConnector().getEventListeners().forEach(toClient::addEventListener);
 
-		baseRequest.setAttribute(HttpTransport.UPGRADE_CONNECTION_ATTRIBUTE, toClient);
-
-		// Save state from request/response and remove reference to the base request/response.
-		new UpgradeHttpServletRequest(request).upgrade();
-		new UpgradeHttpServletResponse(response).upgrade();
-		Forwarder.get().attach(toClient);
-		logger.info("Forwarding to {}, connection={}", vsite, toClient);
+			baseRequest.setHandled(true);
+			prepare101Response(baseResponse);
+			baseResponse.flushBuffer();
+			baseRequest.setAttribute(HttpTransport.UPGRADE_CONNECTION_ATTRIBUTE, toClient);
+			// Save state from request/response and remove reference to the base request/response.
+			new UpgradeHttpServletRequest(request).upgrade();
+			new UpgradeHttpServletResponse(response).upgrade();
+			Forwarder.get().attach(toClient);
+			logger.info("Forwarding to {}, connection={}", vsite, toClient);
+		}
+		else if(httpStatus==432) {
+			// invalid U/X security session - forward this to the client as it normally would be
+			prepare432Response(baseResponse);
+		}
+		else {
+			prepareErrorResponse(baseResponse, httpStatus, "Vsite could not handle Upgrade request.");
+		}
 		return true;
 	}
 
@@ -176,27 +168,38 @@ public class ForwardingSetup {
 		responseFields.put(CONNECTION_HDR);
 	}
 
+	protected void prepare432Response(Response response)
+	{
+		response.setStatus(432);
+	}
+
 	private static final HttpField UPGRADE_HDR = new PreEncodedHttpField(HttpHeader.UPGRADE,
 			REQ_UPGRADE_HEADER_VALUE);
 
 	private static final HttpField CONNECTION_HDR = new PreEncodedHttpField(HttpHeader.CONNECTION,
 			HttpHeader.UPGRADE.asString());
 
-	protected SocketChannel connectToVsite(VSite vsite, String requestURL, HttpServletRequest req) throws Exception {
+	protected SocketChannel connectToVsite(VSite vsite, String requestURL, HttpServletRequest req, HttpServletResponse res) throws Exception {
 		URI u = URI.create(vsite.resolve(requestURL));
 		URI uWithQuery = Servlet.addQueryToURI(u, req.getQueryString());
 		final HttpGet get = new HttpGet(uWithQuery);
 		Servlet.prepareRequest(get, uWithQuery, vsite, req, gateway);
 		SocketChannel s = openSocketChannel(u);
-		doHandshake(s, uWithQuery, get.getHeaders());
+		int code = doHandshake(s, uWithQuery, get.getHeaders());
+		res.setStatus(code);
+		if(code!=101) {
+			IOUtils.closeQuietly(s);
+			s = null;
+		}
 		return s;
 	}
 
 	@SuppressWarnings("resource")
-	public void doHandshake(SocketChannel s, URI u, Header[] headers) throws Exception {
+	public int doHandshake(SocketChannel s, URI u, Header[] headers) throws Exception {
 		OutputStream os = ChannelUtils.newOutputStream(s, 65536);
 		PrintWriter pw = new PrintWriter(os, true, Charset.forName("UTF-8"));
 		String path = u.getPath();
+		int code = 500;
 		if(u.getQuery()!=null) {
 			path += "?"+u.getQuery();
 		}
@@ -217,11 +220,16 @@ public class ForwardingSetup {
 		while( (line=in.readLine())!=null) {
 			logger.debug("<-- {}", line);
 			if(line.length()==0)break;
-			if(first && line!=null && !line.startsWith("HTTP/1.1 101")) {
-				throw new IOException("Backend site cannot handle UNICORE-Socket-Forwarding");
+			if(first) {
+				if(line!=null && !line.startsWith("HTTP/1.1")) {
+					throw new IOException("Backend site cannot handle UNICORE-Socket-Forwarding");
+				}
+				// HTTP/1.1 <code> <message>
+				code = Integer.parseInt(line.split(" ")[1].trim());
 			}
 			first = false;
 		}
+		return code;
 	}
 
 	public SocketChannel openSocketChannel(URI u) throws Exception {

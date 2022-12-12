@@ -25,6 +25,7 @@ import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.http.message.StatusLine;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,9 +69,10 @@ public class TestForwarding {
 	public void tearDown()throws Exception{
 		gw.stopGateway();
 	}
-
+	
 	@Test
 	public void testPortForwarding() throws Exception{
+		echo.setStatusCode(101);
 		String s1Url = echo.getURI();
 		int status=doRegister("TEST",s1Url);
 		assertEquals(HttpStatus.SC_CREATED,status);
@@ -95,6 +97,29 @@ public class TestForwarding {
 			System.out.println("<--- "+line);
 			assertEquals(out, line);
 		}
+	}
+
+	/**
+	 * test that the 'Protocol: upgrade' mechanism is not triggered when
+	 * the server replies with 432 (session invalid)
+	 * @throws Exception
+	 */
+	@Test
+	public void testPortForwarding432Response() throws Exception{
+		echo.setStatusCode(432);
+		String s1Url = echo.getURI();
+		int status=doRegister("TEST",s1Url);
+		assertEquals(HttpStatus.SC_CREATED,status);
+		URL u = new URL(getScheme()+"://localhost:64433/TEST/test?port=1234");
+		HttpClient hc = gw.getClientFactory().makeHttpClient(u);
+		final HttpGet req = new HttpGet(u.toString());
+		req.addHeader("Connection", "Upgrade");
+		req.addHeader("Upgrade", ForwardingSetup.REQ_UPGRADE_HEADER_VALUE);
+		try(ClassicHttpResponse response = hc.executeOpen(null, req, HttpClientContext.create())){
+			System.out.println("---> "+new StatusLine(response));
+			assertEquals(432, response.getCode());
+		};
+		echo.stop();
 	}
 	
 	private int doRegister(String name, String address)throws Exception{

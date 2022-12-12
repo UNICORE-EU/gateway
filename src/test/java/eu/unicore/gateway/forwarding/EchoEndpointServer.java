@@ -52,7 +52,7 @@ public class EchoEndpointServer implements Runnable {
 	public EchoEndpointServer(int port, boolean ssl, IClientConfiguration secProps)throws IOException{
 		this.ssl = ssl;
 		serverSocket = ssl? createSSL(port, secProps) : createPlain(port);
-		serverSocket.setSoTimeout(20000);
+		serverSocket.setSoTimeout(10*3600);
 		this.port=serverSocket.getLocalPort();
 	}
 
