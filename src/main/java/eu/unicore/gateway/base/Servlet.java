@@ -107,7 +107,7 @@ public class Servlet extends HttpServlet {
 		try{
 			X509Certificate[] certPath = (X509Certificate[]) req.getAttribute("javax.servlet.request.X509Certificate");
 			if (certPath != null){
-				clientName=certPath[0].getSubjectDN().getName();
+				clientName=certPath[0].getSubjectX500Principal().getName();
 			}
 		}catch(Exception ex){}
 		ThreadContext.put(LogUtil.MDC_IP, clientIP);
@@ -268,7 +268,7 @@ public class Servlet extends HttpServlet {
 				//boolean chunked = "chunked".equalsIgnoreCase(req.getHeader(HttpHeaders.TRANSFER_ENCODING));
 				long contentLength = req.getContentLength();
 				ContentType contentType = req.getContentType()!=null ?
-					ContentType.create(req.getContentType()) : ContentType.WILDCARD;
+					ContentType.parse(req.getContentType()) : ContentType.WILDCARD;
 				InputStreamEntity requestEntity = new InputStreamEntity(
 						req.getInputStream(), contentLength, contentType);
 				httpWithEntity.setEntity(requestEntity);
@@ -361,7 +361,8 @@ public class Servlet extends HttpServlet {
 		top.append("<br/> Gateway <br/>");
 		if (certs != null)
 		{
-			top.append("<p class='username'>You are authenticated as: <br/>").append(certs[0].getSubjectDN()).append("</p>");
+			top.append("<p class='username'>You are authenticated as: <br/>")
+			.append(certs[0].getSubjectX500Principal().getName()).append("</p>");
 		}
 		top.append("<p class='username'>Your IP address: ").append(clientIP).append("</p></div>");
 		

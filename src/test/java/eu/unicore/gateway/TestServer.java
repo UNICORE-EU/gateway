@@ -395,8 +395,28 @@ public class TestServer extends TestCase {
 
 		String url="http://localhost:64433/FAKE1/test";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
-		HttpPut put=new HttpPut(s1Url);
+		HttpPut put=new HttpPut(url);
 		AbstractHttpEntity entity = new ByteArrayEntity(getBody(url), ContentType.WILDCARD, true);
+		put.setEntity(entity);
+		s1.setStatusCode(HttpStatus.SC_NO_CONTENT);
+		try(ClassicHttpResponse response = hc.executeOpen(null, put, HttpClientContext.create())){
+			System.out.println(getStatusDesc(response));
+			assertEquals(HttpStatus.SC_NO_CONTENT, response.getCode());
+		}
+		s1.stop();
+	}
+
+	public void testPut2()throws Exception{
+		FakeServer s1=new FakeServer();
+		s1.start();
+		String s1Url=s1.getURI();
+		int status=doRegister("FAKE1",s1Url);
+		assertEquals(HttpStatus.SC_CREATED,status);
+
+		String url="http://localhost:64433/FAKE1/test";
+		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+		HttpPut put=new HttpPut(url);
+		AbstractHttpEntity entity = new ByteArrayEntity(getBody(url), ContentType.APPLICATION_JSON, true);
 		put.setEntity(entity);
 		s1.setStatusCode(HttpStatus.SC_NO_CONTENT);
 		try(ClassicHttpResponse response = hc.executeOpen(null, put, HttpClientContext.create())){
