@@ -82,7 +82,7 @@ public class GatewayProperties extends FilePropertiesHelper
 	public static final String PREFIX="gateway.";
 	
 	@DocumentationReferenceMeta
-	public static final Map<String, PropertyMD> DEFAULTS = new HashMap<String, PropertyMD>();
+	public static final Map<String, PropertyMD> DEFAULTS = new HashMap<>();
 	public static final int DEFAULT_MAX_HDR = 102400;
 	static 
 	{
@@ -123,7 +123,7 @@ public class GatewayProperties extends FilePropertiesHelper
 		DEFAULTS.put(KEY_SOCKET_TIMEOUT, 	new PropertyMD("30000").setCategory(cliCat).setDescription(
 				"Connection timeout, used when connecting to backend sites."));
 		DEFAULTS.put(KEY_PROTO_EXPECTCONTINUE, 	new PropertyMD("true").setCategory(cliCat).setDescription(
-				"Controls whether the HTTP expec-continue mechanism is enaled on connections to backend sites."));
+				"Controls whether the HTTP expect-continue mechanism is enabled on connections to backend sites."));
 
 		DEFAULTS.put(KEY_CONSIGNORT_SIGN, 	new PropertyMD("false").setCategory(consigCat).setDescription(
 				"Controls whether information about the authenticated client (the consignor) passed to backend sites should be signed, or not. Signing is slower, but is required when sites may be reached directly, bypassing the Gateway."));

@@ -56,7 +56,7 @@ public class GatewayHttpServerProperties extends HttpServerProperties
 	public static final String PREFIX = GatewayProperties.PREFIX + HttpServerProperties.DEFAULT_PREFIX;
 	
 	@DocumentationReferenceMeta
-	protected final static Map<String, PropertyMD> defaults=new HashMap<String, PropertyMD>();
+	protected final static Map<String, PropertyMD> defaults = new HashMap<>();
 	static 
 	{
 		defaults.put(USE_NIO, new PropertyMD("true").setDescription(

@@ -17,7 +17,6 @@ import org.codehaus.stax2.XMLInputFactory2;
 
 import eu.unicore.gateway.soap.SoapVersion;
 import eu.unicore.gateway.util.BufferingProxyReader;
-import eu.unicore.gateway.util.LogUtil;
 
 /**
  * Holds information during the processing of a single request.
@@ -69,8 +68,7 @@ public class RawMessageExchange
 
 	public RawMessageExchange(Reader r, Writer w, int maxHeader)
 	{
-		reader = new BufferingProxyReader(r, LogUtil.getLogger("gateway.trafficdump", 
-				RawMessageExchange.class), maxHeader);
+		reader = new BufferingProxyReader(r, maxHeader);
 		writer = w;
 		setHeaderPresent(false);
 	}

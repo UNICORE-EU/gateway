@@ -98,16 +98,9 @@ public class HttpClientFactory
 	}
 
 	public HttpClient makeHttpClient(URL url) throws Exception {
-		
-		HttpClient client;
-		if (url.getProtocol().toLowerCase().equals("https")) {
-			log.debug("Creating TLS client");
-			client = HttpUtils.createClient(url.toString(), clientCfg);
-		} else {
-			log.debug("Creating plain client");
-			client = HttpUtils.createClient(clientProperties);
-		}
-		return client;
+		return url.getProtocol().toLowerCase().equals("https") ?
+			HttpUtils.createClient(url.toString(), clientCfg):
+			HttpUtils.createClient(clientProperties);
 	}
 
 	public HttpPost makePostMethod(String path, AbstractHttpEntity requestentity) {

@@ -89,8 +89,8 @@ public class Servlet extends HttpServlet {
 	private static final long serialVersionUID=2L;
 
 	private static final Logger logger=LogUtil.getLogger(LogUtil.GATEWAY,Servlet.class);
-	private GatewayProperties properties;
-	private Gateway gateway;
+	private final GatewayProperties properties;
+	private final Gateway gateway;
 	private final HttpClientFactory clientFactory;
 
 	public Servlet(Gateway gw)
@@ -177,7 +177,6 @@ public class Servlet extends HttpServlet {
 	{
 		SiteOrganiser so = gateway.getSiteOrganiser();     
 		String url=fullRequestURL(req);
-		debugRequest(method, req, url);
 		//check if we can map the request to a virtual site
 		VSite vsite=so.match(url, req.getRemoteAddr());
 		if(vsite!=null){
@@ -265,7 +264,6 @@ public class Servlet extends HttpServlet {
 			}
 			if(http instanceof HttpEntityContainer){
 				HttpEntityContainer httpWithEntity = (HttpEntityContainer)http;
-				//boolean chunked = "chunked".equalsIgnoreCase(req.getHeader(HttpHeaders.TRANSFER_ENCODING));
 				long contentLength = req.getContentLength();
 				ContentType contentType = req.getContentType()!=null ?
 					ContentType.parse(req.getContentType()) : ContentType.WILDCARD;
@@ -385,7 +383,6 @@ public class Servlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
 	{
 		URL url=new URL(fullRequestURL(req));
-		debugRequest("POST", req, url.toString());
 		boolean isSoap = true;
 		try
 		{
@@ -457,7 +454,6 @@ public class Servlet extends HttpServlet {
 		}
 		catch (Exception e){
 			// result in a 500 response
-			LogUtil.logException("Failed to process POST request", e, logger);
 			throw new ServletException("Failed to process POST request: " + e, e);
 		}
 	}
@@ -522,25 +518,6 @@ public class Servlet extends HttpServlet {
 		}
 		sb.append("</div>");
 		return sb.toString();
-	}
-
-	private void debugRequest(String type, HttpServletRequest req, String url)
-	{
-		if(!logger.isDebugEnabled())
-			return;
-		logger.debug("New " + type + " message to " + url);
-		if (!logger.isTraceEnabled())
-			return;
-
-		Enumeration<?> hdrNames = req.getHeaderNames();
-		StringBuilder hdrDump = new StringBuilder();
-
-		while(hdrNames.hasMoreElements())
-		{
-			String n = (String)hdrNames.nextElement();
-			hdrDump.append(n + ": " + req.getHeader(n) + "\n");
-		}
-		logger.trace(type+" request header:\n" + hdrDump);
 	}
 
 	public static String extractGatewayURL(HttpServletRequest req, String vsite){

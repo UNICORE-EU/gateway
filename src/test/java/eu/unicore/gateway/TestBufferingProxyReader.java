@@ -1,5 +1,6 @@
 package eu.unicore.gateway;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -18,8 +19,9 @@ public class TestBufferingProxyReader
 	public void test1()throws Exception
 	{
 		StringReader sr = new StringReader("1234567890abcde");
-		BufferingProxyReader proxy = new BufferingProxyReader(sr, null, 
+		BufferingProxyReader proxy = new BufferingProxyReader(sr,
 				GatewayProperties.DEFAULT_MAX_HDR);
+		assertFalse(proxy.markSupported());
 		char cbuf[] = new char[5];
 		int r = proxy.read(cbuf);
 		proxy.setMarkedPos(5);
@@ -50,7 +52,7 @@ public class TestBufferingProxyReader
 		String f2 = Utils.readFile(new File("src/test/resources/f2"));
 		String f3 = Utils.readFile(new File("src/test/resources/f3"));
 		StringReader sr = new StringReader(f1+f2+f3);
-		BufferingProxyReader proxy = new BufferingProxyReader(sr, null, 
+		BufferingProxyReader proxy = new BufferingProxyReader(sr,
 				GatewayProperties.DEFAULT_MAX_HDR);
 		char cbuf[] = new char[f1.length()];
 		int r = proxy.read(cbuf);

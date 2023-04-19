@@ -11,9 +11,6 @@ package eu.unicore.gateway.util;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.nio.CharBuffer;
-
-import org.apache.logging.log4j.Logger;
 
 /**
  * Proxy over a given Reader implementation. Basic rules are that:
@@ -33,16 +30,13 @@ public class BufferingProxyReader extends Reader
 	private int bufPtr;
 	private int markedPos;
 	private int maxHeader;
-	private Logger log = null;
 
-	public BufferingProxyReader(Reader reader, Logger log, int maxHeader)
+	public BufferingProxyReader(Reader reader, int maxHeader)
 	{
 		this.reader = reader;
 		buffer = new CharArrayWriterExt(10240);
 		bufPtr = 0;
 		markedPos = 0;
-		if (log != null && log.isTraceEnabled())
-			this.log = log;
 		this.maxHeader = maxHeader;
 	}
 
@@ -51,10 +45,7 @@ public class BufferingProxyReader extends Reader
 	{
 		if (buffer == null)
 		{
-			int ret = reader.read(cbuf, off, len);
-			if (log != null && ret > 0)
-				log.trace("[INPUT]" + new String(cbuf, off, ret));
-			return ret;
+			return reader.read(cbuf, off, len);
 		}
 		if (len + bufPtr >= maxHeader)
 			throw new IOException("Header is too large. Gateway supports up to " + 
@@ -64,8 +55,6 @@ public class BufferingProxyReader extends Reader
 			return readChars;
 		buffer.write(cbuf, off, readChars);
 		bufPtr += readChars;
-		if (log != null && readChars > 0)
-			log.trace("[INPUT]" + new String(cbuf, off, readChars));
 		return readChars;
 	}
 	
@@ -73,8 +62,6 @@ public class BufferingProxyReader extends Reader
 	{
 		String s = new String(buffer.getInternalBuffer(), startOffset, len);
 		os.write(s.getBytes(charset));
-		if (log != null)
-			log.trace("[REPLAY]" + s);
 	}
 
 	public void replayRest(OutputStream os, int startOffset, String charset) throws IOException 
@@ -85,8 +72,6 @@ public class BufferingProxyReader extends Reader
 			
 			String s = new String(buffer.getInternalBuffer(), startOffset, len);
 			os.write(s.getBytes(charset));
-			if (log != null)
-				log.trace("[REPLAY-R]" + s);
 		}
 		//just to ensure we get the memory free ASAP
 		buffer = null;
@@ -94,7 +79,6 @@ public class BufferingProxyReader extends Reader
 
 	public void disableBuffer(){
 		assert markedPos <= 0;
-		
 		buffer = null;
 	}
 	
@@ -124,27 +108,9 @@ public class BufferingProxyReader extends Reader
 	}
 
 	@Override
-	public boolean markSupported()
-	{
-		return false;
-	}
-
-	@Override
-	public int read() throws IOException
-	{
-		return super.read();
-	}
-
-	@Override
 	public int read(char[] cbuf) throws IOException
 	{
 		return read(cbuf, 0, cbuf.length);
-	}
-
-	@Override
-	public int read(CharBuffer target) throws IOException
-	{
-		return super.read(target);
 	}
 
 	@Override

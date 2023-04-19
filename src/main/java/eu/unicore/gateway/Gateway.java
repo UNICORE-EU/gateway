@@ -32,8 +32,6 @@ package eu.unicore.gateway;
 import java.io.File;
 import java.net.URI;
 import java.util.Date;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.logging.log4j.Logger;
 
@@ -63,11 +61,9 @@ public class Gateway
 	private GatewayHttpServerProperties jettyProperties;
 	private HttpClientFactory clientFactory;
 	private URI hostURI;
-	private final ScheduledExecutorService executorService;
 	
 	public Gateway(File mainProperties, File connections, File secProperties) throws Exception
 	{
-		executorService=Executors.newSingleThreadScheduledExecutor();
 		configureGateway(mainProperties, connections, secProperties);
 	}
 
@@ -92,7 +88,7 @@ public class Gateway
 		if (externalHostName!=null) 
 		{
 			host = externalHostName;
-			log.info("Using '"+externalHostName+"' as gateway address.");
+			log.info("Using '{}' as gateway address.", externalHostName);
 		}
 		clientFactory = new HttpClientFactory(securityProperties, gatewayProperties);
 		hostURI = URI.create(host);
@@ -207,17 +203,12 @@ public class Gateway
 
 	public void stopGateway() throws Exception
 	{
-		executorService.shutdownNow();
 		jetty.stop();
 		String message = "UNICORE Gateway stopped.";
 		log.info(message);
 		System.out.println(message);
 	}	
-	
-	public ScheduledExecutorService getExecutorService(){
-		return executorService;
-	}
-	
+
 	/**
 	 * warn if no log4j2 config is set
 	 */
