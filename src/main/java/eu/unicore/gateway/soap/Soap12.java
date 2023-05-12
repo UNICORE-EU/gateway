@@ -1,20 +1,3 @@
-/**
- * 
- * Copyright 2004 Protique Ltd
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
- * 
- **/
 package eu.unicore.gateway.soap;
 
 import java.util.HashMap;
@@ -38,17 +21,13 @@ public class Soap12 implements SoapVersion
 	private static final double version = 1.2;
 	private static final String namespace = "http://www.w3.org/2003/05/soap-envelope";
 	private static final String prefix = "env";
-	private static final String noneRole = namespace + "/role/none";
-	private static final String ultimateReceiverRole = namespace
-		+ "/role/ultimateReceiver";
 	private static final String nextRole = namespace + "/role/next";
-	private static final String soapEncodingStyle = "http://www.w3.org/2003/05/soap-encoding";
 	public static final QName envelope = new QName(namespace, "Envelope", prefix);
 	public static final QName header = new QName(namespace, "Header", prefix);
 	public static final QName body = new QName(namespace, "Body", prefix);
 	public static final QName fault = new QName(namespace, "Fault", prefix);
 
-	private static final Map<FaultCode, String> codes = new HashMap<FaultCode, String>();
+	private static final Map<FaultCode, String> codes = new HashMap<>();
 	static
 	{
 		codes.put(FaultCode.MUST_UNDERSTAND, "MustUnderstand");
@@ -115,11 +94,6 @@ public class Soap12 implements SoapVersion
 		return prefix;
 	}
 
-	public QName getEnvelope()
-	{
-		return envelope;
-	}
-
 	public QName getHeader()
 	{
 		return header;
@@ -133,27 +107,5 @@ public class Soap12 implements SoapVersion
 	public QName getFault()
 	{
 		return fault;
-	}
-
-	public String getSoapEncodingStyle()
-	{
-		return soapEncodingStyle;
-	}
-
-	// Role URIs
-	// -------------------------------------------------------------------------
-	public String getNoneRole()
-	{
-		return noneRole;
-	}
-
-	public String getUltimateReceiverRole()
-	{
-		return ultimateReceiverRole;
-	}
-
-	public String getNextRole()
-	{
-		return nextRole;
 	}
 }

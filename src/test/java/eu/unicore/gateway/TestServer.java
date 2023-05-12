@@ -152,6 +152,24 @@ public class TestServer extends TestCase {
 		s1.stop();
 	}
 
+	public void testPostSOAP11Fault()throws Exception{
+		int status=doRegister("FAKE1","http://localhost:64444");
+		assertEquals(HttpStatus.SC_CREATED,status);
+		String url="http://localhost:64433/FAKE1/test";
+		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+		HttpPost post=new HttpPost(url);
+		byte[] originalRequestBody = getBody(url);
+		post.setEntity(new ByteArrayEntity(originalRequestBody, ContentType.APPLICATION_SOAP_XML));
+		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
+			System.out.println(getStatusDesc(response));
+			assertEquals(HttpStatus.SC_OK, response.getCode());
+			String responseBody = EntityUtils.toString(response.getEntity());
+			assertTrue(responseBody.contains("Envelope"));
+			assertTrue(responseBody.contains("Fault"));
+			assertTrue(responseBody.contains("Connection refused"));
+		}
+	}
+
 	public void testPostSOAP11ContentText()throws Exception{
 		FakeServer s1=new FakeServer();
 		s1.start();

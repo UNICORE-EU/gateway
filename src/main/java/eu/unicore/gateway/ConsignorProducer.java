@@ -1,11 +1,3 @@
-/*
- * Copyright (c) 2007, 2008 ICM Uniwersytet Warszawski All rights reserved.
- * See LICENSE.ICM file for licensing information.
- *
- * Created on May 22, 2007
- * Author: K. Benedyczak <golbi@mat.umk.pl>
- */
-
 package eu.unicore.gateway;
 
 import java.io.FileNotFoundException;
@@ -136,24 +128,20 @@ public class ConsignorProducer implements IConsignorProducer
 	public Header getConsignorHeader(X509Certificate[] certChain, String ip) throws Exception {
 		Header ret = null;
 		X509Certificate cert = (certChain == null) ? null: certChain[0];
-		
 		if (myKey == null && cert!=null)
 		{
 			ret = headerCacheGet(cert,ip);
 			if(ret!=null)return ret;
 		}
-		//if(myKey == null)return 
-		// TODO yes it is a cheapo solution
 		String dn = cert.getSubjectX500Principal().getName();
 		String sig = sign(dn);
-		
-		BasicHeader h = new BasicHeader("X-UNICORE-Consignor", "DN=\""+dn+"\";DSIG="+sig);
+		ret = new BasicHeader("X-UNICORE-Consignor", "DN=\""+dn+"\";DSIG="+sig);
 		if (myKey == null && cert!=null){
-			headerCacheAdd(cert,ip, h);
+			headerCacheAdd(cert,ip, ret);
 		}
-		return h;
+		return ret;
 	}
-	
+
 	private AssertionDocument generateAssertion(X509Certificate []cert, String ip) throws DSigException {
 		ConsignorAPI engine = new ConsignorImpl();
 		ConsignorAssertion assertion;
