@@ -40,7 +40,6 @@ import eu.unicore.gateway.Gateway;
 import eu.unicore.gateway.POSTHandler;
 import eu.unicore.gateway.SiteOrganiser;
 import eu.unicore.gateway.VSite;
-import eu.unicore.gateway.client.HttpClientFactory;
 import eu.unicore.gateway.properties.GatewayProperties;
 import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.util.Log;
@@ -58,13 +57,11 @@ public class Servlet extends HttpServlet {
 	private static final Logger logger=LogUtil.getLogger(LogUtil.GATEWAY,Servlet.class);
 	private final GatewayProperties properties;
 	private final Gateway gateway;
-	private final HttpClientFactory clientFactory;
 
 	public Servlet(Gateway gw)
 	{
 		this.gateway = gw;
 		this.properties = gw.getProperties();
-		clientFactory = gateway.getClientFactory();
 	}
 
 	@Override
@@ -225,7 +222,7 @@ public class Servlet extends HttpServlet {
 			synchronized(vsite){
 				client = vsite.getClient();
 				if(client==null){
-					client = clientFactory.makeHttpClient(uri.toURL());
+					client = gateway.getClientFactory().makeHttpClient(uri.toURL());
 					vsite.setClient(client);	
 				}
 			}
@@ -409,7 +406,8 @@ public class Servlet extends HttpServlet {
 					exchange.setSOAP(true);
 				}
 				POSTHandler handler = new POSTHandler(gateway.getSiteOrganiser(), 
-						gateway.getConsignorProducer(), clientFactory,
+						gateway.getConsignorProducer(),
+						gateway.getClientFactory(),
 						properties.isChunkedDispatch(), 
 						gateway.getHostURI().toString());
 				handler.invoke(exchange);

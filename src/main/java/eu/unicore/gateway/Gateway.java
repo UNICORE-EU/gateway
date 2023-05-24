@@ -25,17 +25,20 @@ public class Gateway
 	private GatewayJettyServer jetty;
 	private CompositeSiteOrganiser organiser;
 	private DynamicSiteOrganiser dynamicOrganiser;
-	private String upSince = "---";
+	private final String upSince;
 	private ConsignorProducer consignorProducer;
 	private GatewayProperties gatewayProperties;
 	private AuthnAndTrustProperties securityProperties;
 	private GatewayHttpServerProperties jettyProperties;
 	private HttpClientFactory clientFactory;
 	private URI hostURI;
-	
+
+	private File _securityConfigFile;
+
 	public Gateway(File mainProperties, File connections, File secProperties) throws Exception
 	{
 		configureGateway(mainProperties, connections, secProperties);
+		upSince = new Date().toString();
 	}
 
 	private void configureGateway(File mainProperties, File connections, File secProperties) 
@@ -44,16 +47,12 @@ public class Gateway
 		String message="UNICORE Gateway "+RELEASE_VERSION+" starting.";
 		log.info(message);
 		System.out.println(message);
-
 		gatewayProperties=new GatewayProperties(mainProperties);
 		jettyProperties = new GatewayHttpServerProperties(mainProperties);
+		_securityConfigFile = secProperties;
 		if(secProperties == null) {
-			secProperties = mainProperties;
+			_securityConfigFile = mainProperties;
 		}
-		securityProperties = new AuthnAndTrustProperties(secProperties, 
-				GatewayProperties.PREFIX +TruststoreProperties.DEFAULT_PREFIX, 
-				GatewayProperties.PREFIX +CredentialProperties.DEFAULT_PREFIX);
-		
 		String host = gatewayProperties.getHostname();
 		String externalHostName = gatewayProperties.getExternalHostname();
 		if (externalHostName!=null) 
@@ -61,30 +60,30 @@ public class Gateway
 			host = externalHostName;
 			log.info("Using '{}' as gateway address.", externalHostName);
 		}
-		clientFactory = new HttpClientFactory(securityProperties, gatewayProperties);
 		hostURI = URI.create(host);
 		organiser = new CompositeSiteOrganiser(this, connections);
 		if (gatewayProperties.isDynamicRegistrationEnabled()){
 			dynamicOrganiser=new DynamicSiteOrganiser(this, 
-				gatewayProperties.getRegistrationExcludes(), gatewayProperties.getRegistrationIncludes());
+				gatewayProperties.getRegistrationExcludes(),
+				gatewayProperties.getRegistrationIncludes());
 			organiser.addSiteOrganiser(dynamicOrganiser);
 		}
 		log.info(organiser.toString());
+		configureSecurity();
+	}
 
+	public void configureSecurity() throws Exception {
+		securityProperties = new AuthnAndTrustProperties(_securityConfigFile,
+				GatewayProperties.PREFIX + TruststoreProperties.DEFAULT_PREFIX,
+				GatewayProperties.PREFIX + CredentialProperties.DEFAULT_PREFIX);
 		int tolerance = gatewayProperties.getConsTTol();
 		int validity = gatewayProperties.getConsTVal();
 		boolean doSign = gatewayProperties.isConsTSign();
-		try
-		{
-			consignorProducer = new ConsignorProducer(doSign, tolerance, 
+		consignorProducer = new ConsignorProducer(doSign, tolerance,
 				validity, securityProperties);
-		} catch (Exception e)
-		{
-			LogUtil.logException("Can't create ConsignorProducer instance.", e, log);
-		}
+		clientFactory = new HttpClientFactory(securityProperties, gatewayProperties);
 	}
 
-	
 	public String upSince()
 	{
 		return upSince;
@@ -165,7 +164,6 @@ public class Gateway
 		
 		jetty = new GatewayJettyServer(this);
 		jetty.start();
-		upSince = new Date().toString();
 		
 		message = "UNICORE Gateway startup complete.";
 		log.info(message);
