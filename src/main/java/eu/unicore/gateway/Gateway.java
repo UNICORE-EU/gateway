@@ -61,6 +61,7 @@ public class Gateway
 			log.info("Using '{}' as gateway address.", externalHostName);
 		}
 		hostURI = URI.create(host);
+		configureSecurity();
 		organiser = new CompositeSiteOrganiser(this, connections);
 		if (gatewayProperties.isDynamicRegistrationEnabled()){
 			dynamicOrganiser=new DynamicSiteOrganiser(this, 
@@ -69,7 +70,6 @@ public class Gateway
 			organiser.addSiteOrganiser(dynamicOrganiser);
 		}
 		log.info(organiser.toString());
-		configureSecurity();
 	}
 
 	public void configureSecurity() throws Exception {
