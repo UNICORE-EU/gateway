@@ -46,4 +46,9 @@ public interface Site {
 	 */
 	public abstract VSite select(String clientID);
 
+	/**
+	 * reload configuration - for example due to config changes
+	 */
+	public void reloadConfig();
+
 }

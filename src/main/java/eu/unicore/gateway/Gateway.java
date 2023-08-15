@@ -128,7 +128,22 @@ public class Gateway
 	{
 		return jettyProperties;
 	}
-	
+
+	public void reloadConfig() {
+		getSiteOrganiser().reloadConfig();
+		getDynamicSiteOrganiser().reloadConfig();
+		try{
+			consignorProducer.reinit(securityProperties);
+		}catch(Exception e) {
+			log.error("Error reloading consignorProducer", e);
+		}	
+		try {
+			clientFactory = new HttpClientFactory(securityProperties, gatewayProperties);
+		}catch(Exception e) {
+			log.error("Error reloading clientFactory config", e);
+		}
+	}
+
 	//the version of the gateway jar
 	public static final String VERSION = Gateway.class.getPackage().getImplementationVersion() != null ? 
 			 Gateway.class.getPackage().getImplementationVersion() : "DEVELOPMENT";

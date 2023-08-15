@@ -34,4 +34,9 @@ public interface SiteOrganiser
 	 */
 	public String toHTMLString();
 
+	/**
+	 *  reload configuration - for example due to config changes
+	 */
+	public void reloadConfig();
+
 }

@@ -68,7 +68,7 @@ public class ConsignorProducer implements IConsignorProducer
 		this.negativeTolerance = negativeTolerance;
 		this.validity = validity;
 		this.doSigned=doSigned;
-		cache = new LinkedHashMap<Key, List<XMLEvent>>(CACHE_SIZE + 2, 1.0f, true)
+		cache = new LinkedHashMap<>(CACHE_SIZE + 2, 1.0f, true)
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -78,7 +78,7 @@ public class ConsignorProducer implements IConsignorProducer
 				return size() > CACHE_SIZE;
 			}
 		};
-		cache2 = new LinkedHashMap<Key, Header>(CACHE_SIZE + 2, 1.0f, true)
+		cache2 = new LinkedHashMap<>(CACHE_SIZE + 2, 1.0f, true)
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -88,18 +88,18 @@ public class ConsignorProducer implements IConsignorProducer
 				return size() > CACHE_SIZE;
 			}
 		};
-		init(securityProperties);
+		reinit(securityProperties);
 	}
 	
-	private void init(AuthnAndTrustProperties securityProperties) throws KeyStoreException, NoSuchAlgorithmException, 
+	public void reinit(AuthnAndTrustProperties securityProperties) throws KeyStoreException, NoSuchAlgorithmException, 
 		CertificateException, FileNotFoundException, IOException
 	{
 		X509Credential credential = securityProperties.getCredential();
 		X509Certificate cert = credential.getCertificate();
 		myDN = cert.getSubjectX500Principal().getName();
-		myKey = null;
-		if (doSigned)
-			myKey = credential.getKey();
+		myKey = doSigned? credential.getKey() : null;
+		cache.clear();
+		cache2.clear();
 	}
 	
 	public List<XMLEvent> getConsignorAssertion(X509Certificate[] certChain, String ip, SoapVersion soapVer) 

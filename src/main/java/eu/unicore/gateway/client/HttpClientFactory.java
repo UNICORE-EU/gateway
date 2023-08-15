@@ -79,8 +79,9 @@ public class HttpClientFactory
 			post.setHeader("Connection", "close");
 		return post;
 	}
-	
+
 	public DefaultClientConfiguration getClientConfiguration() {
 		return clientCfg;
 	}
+
 }

@@ -224,7 +224,13 @@ public class VSite implements Site {
 	public final VSite select(String clientIP){
 		return this;
 	}
-
+	
+	@Override
+	public synchronized void reloadConfig() {
+		client = null;
+		socketFactory = null;
+	}
+	
 	@Override
 	public String toString()
 	{

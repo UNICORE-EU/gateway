@@ -46,9 +46,9 @@ public class MultiSite implements Site {
 		this.virtualURI = new URI(gatewayURI+"/"+name);
 		index=new XURI(gatewayURI).countPathElements();
 		this.securityCfg = securityCfg;
-		log.info("new multi-site: "+virtualURI.toString());
-		params=new HashMap<String, String>();
-		configuredSites=new CopyOnWriteArrayList<VSite>();
+		log.info("new multi-site: {}", virtualURI);
+		params = new HashMap<>();
+		configuredSites = new CopyOnWriteArrayList<>();
 		parseDescription(desc);
 		configureSites();
 		configureSelectionStrategy();
@@ -61,9 +61,6 @@ public class MultiSite implements Site {
 			XURI xuri = new XURI(new URI(uri));
 			String sitename = xuri.getPathElement(index);
 			boolean decision = (sitename != null && sitename.equalsIgnoreCase(getName()));
-			if(log.isTraceEnabled()){
-				log.trace("is " + uri + " a correct URI for this (" + this.toString() + ")Vsite ? " + decision);
-			}
 			if(decision)numberOfRequests++;
 			return decision;
 		}
@@ -182,14 +179,14 @@ public class MultiSite implements Site {
 	protected void configureSites()throws URISyntaxException, UnknownHostException{
 		String siteDesc=params.get("vsites");
 		if(siteDesc==null){
-			log.info("No VSites configured for site <"+getName()+">");
+			log.info("No VSites configured for site <{}>", getName());
 			return;
 		}
 		String[] vsites=siteDesc.split("\\s+");
 		for(String vsite: vsites){
 			VSite v=new VSite(gatewayURI,name,vsite,securityCfg);
 			configuredSites.add(v);
-			log.info("Configured vsite "+vsite+" for <"+getName()+">");
+			log.info("Configured vsite {} for <{}>", vsite, getName());
 		}
 	}
 
@@ -208,7 +205,7 @@ public class MultiSite implements Site {
 				try{
 					Class<?>clazz=Class.forName(strategyDesc);
 					selectionStrategy = (SelectionStrategy)clazz.getConstructor().newInstance();
-					log.info("Configured selection strategy <"+strategyDesc+">");
+					log.info("Configured selection strategy <{}>", strategyDesc);
 				}catch(Exception ex){
 					throw new IllegalArgumentException(ex);
 				}
@@ -216,14 +213,20 @@ public class MultiSite implements Site {
 		}
 		else{
 			selectionStrategy=new PrimaryWithFallBack();
-			log.info("Using default selection strategy <"+PrimaryWithFallBack.class.getName()+">");
+			log.info("Using default selection strategy <{}>", PrimaryWithFallBack.class.getName());
 		}
-
 		selectionStrategy.init(this,getParams());
-
 	}
 
 	Map<String, String> getParams() {
 		return params;
 	}
+	
+	@Override
+	public void reloadConfig() {
+		for(Site s: configuredSites) {
+			s.reloadConfig();
+		}
+	}
+
 }

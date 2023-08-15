@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class StopWatch
 {
-	List<Long> periods = new ArrayList<Long>();
+	final List<Long> periods = new ArrayList<>();
 	long last;
 	long start;
 	

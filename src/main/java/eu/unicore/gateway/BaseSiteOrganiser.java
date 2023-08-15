@@ -10,18 +10,20 @@ import eu.unicore.gateway.cluster.MultiSite;
 public abstract class BaseSiteOrganiser implements SiteOrganiser
 {
 	protected Gateway gateway;
-	protected final Map<String,Site> sites = new ConcurrentHashMap<String,Site>();
+	protected final Map<String,Site> sites = new ConcurrentHashMap<>();
 
 	protected BaseSiteOrganiser(Gateway gw)
 	{
 		this.gateway = gw;
 	}
 	
+	@Override
 	public Collection<Site> getSites()
 	{
 		return sites.values();
 	}
 
+	@Override
 	public VSite match(String wsato, String clientIP)
 	{
 		synchronized(sites){
@@ -36,6 +38,13 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser
 		}
 	}
 
+	@Override
+	public void reloadConfig() {
+		for(Site s: sites.values()) {
+			s.reloadConfig();
+		}
+	}
+	
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
