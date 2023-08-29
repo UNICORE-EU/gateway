@@ -1,7 +1,9 @@
 package eu.unicore.gateway;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.Date;
 
 import org.apache.logging.log4j.Logger;
@@ -144,6 +146,11 @@ public class Gateway
 		}
 	}
 
+	private URL getAcmeHttpURL(URL mainURL) throws MalformedURLException {
+		int port = gatewayProperties.getIntValue(GatewayProperties.KEY_ACME_HTTP_PORT);
+		return new URL("http://"+mainURL.getHost()+":"+port);
+	}
+
 	//the version of the gateway jar
 	public static final String VERSION = Gateway.class.getPackage().getImplementationVersion() != null ? 
 			 Gateway.class.getPackage().getImplementationVersion() : "DEVELOPMENT";
@@ -176,8 +183,12 @@ public class Gateway
 		String message=getHeader();
 		log.info(message);
 		System.out.println(message);
-		
-		jetty = new GatewayJettyServer(this);
+		URL mainURL = new URL(gatewayProperties.getHostname());
+		URL[] urls = new URL[] { mainURL };
+		if(gatewayProperties.getBooleanValue(GatewayProperties.KEY_ACME_ENABLE)) {
+			urls = new URL[] { mainURL , getAcmeHttpURL(mainURL)};
+		}
+		jetty = new GatewayJettyServer(urls, this);
 		jetty.start();
 		
 		message = "UNICORE Gateway startup complete.";

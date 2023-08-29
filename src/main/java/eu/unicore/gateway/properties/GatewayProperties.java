@@ -47,6 +47,10 @@ public class GatewayProperties extends FilePropertiesHelper
 	public static final String KEY_CONN_MAX_PERHOST = "client.maxPerService";
 
 	
+	public static final String KEY_ACME_ENABLE = "acme.enable";
+	public static final String KEY_ACME_DIR = "acme.tokenDirectory";
+	public static final String KEY_ACME_HTTP_PORT = "acme.httpPort";
+
 	public static final File FILE_JETTY_PROPERTIES = GatewayProperties.FILE_GATEWAY_PROPERTIES;
 
 	@DocumentationReferencePrefix
@@ -102,6 +106,13 @@ public class GatewayProperties extends FilePropertiesHelper
 				"The validity time of the authenticated client information passed to backend sites will start that many seconds before the real authentication. It is used to mask time synchronization problems between machines."));
 		DEFAULTS.put(KEY_CONSIGNORT_VALIDITY, 	new PropertyMD("60").setPositive().setCategory(consigCat).setDescription(
 				"What is the validity time of the authenticated client information passed to backend sites. Increase it if there machines clocks are not synhronized."));
+
+		DEFAULTS.put(KEY_ACME_ENABLE, new PropertyMD("false").setBoolean().
+				setDescription("Enable ACME / Let's Encrypt support. Will add a HTTP listener on the port defined the acme.httpPort property."));
+		DEFAULTS.put(KEY_ACME_HTTP_PORT, new PropertyMD("80").setInt().setPositive().
+				setDescription("Port for the plain HTTP listener."));
+		DEFAULTS.put(KEY_ACME_DIR, new PropertyMD("./acme").
+				setDescription("Directory from which to serve Let's Encrypt / ACME tokens."));
 
 		DEFAULTS.put(HttpServerProperties.DEFAULT_PREFIX, new PropertyMD().setCanHaveSubkeys().setHidden().
 				setDescription("Properties with this prefix are used to configure advanced Gateway's Jetty HTTP server settings. See separate documentation."));

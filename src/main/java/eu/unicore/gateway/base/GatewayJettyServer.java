@@ -34,9 +34,9 @@ public class GatewayJettyServer extends JettyServerBase {
 
 	private final Gateway gateway;
 
-	public GatewayJettyServer(Gateway gateway) throws Exception
+	public GatewayJettyServer(URL[] URLs, Gateway gateway) throws Exception
 	{
-		super(new URL(gateway.getProperties().getHostname()), gateway.getSecurityProperties(),
+		super(URLs, gateway.getSecurityProperties(),
 			gateway.getJettyProperties());
 		this.gateway = gateway;
 		initServer();
@@ -74,7 +74,7 @@ public class GatewayJettyServer extends JettyServerBase {
 			}
 		}
 	}
-	
+
 	@Override
 	public void reloadCredential() {
 		super.reloadCredential();

@@ -1,5 +1,6 @@
 package eu.unicore.gateway.base;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +42,8 @@ import eu.unicore.gateway.POSTHandler;
 import eu.unicore.gateway.SiteOrganiser;
 import eu.unicore.gateway.VSite;
 import eu.unicore.gateway.properties.GatewayProperties;
+import eu.unicore.gateway.util.AcmeRenderer;
+import eu.unicore.gateway.util.DefaultPageRenderer;
 import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.util.Log;
 
@@ -105,7 +108,11 @@ public class Servlet extends HttpServlet {
 	{
 		URL u=new URL(req.getRequestURL().toString());
 		if("/".equals(u.getPath())){
-			doGETDefaultGWPage(req, res);
+			new DefaultPageRenderer(gateway).doGETDefaultGWPage(req, res);
+		}
+		else if(u.getPath().startsWith("/.well-known/acme-challenge/")) {
+			String file = new File(u.getPath()).getName();
+			new AcmeRenderer(gateway).handleAcmeRequest(file, req, res);
 		}
 		else{
 			doHttp("GET", req, res);
@@ -306,43 +313,7 @@ public class Servlet extends HttpServlet {
 		method.removeHeaders(RawMessageExchange.GATEWAY_EXTERNAL_URL);	
 	}
 	
-	/**
-	 * show the default Gateway page ("monkey page")
-	 */
-	private void doGETDefaultGWPage(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		SiteOrganiser so = gateway.getSiteOrganiser();  
-		PrintWriter out=res.getWriter();
-		res.setContentType("text/html");
-		X509Certificate[] certs = (X509Certificate[]) req.getAttribute("javax.servlet.request.X509Certificate");
-		String clientIP=req.getRemoteAddr();
-		
-		out.println("<html><link rel='stylesheet' type='text/css' href='resources/gateway.css'/>"+
-				"<title>UNICORE Gateway</title><body>");
-		StringBuilder top = new StringBuilder();
-		top.append("<div id='header'><a href='http://www.unicore.eu'><img src='resources/unicore_logo.gif' border='0'/></a>");
-		top.append("<br/> Gateway <br/>");
-		if (certs != null)
-		{
-			top.append("<p class='username'>You are authenticated as: <br/>")
-			.append(certs[0].getSubjectX500Principal().getName()).append("</p>");
-		}
-		top.append("<p class='username'>Your IP address: ").append(clientIP).append("</p></div>");
-		
-		out.println(getContentDiv(top.toString()));
-		out.println("<br/>");
-		if(!properties.isDetailedWebPageDisabled()){
-			out.println(getContentDiv(so.toHTMLString()));
-		}
-		else{
-			out.println(getContentDiv("<br/>Detailed site listing disabled.<br/>"));
-		}
-		out.println("<br/>");
-
-		out.println(getFooter());
-
-		out.println("</html></body>");
-	}
-
+	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
 	{
@@ -466,23 +437,6 @@ public class Servlet extends HttpServlet {
 			requestURL.append(query);
 		}
 		return requestURL.toString();
-	}
-
-	private String getContentDiv(String content){
-		String s="<div id='content'><b class='rtop'><b class='r1'></b><b class='r2'>"+
-				"</b> <b class='r3'></b> <b class='r4'></b></b>"+content+
-				"<b class=<'rbottom'><b class='r4'></b> <b class='r3'></b> <b class='r2'></b> <b class='r1'></b></b></div>";
-		return s;
-	}
-
-	private String getFooter(){
-		StringBuilder sb=new StringBuilder();
-		sb.append("<div id='footer'><hr/> Version: "+Gateway.RELEASE_VERSION+" Up since: ").append(gateway.upSince());
-		if(properties.isDynamicRegistrationEnabled()){
-			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;<a href='resources/register.html'>register a site</a>");
-		}
-		sb.append("</div>");
-		return sb.toString();
 	}
 
 	public static String extractGatewayURL(HttpServletRequest req, String vsite){
