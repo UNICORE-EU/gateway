@@ -10,36 +10,18 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.stream.XMLEventFactory;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.message.BasicHeader;
-import org.apache.logging.log4j.Logger;
-import org.apache.xmlbeans.XmlObject;
-import org.codehaus.stax2.evt.XMLEventFactory2;
-
-import com.ctc.wstx.stax.WstxEventFactory;
 
 import eu.emi.security.authn.x509.X509Credential;
-import eu.unicore.gateway.soap.SoapVersion;
-import eu.unicore.gateway.util.LogUtil;
-import eu.unicore.samly2.SAMLConstants.AuthNClasses;
 import eu.unicore.security.canl.AuthnAndTrustProperties;
-import eu.unicore.security.consignor.ConsignorAPI;
-import eu.unicore.security.consignor.ConsignorAssertion;
-import eu.unicore.security.consignor.ConsignorImpl;
-import eu.unicore.security.dsig.DSigException;
-import xmlbeans.org.oasis.saml2.assertion.AssertionDocument;
 
 /**
  * Registry and producer of consignor assertions. Assertions are returned as
@@ -50,23 +32,17 @@ import xmlbeans.org.oasis.saml2.assertion.AssertionDocument;
  */
 public class ConsignorProducer implements IConsignorProducer
 {
-	private static final Logger log =LogUtil.getLogger(LogUtil.GATEWAY,ConsignorProducer.class);
 	//last CACHE_SIZE tokens are cached (but only if not-signed mode is on).
 	private static final int CACHE_SIZE = 8;
-	private String myDN;
 	private PrivateKey myKey;
-	private int negativeTolerance, validity;
 	private boolean doSigned;
 	private LinkedHashMap<Key, List<XMLEvent>> cache;
 	private LinkedHashMap<Key, Header> cache2;
 
-	public ConsignorProducer(boolean doSigned, int negativeTolerance,
-			int validity, AuthnAndTrustProperties securityProperties) 
+	public ConsignorProducer(boolean doSigned, AuthnAndTrustProperties securityProperties) 
 		throws KeyStoreException, NoSuchAlgorithmException, CertificateException, 
 		FileNotFoundException, IOException
 	{
-		this.negativeTolerance = negativeTolerance;
-		this.validity = validity;
 		this.doSigned=doSigned;
 		cache = new LinkedHashMap<>(CACHE_SIZE + 2, 1.0f, true)
 		{
@@ -95,36 +71,10 @@ public class ConsignorProducer implements IConsignorProducer
 		CertificateException, FileNotFoundException, IOException
 	{
 		X509Credential credential = securityProperties.getCredential();
-		X509Certificate cert = credential.getCertificate();
-		myDN = cert.getSubjectX500Principal().getName();
 		myKey = doSigned? credential.getKey() : null;
 		cache.clear();
 		cache2.clear();
 	}
-	
-	public List<XMLEvent> getConsignorAssertion(X509Certificate[] certChain, String ip, SoapVersion soapVer) 
-			throws Exception
-	{
-		List<XMLEvent>ret=null;
-		
-		X509Certificate cert = (certChain == null) ? null: certChain[0];
-		
-		if (myKey == null && cert!=null)
-		{
-			ret = cacheGet(cert,ip);
-			if(ret!=null)return ret;
-		}
-		
-		ret = new ArrayList<XMLEvent>();
-		XMLEventFactory2 eventFactory=new WstxEventFactory();
-		AssertionDocument assertionDoc = generateAssertion(certChain, ip);
-		save(assertionDoc, eventFactory, ret);
-		if (myKey == null && cert!=null){
-			cacheAdd(cert, ip, ret);
-		}
-		return ret;
-	}
-	
 	public Header getConsignorHeader(X509Certificate[] certChain, String ip) throws Exception {
 		Header ret = null;
 		X509Certificate cert = (certChain == null) ? null: certChain[0];
@@ -140,52 +90,6 @@ public class ConsignorProducer implements IConsignorProducer
 			headerCacheAdd(cert,ip, ret);
 		}
 		return ret;
-	}
-
-	private AssertionDocument generateAssertion(X509Certificate []cert, String ip) throws DSigException {
-		ConsignorAPI engine = new ConsignorImpl();
-		ConsignorAssertion assertion;
-		if (cert != null) 
-		{
-			if (myKey != null)
-				assertion = engine.generateConsignorToken(myDN, cert, myKey,
-					negativeTolerance, validity,
-					AuthNClasses.TLS, ip);
-			else
-				assertion = engine.generateConsignorToken(myDN, cert, 
-						AuthNClasses.TLS, ip);
-		} else
-		{
-			log.debug("Creating ANONYMOUS SAML consignor token");
-			if (myKey != null)
-				assertion = engine.generateConsignorToken(myDN, 
-						negativeTolerance, validity, myKey, ip);
-			else
-				assertion = engine.generateConsignorToken(myDN);
-		}
-		AssertionDocument doc = assertion.getXMLBeanDoc();
-		if(log.isDebugEnabled())log.debug("Consignor token: "+doc);
-		return doc;
-	}
-	
-	//write an XmlObject into an XMLEvent list
-	private void save(XmlObject obj, XMLEventFactory eventFactory, List<XMLEvent> events)throws XMLStreamException{
-		XMLEventReader reader=XMLInputFactory.newInstance().createXMLEventReader(obj.newXMLStreamReader());
-		while(reader.hasNext()){
-			XMLEvent ev=reader.nextEvent();
-			if(ev.isEndDocument())break;
-			events.add(ev);
-		}
-	}
-	
-	private synchronized void cacheAdd(X509Certificate key, String ip, List<XMLEvent> value)
-	{
-		cache.put(new Key(key,ip), value);
-	}
-
-	private synchronized List<XMLEvent> cacheGet(X509Certificate key, String ip)
-	{
-		return cache.get(new Key(key,ip));
 	}
 	
 	private synchronized void headerCacheAdd(X509Certificate key, String ip, Header value)

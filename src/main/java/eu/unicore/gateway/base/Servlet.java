@@ -1,7 +1,6 @@
 package eu.unicore.gateway.base;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,6 +18,7 @@ import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpHead;
 import org.apache.hc.client5.http.classic.methods.HttpOptions;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.classic.methods.HttpPut;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
@@ -33,7 +33,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 
 import eu.unicore.gateway.Gateway;
-import eu.unicore.gateway.POSTHandler;
 import eu.unicore.gateway.SiteOrganiser;
 import eu.unicore.gateway.VSite;
 import eu.unicore.gateway.properties.GatewayProperties;
@@ -59,6 +58,15 @@ public class Servlet extends HttpServlet {
 	private static final Logger logger=LogUtil.getLogger(LogUtil.GATEWAY,Servlet.class);
 	private final GatewayProperties properties;
 	private final Gateway gateway;
+
+	// special header for forwarding the gateway host as seen by the client to the VSite
+	public final static String GATEWAY_EXTERNAL_URL = "X-UNICORE-Gateway";
+
+	// special header for forwarding the client's DN plus a signature to the VSite
+	public final static String CONSIGNOR_HEADER = "X-UNICORE-Consignor";
+
+	// special header for forwarding the client's IP address to the VSite
+	public final static String CONSIGNOR_IP_HEADER = "X-UNICORE-Consignor-IP";
 
 	public Servlet(Gateway gw)
 	{
@@ -177,6 +185,9 @@ public class Servlet extends HttpServlet {
 		else if("PUT".equals(request)){
 			http = new HttpPut(uWithQuery);
 		}
+		else if("POST".equals(request)){
+			http = new HttpPost(uWithQuery);
+		}
 		else if("DELETE".equals(request)){
 			http = new HttpDelete(uWithQuery);
 		}
@@ -199,9 +210,9 @@ public class Servlet extends HttpServlet {
 		copyHeaders(req, http);
 		String clientIP = req.getRemoteAddr();
 		if(clientIP!=null) {
-			http.addHeader(RawMessageExchange.CONSIGNOR_IP_HEADER, req.getRemoteAddr());
+			http.addHeader(Servlet.CONSIGNOR_IP_HEADER, req.getRemoteAddr());
 		}
-		http.addHeader(RawMessageExchange.GATEWAY_EXTERNAL_URL, extractGatewayURL(req, vsite.getName()));
+		http.addHeader(Servlet.GATEWAY_EXTERNAL_URL, extractGatewayURL(req, vsite.getName()));
 		if(gateway.getConsignorProducer()!=null){
 			X509Certificate[] certPath = (X509Certificate[]) req.getAttribute("jakarta.servlet.request.X509Certificate");
 			if (certPath != null)
@@ -307,89 +318,20 @@ public class Servlet extends HttpServlet {
 		method.removeHeaders(HttpHeaders.TRANSFER_ENCODING);
 		method.removeHeaders(HttpHeaders.CONTENT_LENGTH);
 		// prevent clients from sending these headers to the site
-		method.removeHeaders(RawMessageExchange.CONSIGNOR_IP_HEADER);
-		method.removeHeaders(RawMessageExchange.CONSIGNOR_HEADER);
-		method.removeHeaders(RawMessageExchange.GATEWAY_EXTERNAL_URL);	
+		method.removeHeaders(Servlet.CONSIGNOR_IP_HEADER);
+		method.removeHeaders(Servlet.CONSIGNOR_HEADER);
+		method.removeHeaders(Servlet.GATEWAY_EXTERNAL_URL);	
 	}
-	
-	
+
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
 	{
 		URL url=new URL(fullRequestURL(req));
-		boolean isSoap = true;
-		try
-		{
-			//check if it is a registration
-			if("/VSITE_REGISTRATION_REQUEST".equals(url.getPath())){
-				handleRegistration(req,res);
-			}
-			else{
-				int maxHeaderSize = properties.getMaxSoapHeader();
-				boolean isMultipart = false;
-				String contentType = req.getHeader("Content-type");
-				
-				if(contentType!=null){
-					contentType = contentType.toLowerCase();
-					
-					if(contentType.contains("application/soap+xml")){
-						res.setContentType("application/soap+xml; charset=UTF-8");
-					}
-					else if(contentType.contains("multipart/related")){
-						// for now, we support multipart only via the SOAP handler
-						res.setContentType("application/soap+xml; charset=UTF-8");
-						isMultipart = true;
-					}
-					else if(contentType.contains("text/xml")){
-						res.setContentType("text/xml; charset=UTF-8");
-					}
-					else{
-						// all others are non-SOAP
-						String ct = contentType.split(";")[0];
-						res.setContentType(ct+"; charset=UTF-8");
-						isSoap = false;
-					}
-				}
-				else{
-					res.setContentType("text/xml; charset=UTF-8");
-				}
-				
-				RawMessageExchange exchange = new RawMessageExchange(req.getReader(), 
-						res.getWriter(), maxHeaderSize);
-				exchange.setServletResponse(res);
-				exchange.setServletRequest(req);
-				exchange.setSOAP(isSoap);
-				exchange.setMultipart(isMultipart);
-				exchange.setProperty(RawMessageExchange.CONTENT_TYPE, contentType);
-				
-				X509Certificate[] certPath = (X509Certificate[]) req.getAttribute("jakarta.servlet.request.X509Certificate");
-				if (certPath != null)
-				{
-					exchange.setProperty(RawMessageExchange.X509, certPath);
-				}
-				exchange.setProperty(RawMessageExchange.REMOTE_IP, req.getRemoteAddr());
-				
-				exchange.setRequestURL(url.toString());
-				String soapAction = req.getHeader("SOAPAction");
-				if(soapAction!=null){
-					exchange.setProperty(RawMessageExchange.SOAP_ACTION, soapAction);
-					exchange.setSOAP(true);
-				}
-				POSTHandler handler = new POSTHandler(gateway.getSiteOrganiser(), 
-						gateway.getConsignorProducer(),
-						gateway.getClientFactory(),
-						properties.isChunkedDispatch(), 
-						gateway.getHostURI().toString());
-				handler.invoke(exchange);
-				res.flushBuffer();
-			}
+		if("/VSITE_REGISTRATION_REQUEST".equals(url.getPath())){
+			handleRegistration(req,res);
 		}
-		catch (FileNotFoundException fne){
-			res.sendError(404, fne.getMessage());
-		}
-		catch (Exception e){
-			// result in a 500 response
-			throw new ServletException("Failed to process POST request: " + e, e);
+		else{
+			doHttp("POST", req, res);
 		}
 	}
 

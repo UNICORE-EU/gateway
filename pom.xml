@@ -82,6 +82,18 @@
 	    <groupId>stax</groupId>
 	    <artifactId>stax-api</artifactId>
 	  </exclusion>
+	  <exclusion>
+	    <groupId>com.fasterxml.woodstox</groupId>
+	    <artifactId>woodstox-core</artifactId>
+	  </exclusion>
+	  <exclusion>
+	    <groupId>org.apache.santuario</groupId>
+	    <artifactId>xmlsec</artifactId>
+	  </exclusion>
+	  <exclusion>
+	    <groupId>io.imunity.samly</groupId>
+	    <artifactId>samly2</artifactId>
+	  </exclusion>
       </exclusions>
     </dependency>
   </dependencies>

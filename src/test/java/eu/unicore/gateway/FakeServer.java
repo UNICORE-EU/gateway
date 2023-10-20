@@ -109,7 +109,7 @@ public class FakeServer implements Runnable {
 				line = br.readLine();
 			} while (line != null && line.length() == 0);
 			String _latestQuery = line;
-			List<String> _latestHeaders=new ArrayList<String>();
+			List<String> _latestHeaders=new ArrayList<>();
 			StringBuilder sb=new StringBuilder(1024);
 			if (line != null) {
 				line=br.readLine();
@@ -133,8 +133,6 @@ public class FakeServer implements Runnable {
 					latestRequestBody = sb.toString();
 					return;
 				}
-
-				line=br.readLine();
 
 				if(chunked){
 					big_loop: while(line!= null){
@@ -165,11 +163,10 @@ public class FakeServer implements Runnable {
 					}
 				}
 				else{
-					if(contentLength>0) while(line!= null){
-						sb.append(line);
-						line=br.readLine();
-						if(line!=null) sb.append("\n");//not after the last line
-						if(sb.length()>=contentLength) break;
+					if(contentLength>0) {
+						char[]buf = new char[contentLength];
+						br.read(buf);
+						sb.append(new String(buf));
 					}
 				}
 			}
@@ -187,7 +184,7 @@ public class FakeServer implements Runnable {
 		Socket socket = null;
 		while(!stopping){
 			try {
-			        if(socket==null)socket = serverSocket.accept();
+				if(socket==null)socket = serverSocket.accept();
 
 				parseHttp(socket.getInputStream());
 

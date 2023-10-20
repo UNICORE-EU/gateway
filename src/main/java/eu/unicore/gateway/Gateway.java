@@ -78,11 +78,8 @@ public class Gateway
 		securityProperties = new AuthnAndTrustProperties(_securityConfigFile,
 				GatewayProperties.PREFIX + TruststoreProperties.DEFAULT_PREFIX,
 				GatewayProperties.PREFIX + CredentialProperties.DEFAULT_PREFIX);
-		int tolerance = gatewayProperties.getConsTTol();
-		int validity = gatewayProperties.getConsTVal();
 		boolean doSign = gatewayProperties.isConsTSign();
-		consignorProducer = new ConsignorProducer(doSign, tolerance,
-				validity, securityProperties);
+		consignorProducer = new ConsignorProducer(doSign, securityProperties);
 		clientFactory = new HttpClientFactory(securityProperties, gatewayProperties);
 	}
 

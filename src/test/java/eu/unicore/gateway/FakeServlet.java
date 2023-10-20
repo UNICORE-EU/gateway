@@ -7,7 +7,7 @@ import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicHeaderValueParser;
 import org.apache.hc.core5.http.message.ParserCursor;
 
-import eu.unicore.gateway.base.RawMessageExchange;
+import eu.unicore.gateway.base.Servlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ public class FakeServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
 			throws ServletException, IOException {
 		// reply with consignor header
-		String consignor = req.getHeader(RawMessageExchange.CONSIGNOR_HEADER);
+		String consignor = req.getHeader(Servlet.CONSIGNOR_HEADER);
 		NameValuePair[] parsed = new BasicHeaderValueParser().parseParameters(consignor, new ParserCursor(0, consignor.length()));
 		for(NameValuePair p: parsed){
 			write(p.getName()+"="+p.getValue()+"\n",resp);
