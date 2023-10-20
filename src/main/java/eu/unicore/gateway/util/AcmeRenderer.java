@@ -4,15 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Logger;
 
 import eu.unicore.gateway.Gateway;
 import eu.unicore.gateway.properties.GatewayProperties;
 import eu.unicore.util.Log;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * ACME / Let's Encrypt support

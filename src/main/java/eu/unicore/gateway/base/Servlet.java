@@ -14,11 +14,6 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -46,6 +41,10 @@ import eu.unicore.gateway.util.AcmeRenderer;
 import eu.unicore.gateway.util.DefaultPageRenderer;
 import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.util.Log;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Servlet for forwarding HTTP requests to the Vsite<br/>
@@ -72,7 +71,7 @@ public class Servlet extends HttpServlet {
 		String clientIP=req.getRemoteAddr();
 		String clientName="n/a";
 		try{
-			X509Certificate[] certPath = (X509Certificate[]) req.getAttribute("javax.servlet.request.X509Certificate");
+			X509Certificate[] certPath = (X509Certificate[]) req.getAttribute("jakarta.servlet.request.X509Certificate");
 			if (certPath != null){
 				clientName=certPath[0].getSubjectX500Principal().getName();
 			}
@@ -204,7 +203,7 @@ public class Servlet extends HttpServlet {
 		}
 		http.addHeader(RawMessageExchange.GATEWAY_EXTERNAL_URL, extractGatewayURL(req, vsite.getName()));
 		if(gateway.getConsignorProducer()!=null){
-			X509Certificate[] certPath = (X509Certificate[]) req.getAttribute("javax.servlet.request.X509Certificate");
+			X509Certificate[] certPath = (X509Certificate[]) req.getAttribute("jakarta.servlet.request.X509Certificate");
 			if (certPath != null)
 			{
 				try{
@@ -363,7 +362,7 @@ public class Servlet extends HttpServlet {
 				exchange.setMultipart(isMultipart);
 				exchange.setProperty(RawMessageExchange.CONTENT_TYPE, contentType);
 				
-				X509Certificate[] certPath = (X509Certificate[]) req.getAttribute("javax.servlet.request.X509Certificate");
+				X509Certificate[] certPath = (X509Certificate[]) req.getAttribute("jakarta.servlet.request.X509Certificate");
 				if (certPath != null)
 				{
 					exchange.setProperty(RawMessageExchange.X509, certPath);

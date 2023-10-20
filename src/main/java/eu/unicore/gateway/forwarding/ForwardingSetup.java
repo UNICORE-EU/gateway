@@ -12,9 +12,6 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 
 import javax.net.ssl.SSLEngine;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -45,6 +42,9 @@ import eu.unicore.util.jetty.forwarding.Forwarder;
 import eu.unicore.util.jetty.forwarding.ForwardingConnection;
 import eu.unicore.util.jetty.forwarding.UpgradeHttpServletRequest;
 import eu.unicore.util.jetty.forwarding.UpgradeHttpServletResponse;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * establishes a ForwardingConnection to the requested back-end site,

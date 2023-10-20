@@ -6,8 +6,6 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -17,6 +15,8 @@ import org.codehaus.stax2.XMLInputFactory2;
 
 import eu.unicore.gateway.soap.SoapVersion;
 import eu.unicore.gateway.util.BufferingProxyReader;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Holds information during the processing of a single request.

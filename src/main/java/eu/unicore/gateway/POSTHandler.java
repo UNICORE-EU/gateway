@@ -16,9 +16,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.events.XMLEvent;
@@ -51,6 +48,9 @@ import eu.unicore.gateway.soap.SoapVersion;
 import eu.unicore.gateway.util.AbstractStreamReaderRequestEntity;
 import eu.unicore.gateway.util.BufferingProxyReader;
 import eu.unicore.gateway.util.LogUtil;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Main entry point for SOAP processing.

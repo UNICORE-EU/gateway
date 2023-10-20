@@ -4,11 +4,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.cert.X509Certificate;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import eu.unicore.gateway.Gateway;
 import eu.unicore.gateway.SiteOrganiser;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class DefaultPageRenderer {
 	
@@ -25,7 +24,7 @@ public class DefaultPageRenderer {
 		SiteOrganiser so = gateway.getSiteOrganiser();  
 		PrintWriter out=res.getWriter();
 		res.setContentType("text/html");
-		X509Certificate[] certs = (X509Certificate[]) req.getAttribute("javax.servlet.request.X509Certificate");
+		X509Certificate[] certs = (X509Certificate[]) req.getAttribute("jakarta.servlet.request.X509Certificate");
 		String clientIP=req.getRemoteAddr();
 		
 		out.println("<html><link rel='stylesheet' type='text/css' href='resources/gateway.css'/>"+
