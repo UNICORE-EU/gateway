@@ -22,7 +22,7 @@
     <specification.version>${package.version}</specification.version>
     <seclib.version>7.0.0</seclib.version>
     <httpclient.version>5.2.1</httpclient.version>
-    <jetty.version>11.0.18</jetty.version>
+    <jetty.version>11.0.19</jetty.version>
   </properties>
 
   <scm>
