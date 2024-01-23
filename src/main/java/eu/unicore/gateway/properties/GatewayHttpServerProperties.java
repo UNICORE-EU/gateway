@@ -17,12 +17,6 @@ public class GatewayHttpServerProperties extends HttpServerProperties
 {
 	public static final File FILE_JETTY_PROPERTIES = GatewayProperties.FILE_GATEWAY_PROPERTIES;
 
-	/**
-	 * deprecated NIO property
-	 */
-	@Deprecated
-	public static final String USE_NIO = "useNIO";
-
 	@DocumentationReferencePrefix
 	public static final String PREFIX = GatewayProperties.PREFIX + HttpServerProperties.DEFAULT_PREFIX;
 	
@@ -30,8 +24,10 @@ public class GatewayHttpServerProperties extends HttpServerProperties
 	protected final static Map<String, PropertyMD> defaults = new HashMap<>();
 	static 
 	{
-		defaults.put(USE_NIO, new PropertyMD("true").setDescription(
-				"DEPRECATED, no effect"));
+		String[] deprecated = new String[] {"useNIO", "lowResourceMaxIdleTime", "highLoadConnections"};
+		for(String s: deprecated) {
+			defaults.put(s, new PropertyMD().setDescription("DEPRECATED, no effect"));
+		}
 		defaults.putAll(HttpServerProperties.defaults);
 	}
 	

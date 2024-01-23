@@ -28,7 +28,6 @@ public class GatewayProperties extends FilePropertiesHelper
 	public static final String KEY_CONSIGNORT_TOLERANCE = "consignorTokenTimeTolerance";
 	public static final String KEY_CONSIGNORT_VALIDITY = "consignorTokenValidity";
 	public static final String KEY_CONSIGNORT_SIGN = "signConsignorToken";
-	public static final String KEY_MAX_HEADER = "soapMaxHeader";
 	
 	public static final String KEY_EXTERNAL_ADDRESS = "externalHostname";
 	public static final String KEY_WEBPAGE_DISABLE = "disableWebpage";
@@ -80,9 +79,6 @@ public class GatewayProperties extends FilePropertiesHelper
 				"Whether the (so called monkey) status web page should be disabled."));
 		DEFAULTS.put(KEY_EXTERNAL_ADDRESS, 	new PropertyMD((String)null).setCategory(advCat).setDescription(
 				"External address of the gateway, when it is accessible through a frontend server as Apache HTTP."));
-		DEFAULTS.put(KEY_MAX_HEADER, 		new PropertyMD(DEFAULT_MAX_HDR+"").
-				setBounds(1024, 1024000000).setCategory(advCat).setDescription(
-				"Size in bytes of the accepted SOAP header. In the most cases you don't need to change it."));
 		DEFAULTS.put(KEY_CONN_MAX_PERHOST, 	new PropertyMD("20").setCategory(cliCat).setDescription(
 				"Maximum allowed number of connections per backend site."));
 		DEFAULTS.put(KEY_CONN_MAX_TOTAL, 	new PropertyMD("100").setCategory(cliCat).setDescription(
@@ -121,6 +117,10 @@ public class GatewayProperties extends FilePropertiesHelper
 				setDescription("Properties with this prefix are used to configure the Gateway's SSL credential. See separate documentation."));
 		DEFAULTS.put("truststore", new PropertyMD().setCanHaveSubkeys().setHidden().
 				setDescription("Properties with this prefix are used to configure the Gateway's SSL truststore. See separate documentation."));
+
+		// Deprecated
+		DEFAULTS.put("soapMaxHeader", new PropertyMD().setDescription("DEPRECATED, no effect"));
+
 	}
 
 
@@ -225,10 +225,5 @@ public class GatewayProperties extends FilePropertiesHelper
 	public String getRegistrationIncludes()
 	{
 		return getValue(KEY_REG_INCL);
-	}
-	
-	public int getMaxSoapHeader()
-	{
-		return getIntValue(KEY_MAX_HEADER);
 	}
 }
