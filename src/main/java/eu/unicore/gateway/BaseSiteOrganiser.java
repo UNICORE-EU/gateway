@@ -1,7 +1,11 @@
 package eu.unicore.gateway;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Formatter;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,7 +61,7 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser
 		return sb.toString();
 	}
 
-	public String toHTMLString()
+	public String toHTMLString(SortOrder order)
 	{
 		StringBuilder sb = new StringBuilder();
 		Formatter formatter = new Formatter(sb);
@@ -66,8 +70,18 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser
 		String css;
 		String image;
 		String href;
-		formatter.format("<tr class='heading'><td>Site name</td><td>Address</td><td>Requests served</td><td>Status</td><td>Message</td></tr>");
-		for (Site site : getSites())
+		formatter.format("<tr class='heading'>"
+				+ "<td><a class='heading' href=\"?sort=NAME\">Site name</a></td>"
+				+ "<td>Address</td>"
+				+ "<td><a href=\"?sort=REQUESTS\">Requests served</a></td>"
+				+ "<td>Status</td>"
+				+ "<td><a href=\"?sort=MESSAGE\">Message</a></td></tr>");
+		List<Site> sites = new ArrayList<>();
+		sites.addAll(getSites());
+		if(SortOrder.NONE!=order) {
+			Collections.sort(sites, getSorter(order));
+		}
+		for (Site site : sites)
 		{
 			css=even?"even":"odd";
 			String uri="N/A";
@@ -100,6 +114,24 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser
 		formatter.format("\n</table>");
 		formatter.close();
 		return sb.toString();
+	}
+
+	public Comparator<Site>getSorter(SortOrder order){
+		switch (order){
+		case REQUESTS:
+			return (a,b)->{
+				return b.getNumberOfRequests()-a.getNumberOfRequests();
+			};
+		case MESSAGE:
+			return (a,b)->{
+				return a.getStatusMessage().compareTo(b.getStatusMessage());
+			};
+		case NAME:
+		default:
+			return (a,b)->{
+				return a.getName().compareTo(b.getName());
+			};
+		}
 	}
 
 }

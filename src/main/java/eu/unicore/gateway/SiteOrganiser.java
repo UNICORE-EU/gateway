@@ -14,6 +14,10 @@ import java.util.Collection;
 public interface SiteOrganiser
 {
 
+	public enum SortOrder {
+		NONE, NAME, REQUESTS, MESSAGE
+	};
+
 	/**
 	 * get the current set of sites
 	 */
@@ -32,7 +36,7 @@ public interface SiteOrganiser
 	/**
 	 * get a HTML representation of this site organiser
 	 */
-	public String toHTMLString();
+	public String toHTMLString(SortOrder ordering);
 
 	/**
 	 *  reload configuration - for example due to config changes

@@ -7,11 +7,21 @@
 }
 
 .heading {
- font-size:120%;
+ font-size:115%;
  font-weight: bold;
  text-align: center;
  color: #FFFFFF;
  background: #145a96;
+}
+
+.heading a:link { 
+	color:#FFFFFF; 
+	text-decoration:underline 
+}
+
+.heading a:visited { 
+	color:#FFFFFF; 
+	text-decoration:underline 
 }
 
 .sitetable {

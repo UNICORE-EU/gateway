@@ -6,6 +6,7 @@ import java.security.cert.X509Certificate;
 
 import eu.unicore.gateway.Gateway;
 import eu.unicore.gateway.SiteOrganiser;
+import eu.unicore.gateway.SiteOrganiser.SortOrder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -42,7 +43,16 @@ public class DefaultPageRenderer {
 		out.println(getContentDiv(top.toString()));
 		out.println("<br/>");
 		if(!gateway.getProperties().isDetailedWebPageDisabled()){
-			out.println(getContentDiv(so.toHTMLString()));
+			SortOrder ordering = SortOrder.NONE;
+			if(req.getQueryString()!=null) {
+				String sort = req.getParameter("sort");
+				if(sort!=null) {
+					try {
+						ordering = SortOrder.valueOf(sort);
+					}catch(Exception ex) {}
+				}
+			}
+			out.println(getContentDiv(so.toHTMLString(ordering)));
 		}
 		else{
 			out.println(getContentDiv("<br/>Detailed site listing disabled.<br/>"));

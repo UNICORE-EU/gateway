@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 
 import org.junit.Test;
 
+import eu.unicore.gateway.SiteOrganiser.SortOrder;
 import eu.unicore.gateway.cluster.MultiSite;
 import eu.unicore.gateway.properties.GatewayProperties;
 import eu.unicore.security.canl.AuthnAndTrustProperties;
@@ -45,7 +46,7 @@ public class TestDynamicSiteOrganiser {
 		dso.register("new-site", new URI("http://localhost:6789"));
 		assertEquals(2,dso.getSites().size());
 		
-		String html=dso.toHTMLString();
+		String html=dso.toHTMLString(SortOrder.NONE);
 		
 		assertTrue(html.contains("http://localhost:54321"));
 		assertTrue(html.contains("http://localhost:12345"));
