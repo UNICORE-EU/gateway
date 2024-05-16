@@ -235,14 +235,7 @@ public class Servlet extends HttpServlet {
 		prepareRequest(http, uri, vsite, req, gateway);
 		try
 		{
-			HttpClient client =null;
-			synchronized(vsite){
-				client = vsite.getClient();
-				if(client==null){
-					client = gateway.getClientFactory().makeHttpClient(uri.toURL());
-					vsite.setClient(client);	
-				}
-			}
+			HttpClient client = gateway.getSiteOrganiser().getHTTPClient(vsite);
 			if(http instanceof HttpEntityContainer){
 				HttpEntityContainer httpWithEntity = (HttpEntityContainer)http;
 				long contentLength = req.getContentLength();

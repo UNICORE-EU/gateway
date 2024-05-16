@@ -2,6 +2,8 @@ package eu.unicore.gateway;
 
 import java.util.Collection;
 
+import org.apache.hc.client5.http.classic.HttpClient;
+
 /**
  * collects information about the gateway and the sites (vsites) available. 
  * 
@@ -42,5 +44,10 @@ public interface SiteOrganiser
 	 *  reload configuration - for example due to config changes
 	 */
 	public void reloadConfig();
+
+	/**
+	 * get a client for talking to the site
+	 */
+	public HttpClient getHTTPClient(VSite site) throws Exception;
 
 }

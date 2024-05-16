@@ -234,7 +234,8 @@ public class TestServer extends TestCase {
 		HttpGet get=new HttpGet(url);
 		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
 			assertEquals(HttpStatus.SC_OK, response.getCode());
-			assert(EntityUtils.toString(response.getEntity()).contains("Version: "+Gateway.VERSION));
+			String res = EntityUtils.toString(response.getEntity());
+			assert res.contains("Version: "+Gateway.VERSION);
 		}
 	}
 

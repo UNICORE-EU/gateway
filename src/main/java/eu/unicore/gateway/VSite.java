@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
-import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.logging.log4j.Logger;
 
 import eu.emi.security.authn.x509.impl.SocketFactoryCreator2;
@@ -44,9 +43,6 @@ public class VSite implements Site {
 	private final URI realURI;
 	private final InetAddress inetaddress;
 	private final AuthnAndTrustProperties securityCfg;
-
-	//cached client
-	private HttpClient client;
 
 	//for monitoring
 	private final AtomicInteger numberOfRequests=new AtomicInteger(0);
@@ -88,16 +84,6 @@ public class VSite implements Site {
 		return realURI;
 	}
 
-	public HttpClient getClient()
-	{
-		return client;
-	}
-
-	public void setClient(HttpClient client)
-	{
-		this.client = client;
-	}
-
 	/**
 	 * return the real internet address of the site
 	 */
@@ -123,7 +109,7 @@ public class VSite implements Site {
 		return ping(5000);
 	}
 
-	private static SSLSocketFactory socketFactory = null;
+	private SSLSocketFactory socketFactory = null;
 	
 	private synchronized SSLSocketFactory getSocketFactory() {
 		if(socketFactory==null) {
@@ -134,7 +120,11 @@ public class VSite implements Site {
 		}
 		return socketFactory;
 	}
-	
+
+	public void reloadConfig() {
+		socketFactory=null;
+	}
+
 	@Override
 	public boolean ping(int timeout)
 	{
@@ -223,12 +213,6 @@ public class VSite implements Site {
 	@Override
 	public final VSite select(String clientIP){
 		return this;
-	}
-	
-	@Override
-	public synchronized void reloadConfig() {
-		client = null;
-		socketFactory = null;
 	}
 	
 	@Override

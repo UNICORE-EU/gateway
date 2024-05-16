@@ -25,8 +25,6 @@ public class GatewayProperties extends FilePropertiesHelper
 		+ "gateway.properties");
 
 	public static final String KEY_HOSTNAME = "hostname";
-	public static final String KEY_CONSIGNORT_TOLERANCE = "consignorTokenTimeTolerance";
-	public static final String KEY_CONSIGNORT_VALIDITY = "consignorTokenValidity";
 	public static final String KEY_CONSIGNORT_SIGN = "signConsignorToken";
 	
 	public static final String KEY_EXTERNAL_ADDRESS = "externalHostname";
@@ -98,11 +96,6 @@ public class GatewayProperties extends FilePropertiesHelper
 
 		DEFAULTS.put(KEY_CONSIGNORT_SIGN, 	new PropertyMD("false").setCategory(consigCat).setDescription(
 				"Controls whether information about the authenticated client (the consignor) passed to backend sites should be signed, or not. Signing is slower, but is required when sites may be reached directly, bypassing the Gateway."));
-		DEFAULTS.put(KEY_CONSIGNORT_TOLERANCE, 	new PropertyMD("30").setNonNegative().setCategory(consigCat).setDescription(
-				"The validity time of the authenticated client information passed to backend sites will start that many seconds before the real authentication. It is used to mask time synchronization problems between machines."));
-		DEFAULTS.put(KEY_CONSIGNORT_VALIDITY, 	new PropertyMD("60").setPositive().setCategory(consigCat).setDescription(
-				"What is the validity time of the authenticated client information passed to backend sites. Increase it if there machines clocks are not synhronized."));
-
 		DEFAULTS.put(KEY_ACME_ENABLE, new PropertyMD("false").setBoolean().
 				setDescription("Enable ACME / Let's Encrypt support. Will add a HTTP listener on the port defined the acme.httpPort property."));
 		DEFAULTS.put(KEY_ACME_HTTP_PORT, new PropertyMD("80").setInt().setPositive().
@@ -120,7 +113,8 @@ public class GatewayProperties extends FilePropertiesHelper
 
 		// Deprecated
 		DEFAULTS.put("soapMaxHeader", new PropertyMD().setDescription("DEPRECATED, no effect"));
-
+		DEFAULTS.put("consignorTokenTimeTolerance", new PropertyMD().setDeprecated().setDescription("DEPRECATED, no effect"));
+		DEFAULTS.put("consignorTokenValidity",  new PropertyMD().setDeprecated().setDescription("DEPRECATED, no effect"));
 	}
 
 
@@ -179,17 +173,7 @@ public class GatewayProperties extends FilePropertiesHelper
 		return getValue(GatewayProperties.KEY_EXTERNAL_ADDRESS);
 	}
 	
-	public int getConsTTol()
-	{
-		return getIntValue(KEY_CONSIGNORT_TOLERANCE);
-	}
-	
-	public int getConsTVal()
-	{
-		return getIntValue(KEY_CONSIGNORT_VALIDITY);
-	}
-	
-	public boolean isConsTSign()
+	public boolean isSignConsignor()
 	{
 		return getBooleanValue(KEY_CONSIGNORT_SIGN);
 	}

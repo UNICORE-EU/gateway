@@ -1,13 +1,17 @@
 package eu.unicore.gateway;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.hc.client5.http.classic.HttpClient;
 
 import eu.unicore.gateway.cluster.MultiSite;
 
@@ -20,7 +24,7 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser
 	{
 		this.gateway = gw;
 	}
-	
+
 	@Override
 	public Collection<Site> getSites()
 	{
@@ -28,12 +32,12 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser
 	}
 
 	@Override
-	public VSite match(String wsato, String clientIP)
+	public VSite match(String targetURL, String clientIP)
 	{
 		synchronized(sites){
 			for (Site site : getSites())
 			{
-				if (site.accept(wsato))
+				if (site.accept(targetURL))
 				{
 					return site.select(clientIP);
 				}
@@ -47,8 +51,9 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser
 		for(Site s: sites.values()) {
 			s.reloadConfig();
 		}
+		cachedClients.clear();
 	}
-	
+
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
@@ -132,6 +137,19 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser
 				return a.getName().compareTo(b.getName());
 			};
 		}
+	}
+
+	private final Map<URL, HttpClient> cachedClients = new HashMap<>();
+
+	@Override
+	public synchronized HttpClient getHTTPClient(VSite site) throws Exception{
+		URL url = site.getRealURI().toURL();
+		HttpClient c = cachedClients.get(url);
+		if(c==null) {
+			c = gateway.getClientFactory().makeHttpClient(url);
+			cachedClients.put(url, c);
+		}
+		return c;
 	}
 
 }

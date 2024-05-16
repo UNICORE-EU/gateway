@@ -78,7 +78,7 @@ public class Gateway
 		securityProperties = new AuthnAndTrustProperties(_securityConfigFile,
 				GatewayProperties.PREFIX + TruststoreProperties.DEFAULT_PREFIX,
 				GatewayProperties.PREFIX + CredentialProperties.DEFAULT_PREFIX);
-		boolean doSign = gatewayProperties.isConsTSign();
+		boolean doSign = gatewayProperties.isSignConsignor();
 		consignorProducer = new ConsignorProducer(doSign, securityProperties);
 		clientFactory = new HttpClientFactory(securityProperties, gatewayProperties);
 	}
@@ -129,8 +129,6 @@ public class Gateway
 	}
 
 	public void reloadConfig() {
-		getSiteOrganiser().reloadConfig();
-		getDynamicSiteOrganiser().reloadConfig();
 		try{
 			consignorProducer.reinit(securityProperties);
 		}catch(Exception e) {
