@@ -11,10 +11,7 @@ import java.security.Signature;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-
-import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.hc.core5.http.Header;
@@ -24,10 +21,9 @@ import eu.emi.security.authn.x509.X509Credential;
 import eu.unicore.security.canl.AuthnAndTrustProperties;
 
 /**
- * Registry and producer of consignor assertions. Assertions are returned as
- * XMLEvents lists to ease insertion to header in main GatewayHandler.
- * If there is no header that this code can also generate wrapping header element.
- * Assertions are cached.
+ * Registry and producer of (signed) "X-UNICORE-Consignor"
+ * headers that assert the original client's IP
+ *
  * @author K. Benedyczak
  */
 public class ConsignorProducer implements IConsignorProducer
@@ -35,26 +31,16 @@ public class ConsignorProducer implements IConsignorProducer
 	//last CACHE_SIZE tokens are cached (but only if not-signed mode is on).
 	private static final int CACHE_SIZE = 8;
 	private PrivateKey myKey;
+	private String alg;
 	private boolean doSigned;
-	private LinkedHashMap<Key, List<XMLEvent>> cache;
-	private LinkedHashMap<Key, Header> cache2;
+	private LinkedHashMap<Key, Header> cache;
 
 	public ConsignorProducer(boolean doSigned, AuthnAndTrustProperties securityProperties) 
 		throws KeyStoreException, NoSuchAlgorithmException, CertificateException, 
 		FileNotFoundException, IOException
 	{
 		this.doSigned=doSigned;
-		cache = new LinkedHashMap<>(CACHE_SIZE + 2, 1.0f, true)
-		{
-			private static final long serialVersionUID = 1L;
-
-			protected boolean removeEldestEntry(
-					Map.Entry<Key, List<XMLEvent>> eldest)
-			{
-				return size() > CACHE_SIZE;
-			}
-		};
-		cache2 = new LinkedHashMap<>(CACHE_SIZE + 2, 1.0f, true)
+		this.cache = new LinkedHashMap<>(CACHE_SIZE + 2, 1.0f, true)
 		{
 			private static final long serialVersionUID = 1L;
 
@@ -66,15 +52,23 @@ public class ConsignorProducer implements IConsignorProducer
 		};
 		reinit(securityProperties);
 	}
-	
+
 	public void reinit(AuthnAndTrustProperties securityProperties) throws KeyStoreException, NoSuchAlgorithmException, 
 		CertificateException, FileNotFoundException, IOException
 	{
 		X509Credential credential = securityProperties.getCredential();
-		myKey = doSigned? credential.getKey() : null;
 		cache.clear();
-		cache2.clear();
+		if(doSigned) {
+			myKey = credential.getKey();
+			String _base = "SHA1";
+			alg = "RSA".equalsIgnoreCase(myKey.getAlgorithm())?  
+					_base + "withRSA" : _base + "withDSA";
+		}else {
+			myKey = null;
+			alg = null;
+		}
 	}
+
 	public Header getConsignorHeader(X509Certificate[] certChain, String ip) throws Exception {
 		Header ret = null;
 		X509Certificate cert = (certChain == null) ? null: certChain[0];
@@ -91,45 +85,43 @@ public class ConsignorProducer implements IConsignorProducer
 		}
 		return ret;
 	}
-	
+
 	private synchronized void headerCacheAdd(X509Certificate key, String ip, Header value)
 	{
-		cache2.put(new Key(key,ip), value);
+		cache.put(new Key(key,ip), value);
 	}
 
 	private synchronized Header headerCacheGet(X509Certificate key, String ip)
 	{
-		return cache2.get(new Key(key,ip));
+		return cache.get(new Key(key,ip));
 	}
-	
+
 	private String sign(String toSign) throws GeneralSecurityException, IOException {
 		if(myKey==null)return "";
 		byte[] hashedToken = hash(toSign.getBytes());
-		String alg = "RSA".equalsIgnoreCase(myKey.getAlgorithm())? "SHA1withRSA" : "SHA1withDSA";
 		Signature signature = Signature.getInstance(alg);
 		signature.initSign(myKey);
 		signature.update(hashedToken);
-		byte[]signed = signature.sign();
-		return new String(Base64.encodeBase64(signed)); 
+		return new String(Base64.encodeBase64(signature.sign())); 
 	}
-	
+
 	private byte[] hash(byte[]data) throws GeneralSecurityException {
 		MessageDigest md = MessageDigest.getInstance("SHA1");
 		md.update(data);
 		return md.digest();
 	}
-	
+
 	private static class Key{
-		
+
 		private X509Certificate cert;
-		
+
 		private String ip;
-		
+
 		public Key(X509Certificate cert,String ip){
 			this.cert=cert;
 			this.ip=ip;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -138,7 +130,7 @@ public class ConsignorProducer implements IConsignorProducer
 			result = prime * result + ((ip == null) ? 0 : ip.hashCode());
 			return result;
 		}
-		
+
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)
@@ -160,6 +152,6 @@ public class ConsignorProducer implements IConsignorProducer
 				return false;
 			return true;
 		}
-		
+
 	}
 }

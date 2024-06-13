@@ -219,6 +219,8 @@ public class Gateway
 		}
 	}
 
+	static Gateway instance;
+	
 	public static void main(String[] args) throws Exception
 	{
 		checkLogSystem();
@@ -233,7 +235,7 @@ public class Gateway
 			secProperties = new File(args[2]);
 		try
 		{
-			Gateway instance = new Gateway(gwProperties, connProperties, secProperties);
+			instance = new Gateway(gwProperties, connProperties, secProperties);
 			instance.startGateway();
 		} catch(Exception e)
 		{

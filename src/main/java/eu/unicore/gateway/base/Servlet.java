@@ -119,7 +119,7 @@ public class Servlet extends HttpServlet {
 		}
 		else if(u.getPath().startsWith("/.well-known/acme-challenge/")) {
 			String file = new File(u.getPath()).getName();
-			new AcmeRenderer(gateway).handleAcmeRequest(file, req, res);
+			new AcmeRenderer(properties).handleAcmeRequest(file, req, res);
 		}
 		else{
 			doHttp("GET", req, res);
@@ -226,6 +226,7 @@ public class Servlet extends HttpServlet {
 			}
 		}
 	}
+
 	/**
 	 * forward the HTTP request to the selected VSite
 	 */

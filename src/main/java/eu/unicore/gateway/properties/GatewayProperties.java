@@ -25,8 +25,8 @@ public class GatewayProperties extends FilePropertiesHelper
 		+ "gateway.properties");
 
 	public static final String KEY_HOSTNAME = "hostname";
-	public static final String KEY_CONSIGNORT_SIGN = "signConsignorToken";
-	
+	public static final String KEY_SIGN_CONSIGNOR_TOKEN = "signConsignorToken";
+
 	public static final String KEY_EXTERNAL_ADDRESS = "externalHostname";
 	public static final String KEY_WEBPAGE_DISABLE = "disableWebpage";
 	public static final String KEY_REG_ENABLED = "registration.enable";
@@ -94,8 +94,9 @@ public class GatewayProperties extends FilePropertiesHelper
 		DEFAULTS.put(KEY_PROTO_EXPECTCONTINUE, 	new PropertyMD("true").setCategory(cliCat).setDescription(
 				"Controls whether the HTTP expect-continue mechanism is enabled on connections to backend sites."));
 
-		DEFAULTS.put(KEY_CONSIGNORT_SIGN, 	new PropertyMD("false").setCategory(consigCat).setDescription(
+		DEFAULTS.put(KEY_SIGN_CONSIGNOR_TOKEN, 	new PropertyMD("false").setCategory(consigCat).setDescription(
 				"Controls whether information about the authenticated client (the consignor) passed to backend sites should be signed, or not. Signing is slower, but is required when sites may be reached directly, bypassing the Gateway."));
+
 		DEFAULTS.put(KEY_ACME_ENABLE, new PropertyMD("false").setBoolean().
 				setDescription("Enable ACME / Let's Encrypt support. Will add a HTTP listener on the port defined the acme.httpPort property."));
 		DEFAULTS.put(KEY_ACME_HTTP_PORT, new PropertyMD("80").setInt().setPositive().
@@ -175,7 +176,7 @@ public class GatewayProperties extends FilePropertiesHelper
 	
 	public boolean isSignConsignor()
 	{
-		return getBooleanValue(KEY_CONSIGNORT_SIGN);
+		return getBooleanValue(KEY_SIGN_CONSIGNOR_TOKEN);
 	}
 	
 	public boolean isDynamicRegistrationEnabled() 

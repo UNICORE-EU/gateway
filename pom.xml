@@ -6,43 +6,52 @@
   <packaging>jar</packaging>
   <description>UNICORE web services gateway</description>
   <inceptionYear>2004</inceptionYear>
-  <version>2.1.0</version>
+  <version>2.1.0-SNAPSHOT</version>
   <name>UNICORE Gateway</name>
   
   <parent>
     <groupId>eu.unicore</groupId>
     <artifactId>unicore-parent</artifactId>
-    <version>2.3</version>
+    <version>3.0.1</version>
   </parent>
 
   <properties>
     <!-- release version numbers (for the Linux packaging) -->
-    <package.version>10.0.0</package.version>
+    <package.version>10.1.0</package.version>
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
     <seclib.version>7.0.0</seclib.version>
     <httpclient.version>5.2.1</httpclient.version>
-    <jetty.version>11.0.20</jetty.version>
+    <jetty.version>11.0.21</jetty.version>
+    <commons-codec.version>1.17.0</commons-codec.version>
+    <junit.version>4.13.2</junit.version>
+    <jmock.version>2.13.1</jmock.version>
+    
   </properties>
 
   <scm>
     <connection>scm:git:git://github.com/UNICORE-EU/gateway.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/UNICORE-EU/gateway.git</developerConnection>
     <url>https://github.com/UNICORE-EU/gateway</url>
-    <tag>HEAD</tag>
   </scm>
 
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.13.2</version>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jmock</groupId>
+      <artifactId>jmock-junit4</artifactId>
+      <version>${jmock.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
 	<artifactId>commons-codec</artifactId>
-	<version>1.16.1</version>
+	<version>${commons-codec.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents.client5</groupId>
@@ -98,13 +107,5 @@
       </exclusions>
     </dependency>
   </dependencies>
-
-  <repositories>
-    <repository>
-      <id>unicore.eu</id>
-      <name>UNICORE repo</name>
-      <url>https://unicore-dev.zam.kfa-juelich.de/maven</url>
-    </repository>
-  </repositories>
 
 </project>
