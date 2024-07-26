@@ -39,7 +39,7 @@ public class ConsignorProducer implements IConsignorProducer
 		throws KeyStoreException, NoSuchAlgorithmException, CertificateException, 
 		FileNotFoundException, IOException
 	{
-		this.doSigned=doSigned;
+		this.doSigned = doSigned;
 		this.cache = new LinkedHashMap<>(CACHE_SIZE + 2, 1.0f, true)
 		{
 			private static final long serialVersionUID = 1L;

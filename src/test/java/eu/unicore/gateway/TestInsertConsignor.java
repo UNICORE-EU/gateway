@@ -31,4 +31,17 @@ public class TestInsertConsignor
 		System.out.println("Consignor header: \n"+r);
 		assertTrue(r.contains(certChain[0].getSubjectX500Principal().getName()));
 	}
+	
+	@Test
+	public void testConsignorHTTPHeaderUnsigned() throws Exception
+	{
+		AuthnAndTrustProperties sp = new AuthnAndTrustProperties(secProps,
+				GatewayProperties.PREFIX + TruststoreProperties.DEFAULT_PREFIX, 
+				GatewayProperties.PREFIX + CredentialProperties.DEFAULT_PREFIX);
+		ConsignorProducer cp = new ConsignorProducer(false, sp);
+		X509Certificate[]certChain=sp.getCredential().getCertificateChain();
+		String r = cp.getConsignorHeader(certChain, "127.0.0.1").toString();
+		System.out.println("Consignor header: \n"+r);
+		assertTrue(r.contains(certChain[0].getSubjectX500Principal().getName()));
+	}
 }

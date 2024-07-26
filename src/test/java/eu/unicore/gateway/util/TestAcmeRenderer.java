@@ -58,8 +58,6 @@ public class TestAcmeRenderer {
 		p.setProperty(GatewayProperties.KEY_ACME_ENABLE, "true");
 		p.setProperty(GatewayProperties.KEY_ACME_DIR, "target");
 		AcmeRenderer r = new AcmeRenderer(p);
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		PrintWriter out = new PrintWriter(bos);
 		Mockery context = new JUnit4Mockery();
 		HttpServletResponse res = context.mock(HttpServletResponse.class);
 		context.checking(new Expectations() {{
