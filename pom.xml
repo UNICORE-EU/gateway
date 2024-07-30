@@ -24,7 +24,7 @@
     <httpclient.version>5.2.1</httpclient.version>
     <jetty.version>11.0.22</jetty.version>
     <commons-codec.version>1.17.1</commons-codec.version>
-    <junit.version>4.13.2</junit.version>
+    <junit.version>5.10.3</junit.version>
     <jmock.version>2.13.1</jmock.version>
   </properties>
 
@@ -36,14 +36,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jmock</groupId>
-      <artifactId>jmock-junit4</artifactId>
+      <artifactId>jmock-junit5</artifactId>
       <version>${jmock.version}</version>
       <scope>test</scope>
     </dependency>

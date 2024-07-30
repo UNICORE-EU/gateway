@@ -1,12 +1,12 @@
 package eu.unicore.gateway;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.util.configuration.ConfigurationException;
 
@@ -54,7 +54,7 @@ public class TestInvalidSettings {
 			new Gateway(gp, cp, sp4);
 			fail("Started GW with ks without key alias");
 		} catch (ConfigurationException e) {
-			assertTrue(e.getMessage(), e.getMessage().contains("doesn't contain any key"));
+			assertTrue(e.getMessage().contains("doesn't contain any key"));
 		}
 		
 		try
@@ -62,7 +62,7 @@ public class TestInvalidSettings {
 			new Gateway(gp, cp, sp5);
 			fail("Started GW with ks without a password");
 		} catch (ConfigurationException e) {
-			assertTrue(e.getMessage(), e.getMessage().contains("Keystore was tampered with, or password was incorrect"));
+			assertTrue(e.getMessage().contains("Keystore was tampered with, or password was incorrect"));
 		}
 		
 		try
@@ -70,7 +70,7 @@ public class TestInvalidSettings {
 			new Gateway(gp, cp, sp6);
 			fail("Started GW with ts without a password");
 		} catch (ConfigurationException e) {
-			assertTrue(e.getMessage(), e.getMessage().contains("Keystore was tampered with, or password was incorrect"));
+			assertTrue(e.getMessage().contains("Keystore was tampered with, or password was incorrect"));
 		}
 	}
 }

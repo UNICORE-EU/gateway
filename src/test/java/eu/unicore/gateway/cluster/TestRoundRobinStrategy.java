@@ -1,10 +1,13 @@
 package eu.unicore.gateway.cluster;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.net.URI;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.gateway.FakeServer;
 import eu.unicore.gateway.VSite;
@@ -12,9 +15,8 @@ import eu.unicore.gateway.properties.GatewayProperties;
 import eu.unicore.security.canl.AuthnAndTrustProperties;
 import eu.unicore.security.canl.CredentialProperties;
 import eu.unicore.security.canl.TruststoreProperties;
-import junit.framework.TestCase;
 
-public class TestRoundRobinStrategy extends TestCase{
+public class TestRoundRobinStrategy {
 	
 	@Test
 	public void testRoundRobin()throws Exception{

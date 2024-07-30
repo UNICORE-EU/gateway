@@ -1,11 +1,11 @@
 package eu.unicore.gateway.cluster;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.net.URI;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.gateway.FakeServer;
 import eu.unicore.gateway.VSite;

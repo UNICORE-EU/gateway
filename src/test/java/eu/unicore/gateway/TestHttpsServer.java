@@ -1,8 +1,8 @@
 package eu.unicore.gateway;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.net.URL;
@@ -17,16 +17,16 @@ import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.StatusLine;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class TestHttpsServer {
-	protected Gateway gw;
-	protected FakeHttpsServer backend;
+	protected static Gateway gw;
+	protected static FakeHttpsServer backend;
 	
-	@Before
-	public void setUp() throws Exception {
+	@BeforeAll
+	public static void setUp() throws Exception {
 		File gp = new File("src/test/resources/gateway-ssl.properties");
 		File sp = new File("src/test/resources/security.properties");
 		File cp = new File("src/test/resources/connection.properties");
@@ -36,8 +36,8 @@ public class TestHttpsServer {
 		backend.start();
 	}
 	
-	@After
-	public void tearDown()throws Exception{
+	@AfterAll
+	public static void tearDown()throws Exception{
 		Thread.sleep(1000);
 		backend.stop();
 		gw.stopGateway();

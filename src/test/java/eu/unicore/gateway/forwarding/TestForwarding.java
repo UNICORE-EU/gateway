@@ -1,7 +1,7 @@
 package eu.unicore.gateway.forwarding;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,9 +26,9 @@ import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.http.message.StatusLine;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.gateway.Gateway;
 import eu.unicore.util.ChannelUtils;
@@ -54,19 +54,19 @@ public class TestForwarding {
 		return "src/test/resources/gateway.properties";
 	}
 
-	@Before
-	public void setUp() throws Exception{
+	@BeforeEach
+	protected void setUp() throws Exception{
 		File gp = new File(getPropertiesLoc());
 		File sp = new File("src/test/resources/security.properties");
 		File cp = new File("src/test/resources/connection.properties");
 		gw = new Gateway(gp, cp, sp);
 		gw.startGateway();
-		echo = createBackend();
+		echo = new EchoEndpointServer();
 		echo.start();
 	}
 
-	@After
-	public void tearDown()throws Exception{
+	@AfterEach
+	protected void tearDown()throws Exception{
 		gw.stopGateway();
 	}
 	

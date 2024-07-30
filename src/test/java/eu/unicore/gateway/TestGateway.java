@@ -1,9 +1,10 @@
 package eu.unicore.gateway;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class TestGateway extends TestCase {
+public class TestGateway {
 
+	@Test
 	public void testMain() throws Exception{
 		String[] args = new String[] {
 				"src/test/resources/gateway.properties",

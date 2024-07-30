@@ -1,5 +1,8 @@
 package eu.unicore.gateway;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -26,16 +29,19 @@ import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.http.message.StatusLine;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.gateway.base.Servlet;
 import eu.unicore.gateway.properties.GatewayProperties;
-import junit.framework.TestCase;
 
-public class TestServer extends TestCase {
-	protected Gateway gw;
+public class TestServer {
+	
+	protected static Gateway gw;
 
-	@Override
-	protected void setUp() throws Exception{
+	@BeforeAll
+	public static void setUp() throws Exception{
 		File gp = new File("src/test/resources/gateway.properties");
 		File sp = new File("src/test/resources/security.properties");
 		File cp = new File("src/test/resources/connection.properties");
@@ -43,11 +49,13 @@ public class TestServer extends TestCase {
 		gw.startGateway();
 	}
 
-	protected void tearDown()throws Exception{
+	@AfterAll
+	public static void tearDown()throws Exception{
 		Thread.sleep(2000);
 		gw.stopGateway();
 	}
 
+	@Test
 	public void testHead() throws Exception{
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL("http://localhost:64433/DEMO-SITE"));
 		HttpHead head = new HttpHead("http://localhost:64433/DEMO-SITE");
@@ -56,6 +64,7 @@ public class TestServer extends TestCase {
 		}
 	}
 
+	@Test
 	public void testDynamicRegistration()throws Exception{
 		gw.getProperties().setProperty(GatewayProperties.KEY_REG_ENABLED, "false");
 		int status=doRegister("test","http://localhost:12345");
@@ -65,6 +74,7 @@ public class TestServer extends TestCase {
 		assertEquals(HttpStatus.SC_CREATED,status);
 	}
 
+	@Test
 	public void testPost()throws Exception{
 		FakeServer s1=new FakeServer();
 		s1.start();
@@ -88,12 +98,10 @@ public class TestServer extends TestCase {
 
 			String forwardedRequestBody = s1.getLatestRequestBody();
 			System.out.println(forwardedRequestBody);
-			assertEquals("Request was not properly forwarded",
-					new String(originalRequestBody), forwardedRequestBody);
+			assertEquals(new String(originalRequestBody), forwardedRequestBody);
 
 			byte[] responseBody = EntityUtils.toByteArray(response.getEntity());
-			assertTrue("Server response was not properly forwarded",
-					Arrays.equals(s1.getAnswer(), responseBody));
+			assertTrue(Arrays.equals(s1.getAnswer(), responseBody));
 
 			// check auth header was forwarded
 			List<String> lastHeaders = s1.getLatestRequestHeaders();
@@ -108,9 +116,10 @@ public class TestServer extends TestCase {
 		for(String h: headers){
 			if(h.startsWith(headerName))return;
 		}
-		assertTrue("Header "+headerName+" was not forwarded",false);
+		assertTrue(false, "Header "+headerName+" was not forwarded");
 	}
 	
+	@Test
 	public void testGet()throws Exception{
 		FakeServer s1=new FakeServer();
 		s1.start();
@@ -136,14 +145,11 @@ public class TestServer extends TestCase {
 					filteredHeadersForwarded.add(string);
 				}
 			}
-			assertEquals("Client query was not properly forwarded", originalQuery, s1.getLatestQuery());
-			assertTrue("Consignor IP Header not present", filteredHeadersForwarded.contains(Servlet.CONSIGNOR_IP_HEADER+": 127.0.0.1"));
-			assertTrue("GW Host Header not present", 
-					filteredHeadersForwarded.contains(Servlet.GATEWAY_EXTERNAL_URL+": http://localhost:64433/FAKE1"));
-			assertTrue("Headers were not forwarded", filteredHeadersForwarded.contains("X-testHeader: test123"));
-
-			assertTrue("Server response was not properly forwarded",
-					Arrays.equals(s1.getAnswer(), EntityUtils.toByteArray(response.getEntity())));
+			assertEquals(originalQuery, s1.getLatestQuery());
+			assertTrue(filteredHeadersForwarded.contains(Servlet.CONSIGNOR_IP_HEADER+": 127.0.0.1"));
+			assertTrue(filteredHeadersForwarded.contains(Servlet.GATEWAY_EXTERNAL_URL+": http://localhost:64433/FAKE1"));
+			assertTrue(filteredHeadersForwarded.contains("X-testHeader: test123"));
+			assertTrue(Arrays.equals(s1.getAnswer(), EntityUtils.toByteArray(response.getEntity())));
 		}
 
 		int expectedCode=503;
@@ -152,12 +158,12 @@ public class TestServer extends TestCase {
 		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
 			assertEquals(expectedCode, response.getCode());
-			assertTrue("Server response was not properly forwarded for status code <"+status+">",
-					Arrays.equals(s1.getAnswer(), EntityUtils.toByteArray(response.getEntity())));
+			assertTrue(Arrays.equals(s1.getAnswer(), EntityUtils.toByteArray(response.getEntity())));
 		}
 		s1.stop();
 	}
 
+	@Test
 	public void testGetWrongAddress()throws Exception{
 		String queryPath = "/test";
 		String url="http://localhost:64433/DOESNOTEXIST"+queryPath;
@@ -170,7 +176,7 @@ public class TestServer extends TestCase {
 		}
 	}
 
-	
+	@Test
 	public void testGetPathWithSpaces()throws Exception{
 		FakeServer s1=new FakeServer();
 		s1.start();
@@ -191,6 +197,7 @@ public class TestServer extends TestCase {
 		s1.stop();
 	}
 	
+	@Test
 	public void testGetPathWithQuery()throws Exception{
 		FakeServer s1=new FakeServer();
 		s1.start();
@@ -212,6 +219,7 @@ public class TestServer extends TestCase {
 		s1.stop();
 	}
 	
+	@Test
 	public void testGetWithVSiteOffline()throws Exception{
 		int status=doRegister("FAKE1","http://some_offline_site");
 		assertEquals(HttpStatus.SC_CREATED,status);
@@ -228,6 +236,7 @@ public class TestServer extends TestCase {
 		}
 	}
 	
+	@Test
 	public void testShowVersion()throws Exception{
 		String url="http://localhost:64433/";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
@@ -239,6 +248,7 @@ public class TestServer extends TestCase {
 		}
 	}
 
+	@Test
 	public void testPut()throws Exception{
 		FakeServer s1=new FakeServer();
 		s1.start();
@@ -259,6 +269,7 @@ public class TestServer extends TestCase {
 		s1.stop();
 	}
 
+	@Test
 	public void testPut2()throws Exception{
 		FakeServer s1=new FakeServer();
 		s1.start();
