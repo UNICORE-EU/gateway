@@ -20,8 +20,7 @@
     <package.version>10.1.0</package.version>
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
-    <seclib.version>7.1.0</seclib.version>
-    <bc.version>1.78.1</bc.version>
+    <seclib.version>7.1.1</seclib.version>
     <httpclient.version>5.2.1</httpclient.version>
     <jetty.version>11.0.22</jetty.version>
     <commons-codec.version>1.17.1</commons-codec.version>
@@ -108,25 +107,5 @@
       </exclusions>
     </dependency>
   </dependencies>
-
-   <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk18on</artifactId>
-        <version>${bc.version}</version>
-      </dependency>
-    <dependency>
-        <groupId>org.bouncycastle</groupId>
-        <artifactId>bcpkix-jdk18on</artifactId>
-        <version>${bc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>2.16.1</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
 </project>
