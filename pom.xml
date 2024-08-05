@@ -6,7 +6,7 @@
   <packaging>jar</packaging>
   <description>UNICORE web services gateway</description>
   <inceptionYear>2004</inceptionYear>
-  <version>2.1.2-SNAPSHOT</version>
+  <version>2.1.2</version>
   <name>UNICORE Gateway</name>
   
   <parent>
@@ -32,7 +32,7 @@
     <connection>scm:git:git://github.com/UNICORE-EU/gateway.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/UNICORE-EU/gateway.git</developerConnection>
     <url>https://github.com/UNICORE-EU/gateway</url>
-    <tag>HEAD</tag>
+    <tag>gateway-2.1.2</tag>
   </scm>
 
   <dependencies>
