@@ -151,8 +151,10 @@ public class TestMultiSite {
 		Thread.sleep(2000);
 		
 		VSite v1=new VSite(gwURI,"site",s1.getURI(),sp);
+		v1.disablePingDelay();
 		ms.registerVsite(v1);
 		VSite v2=new VSite(gwURI,"site",s2.getURI(),sp);
+		v2.disablePingDelay();
 		ms.registerVsite(v2);
 		
 		VSite selected=ms.select("123.45.67.89");

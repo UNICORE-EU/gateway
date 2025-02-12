@@ -8,43 +8,36 @@ public interface Site {
 	/**
 	 * the name of the site
 	 */
-	public abstract String getName();
+	public String getName();
 
 	/**
 	 * the number of requests that have been processed by the site
 	 */
-	public abstract int getNumberOfRequests();
+	public int getNumberOfRequests();
 
 	/**
 	 * get a human-friendly status message
 	 */
-	public abstract String getStatusMessage();
+	public String getStatusMessage();
 
 	/**
-	 * ping the site, using a default timeout of 3OO ms.
+	 * ping the site
 	 * @return true if the site is live, false if not, or a timeout occurs
 	 */
-	public abstract boolean ping();
-
-	/**
-	 * ping with a given timeout
-	 * @param timeout in ms
-	 * @return true if the site is live, false if not, or a timeout occurs
-	 */
-	public abstract boolean ping(int timeout);
+	public boolean ping();
 
 	/**
 	 * check if the supplied URI matches this Vsite
 	 * 
 	 * @param uri
 	 */
-	public abstract boolean accept(String uri);
+	public boolean accept(String uri);
 
 	/**
 	 * select a VSite from this Site based on the given client identifier (for example, the client IP)
 	 * @param clientID
 	 */
-	public abstract VSite select(String clientID);
+	public VSite select(String clientID);
 
 	/**
 	 * reload configuration - for example due to config changes

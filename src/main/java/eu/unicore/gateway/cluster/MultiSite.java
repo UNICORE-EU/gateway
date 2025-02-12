@@ -93,13 +93,9 @@ public class MultiSite implements Site {
 	}
 
 	public boolean ping() {
-		return ping(2000);
-	}
-
-	public boolean ping(int timeout) {
 		boolean OK=false;
 		for(VSite v: configuredSites){
-			if(v.ping(timeout)){
+			if(v.ping()){
 				OK=true;
 				break;
 			}

@@ -39,10 +39,13 @@ public class TestRoundRobinStrategy {
 		Thread.sleep(2000);
 		
 		VSite v1=new VSite(gwURI,vsiteName,s1.getURI(),sp);
+		v1.disablePingDelay();
 		ms.registerVsite(v1);
 		VSite v2=new VSite(gwURI,vsiteName,s2.getURI(),sp);
+		v2.disablePingDelay();
 		ms.registerVsite(v2);
 		VSite v3=new VSite(gwURI,vsiteName,s3.getURI(),sp);
+		v3.disablePingDelay();
 		ms.registerVsite(v3);
 
 		assertEquals(RoundRobin.class,ms.getSelectionStrategy().getClass());
