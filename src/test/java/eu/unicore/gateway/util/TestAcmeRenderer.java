@@ -36,20 +36,21 @@ public class TestAcmeRenderer {
 		p.setProperty(GatewayProperties.KEY_ACME_ENABLE, "true");
 		p.setProperty(GatewayProperties.KEY_ACME_DIR, "target");
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		PrintWriter out = new PrintWriter(bos);
-		File token = new File("target", "tokentest.txt");
-		FileUtils.write(token, "test123", "UTF-8");
-		AcmeRenderer r = new AcmeRenderer(p);
-		Mockery context = new JUnit5Mockery();
-		HttpServletResponse res = context.mock(HttpServletResponse.class);
-		context.checking(new Expectations() {{
-			oneOf(res).getWriter();will(returnValue(out));
-			oneOf(res).setContentType("text/plain");
-		}});
-		r.handleAcmeRequest("tokentest.txt", null, res);
-		context.assertIsSatisfied();
-		out.flush();
-		assertEquals("test123", bos.toString("UTF-8").strip());
+		try(PrintWriter out = new PrintWriter(bos)){
+			File token = new File("target", "tokentest.txt");
+			FileUtils.write(token, "test123", "UTF-8");
+			AcmeRenderer r = new AcmeRenderer(p);
+			Mockery context = new JUnit5Mockery();
+			HttpServletResponse res = context.mock(HttpServletResponse.class);
+			context.checking(new Expectations() {{
+				oneOf(res).getWriter();will(returnValue(out));
+				oneOf(res).setContentType("text/plain");
+			}});
+			r.handleAcmeRequest("tokentest.txt", null, res);
+			context.assertIsSatisfied();
+			out.flush();
+			assertEquals("test123", bos.toString("UTF-8").strip());
+		}
 	}
 	
 	@Test

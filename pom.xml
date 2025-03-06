@@ -12,7 +12,7 @@
   <parent>
     <groupId>eu.unicore</groupId>
     <artifactId>unicore-parent</artifactId>
-    <version>3.0.1</version>
+    <version>3.0.3</version>
   </parent>
 
   <properties>
@@ -24,7 +24,7 @@
     <httpclient.version>5.4.2</httpclient.version>
     <jetty.version>11.0.24</jetty.version>
     <commons-codec.version>1.18.0</commons-codec.version>
-    <junit.version>5.11.4</junit.version>
+    <junit.version>5.12.0</junit.version>
     <jmock.version>2.13.1</jmock.version>
   </properties>
 
@@ -40,6 +40,12 @@
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <version>1.12.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
