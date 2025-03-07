@@ -7,7 +7,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
@@ -60,7 +59,7 @@ public class VSite implements Site {
 	private volatile boolean isUp = false;
 	private volatile long lastPing = 0;
 	private long pingDelay = 30*1000;
-	private long pingTimeout = 5*1000;
+	private long pingTimeout = 10*1000;
 
 	public VSite(URI gatewayURI, String name, String uri, AuthnAndTrustProperties securityCfg) throws UnknownHostException, URISyntaxException{
 		if(uri==null)throw new IllegalArgumentException("URI can't be null.");
@@ -134,8 +133,7 @@ public class VSite implements Site {
 		if(lastPing+pingDelay>System.currentTimeMillis()) {
 			return isUp;
 		}
-		Future<Boolean> res = pingService.submit(new Callable<Boolean>(){
-			public Boolean call(){
+		Future<Boolean> res = pingService.submit( ()-> {
 				Socket s = null;
 				try{
 					if(isSecure){
@@ -157,9 +155,12 @@ public class VSite implements Site {
 					}
 					errorMessage="Site is down: connection refused.";
 				}catch(Exception e){
-					LogUtil.logException("Error pinging VSite '"+name+"' @ "+getRealURI()+"",e,log);
-					errorMessage="Site unavailable: " + Log.getDetailMessage(e);
-					isUp = false;
+					if(isUp) {
+						String msg = Log.getDetailMessage(e);
+						log.info("VSite '{}' @ {} is unavailable: {}", name, getRealURI(),msg);
+						errorMessage="Site unavailable: " + msg;
+						isUp = false;
+					}
 				}
 				finally{
 					lastPing = System.currentTimeMillis();
@@ -167,11 +168,10 @@ public class VSite implements Site {
 				}
 				return Boolean.FALSE;
 			}
-		});
+		);
 		try{
 			return res.get(pingTimeout, TimeUnit.MILLISECONDS);
 		}catch(Exception tex){
-			LogUtil.logException("Error waiting for ping result", tex, log);
 			errorMessage = "Timeout";
 			isUp = false;
 		}
