@@ -6,21 +6,21 @@
   <packaging>jar</packaging>
   <description>UNICORE web services gateway</description>
   <inceptionYear>2004</inceptionYear>
-  <version>2.2.0</version>
+  <version>2.2.1</version>
   <name>UNICORE Gateway</name>
   
   <parent>
     <groupId>eu.unicore</groupId>
     <artifactId>unicore-parent</artifactId>
-    <version>3.0.4</version>
+    <version>3.1.1</version>
   </parent>
 
   <properties>
     <!-- release version numbers (for the Linux packaging) -->
-    <package.version>10.2.0</package.version>
+    <package.version>10.3.0</package.version>
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
-    <seclib.version>7.2.0</seclib.version>
+    <seclib.version>7.2.1</seclib.version>
     <httpclient.version>5.5</httpclient.version>
     <jetty.version>11.0.25</jetty.version>
     <commons-codec.version>1.18.0</commons-codec.version>
@@ -33,7 +33,7 @@
     <connection>scm:git:git://github.com/UNICORE-EU/gateway.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/UNICORE-EU/gateway.git</developerConnection>
     <url>https://github.com/UNICORE-EU/gateway</url>
-    <tag>gateway-2.2.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <dependencies>
