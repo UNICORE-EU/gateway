@@ -55,7 +55,7 @@ public class Servlet extends HttpServlet {
 
 	private static final long serialVersionUID=2L;
 
-	private static final Logger logger=LogUtil.getLogger(LogUtil.GATEWAY,Servlet.class);
+	private static final Logger logger = LogUtil.getLogger(LogUtil.GATEWAY,Servlet.class);
 	private final GatewayProperties properties;
 	private final Gateway gateway;
 
@@ -105,7 +105,7 @@ public class Servlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
 	{
-		URL u=new URL(req.getRequestURL().toString());
+		URL u = new URL(req.getRequestURL().toString());
 		if("/".equals(u.getPath())){
 			new DefaultPageRenderer(gateway).doGETDefaultGWPage(req, res);
 		}
@@ -117,7 +117,7 @@ public class Servlet extends HttpServlet {
 			doHttp("GET", req, res);
 		}
 	}
-	
+
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		doHttp("PUT", req, res);
@@ -127,12 +127,12 @@ public class Servlet extends HttpServlet {
 	protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		doHttp("DELETE", req, res);
 	}
-	
+
 	@Override
 	protected void doOptions(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		doHttp("OPTIONS", req, res);
 	}
-	
+
 	/**
 	 * generic HTTP forwarding: resolve a VSite, forward the request, collect result and
 	 * return it to the client
@@ -250,7 +250,7 @@ public class Servlet extends HttpServlet {
 			res.sendError(503, Log.createFaultMessage("Could not perform request", e));
 		}
 	}
-	
+
 	private void writeResponseContent(ClassicHttpResponse response, OutputStream os) throws IOException {
 		if(response.getEntity()!=null && response.getEntity().getContent()!=null){
 			InputStream is = response.getEntity().getContent();
@@ -261,11 +261,11 @@ public class Servlet extends HttpServlet {
 			}
 		}
 	}
-	
+
 	final static List<String>excludedHeaders = Arrays.asList(new String[]{
 			"x-frame-options", "date",
 	});
-	
+
 	private void copyResponseHeaders(ClassicHttpResponse fromSite, HttpServletResponse toClient){
 		for (Header h: fromSite.getHeaders()){
 			if(!excludedHeaders.contains(h.getName().toLowerCase())){
@@ -373,5 +373,5 @@ public class Servlet extends HttpServlet {
 		sb.append("/").append(vsite);
 		return sb.toString();
 	}
-	
+
 }

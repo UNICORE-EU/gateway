@@ -1,10 +1,12 @@
-package eu.unicore.gateway.forwarding;
+package eu.unicore.gateway.util;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.EnumSet;
 import java.util.Objects;
 
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.FilterMapping;
@@ -14,11 +16,9 @@ import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.thread.AutoLock;
 
 import eu.unicore.gateway.Gateway;
-import eu.unicore.gateway.util.LogUtil;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -27,28 +27,23 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Based on Jetty's WebSocketUpgradeFilter
+ * if acme is enabled (and the server is running HTTPS), this filter ensures
+ * that only acme requests are served over the plain http connection
  *
  * @author schuller
  */
-@ManagedObject("Protocol Upgrade Filter")
-public class ProtocolUpgradeFilter implements Filter
+@ManagedObject("Acme Filter")
+public class AcmeFilter implements Filter
 {
-	private static final Logger logger = LogUtil.getLogger(LogUtil.GATEWAY, ProtocolUpgradeFilter.class);
+	private static final Logger logger = LogUtil.getLogger(LogUtil.GATEWAY, AcmeFilter.class);
 
 	private static final AutoLock LOCK = new AutoLock();
-
-	private final Gateway gateway;
-
-	public ProtocolUpgradeFilter(final Gateway gateway) {
-		this.gateway = gateway;
-	}
 
 	private static FilterHolder getFilter(ServletContext servletContext)
 	{
 		ContextHandler contextHandler = Objects.requireNonNull(ContextHandler.getContextHandler(servletContext));
 		ServletHandler servletHandler = contextHandler.getChildHandlerByClass(ServletHandler.class);
-		return servletHandler.getFilter(ProtocolUpgradeFilter.class.getName());
+		return servletHandler.getFilter(AcmeFilter.class.getName());
 	}
 
 	/**
@@ -56,10 +51,12 @@ public class ProtocolUpgradeFilter implements Filter
 	 */
 	public static void ensureFilter(ServletContext servletContext, Gateway gateway)
 	{
+		if(!gateway.getProperties().isAcmeEnabled())return;
+		if(!gateway.getProperties().getHostname().toLowerCase().startsWith("https"))return;
 		// Lock in case two concurrent requests are initializing the filter lazily.
 		try (AutoLock l = LOCK.lock())
 		{
-			FilterHolder existingFilter = ProtocolUpgradeFilter.getFilter(servletContext);
+			FilterHolder existingFilter = AcmeFilter.getFilter(servletContext);
 			if (existingFilter != null)
 				return;
 
@@ -67,8 +64,8 @@ public class ProtocolUpgradeFilter implements Filter
 			ServletHandler servletHandler = contextHandler.getChildHandlerByClass(ServletHandler.class);
 
 			final String pathSpec = "/*";
-			FilterHolder holder = new FilterHolder(new ProtocolUpgradeFilter(gateway));
-			holder.setName(ProtocolUpgradeFilter.class.getName());
+			FilterHolder holder = new FilterHolder(new AcmeFilter());
+			holder.setName(AcmeFilter.class.getName());
 			holder.setAsyncSupported(true);
 
 			FilterMapping mapping = new FilterMapping();
@@ -78,7 +75,6 @@ public class ProtocolUpgradeFilter implements Filter
 
 			servletHandler.prependFilter(holder);
 			servletHandler.prependFilterMapping(mapping);
-
 			contextHandler.addEventListener(new LifeCycle.Listener()
 			{
 				@Override
@@ -94,24 +90,22 @@ public class ProtocolUpgradeFilter implements Filter
 		}
 	}
 
-	private ForwardingSetup mapper;
-
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
 	{		
-		HttpServletRequest httpreq = (HttpServletRequest)request;
-		HttpServletResponse httpresp = (HttpServletResponse)response;
-		if (mapper.upgrade(httpreq, httpresp))
-		{
+		HttpServletRequest req = (HttpServletRequest)request;
+		HttpServletResponse res = (HttpServletResponse)response;
+		URL u = new URL(req.getRequestURL().toString());
+		if(u.getProtocol().toLowerCase().equals("https")) {
+			// handle normally
+			chain.doFilter(request, response);
 			return;
 		}
-		// Otherwise, handle normally
-		chain.doFilter(request, response);
+		// otherwise, make sure it is an ACME request
+		if(!u.getPath().startsWith("/.well-known/acme-challenge/")){
+			res.sendError(404);
+			Request.getBaseRequest(request).setHandled(true);
+		}
 	}
 
-	@Override
-	public void init(FilterConfig config) throws ServletException
-	{
-		  mapper = ForwardingSetup.ensureMappings(config.getServletContext(), gateway);
-	}
 }

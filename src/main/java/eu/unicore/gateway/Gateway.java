@@ -185,12 +185,15 @@ public class Gateway
 		System.out.println(message);
 		URL mainURL = new URL(gatewayProperties.getHostname());
 		URL[] urls = new URL[] { mainURL };
-		if(gatewayProperties.getBooleanValue(GatewayProperties.KEY_ACME_ENABLE)) {
-			urls = new URL[] { mainURL , getAcmeHttpURL(mainURL)};
+		if(gatewayProperties.isAcmeEnabled()) {
+			boolean isSSL = gatewayProperties.getHostname().toLowerCase().startsWith("https");
+			if(isSSL) {
+				// must add plain http listener for ACME
+				urls = new URL[] { mainURL , getAcmeHttpURL(mainURL)};
+			}
 		}
 		jetty = new GatewayJettyServer(urls, this);
 		jetty.start();
-		
 		message = "UNICORE Gateway startup complete.";
 		log.info(message);
 		System.out.println(message);

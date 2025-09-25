@@ -30,12 +30,12 @@ public class AcmeRenderer {
 	 * return the named file from the directory that holds the ACME token
 	 */
 	public void handleAcmeRequest(String file, HttpServletRequest req, HttpServletResponse res) throws IOException {
-		if(!gatewayProperties.getBooleanValue(GatewayProperties.KEY_ACME_ENABLE)) {
+		if(!gatewayProperties.isAcmeEnabled()) {
 			// acme disabled - 404
 			res.sendError(404, "Not found");
 			return;
 		}
-		File tokenDirectory = gatewayProperties.getFileValue(GatewayProperties.KEY_ACME_DIR, true);
+		File tokenDirectory = gatewayProperties.getAcmeDirectory();
 		File tokenFile = new File(tokenDirectory, file);
 		if(!tokenFile.exists()) {
 			res.sendError(404, "Not found");

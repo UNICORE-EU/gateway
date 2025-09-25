@@ -207,4 +207,14 @@ public class GatewayProperties extends FilePropertiesHelper
 	{
 		return getValue(KEY_REG_INCL);
 	}
+
+	public boolean isAcmeEnabled()
+	{
+		return getBooleanValue(KEY_ACME_ENABLE);
+	}
+
+	public File getAcmeDirectory()
+	{
+		return getFileValue(KEY_ACME_DIR, true);
+	}
 }

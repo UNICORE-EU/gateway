@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpHead;
 import org.apache.hc.client5.http.classic.methods.HttpOptions;
@@ -77,6 +79,15 @@ public class TestServer {
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL("http://localhost:64433/DEMO-SITE"));
 		HttpOptions opts = new HttpOptions("http://localhost:64433/DEMO-SITE");
 		try(ClassicHttpResponse response = hc.executeOpen(null, opts, HttpClientContext.create())){
+			System.out.println("OPTIONS got reply: " + new StatusLine(response));
+		}
+	}
+
+	@Test
+	public void testDelete() throws Exception{
+		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL("http://localhost:64433/DEMO-SITE"));
+		HttpDelete del = new HttpDelete("http://localhost:64433/DEMO-SITE");
+		try(ClassicHttpResponse response = hc.executeOpen(null, del, HttpClientContext.create())){
 			System.out.println("OPTIONS got reply: " + new StatusLine(response));
 		}
 	}
@@ -249,6 +260,20 @@ public class TestServer {
 			String errorBody = EntityUtils.toString(response.getEntity());
 			System.out.println(errorBody);
 			assertEquals(HttpStatus.SC_SERVICE_UNAVAILABLE, response.getCode());
+		}
+	}
+	
+	@Test
+	public void testAcmeGet()throws Exception{
+		String queryPath = ".well-known/acme-challenge/tokentest.txt";
+		String url="http://localhost:64433/"+queryPath;
+		File token = new File("target", "tokentest.txt");
+ 		FileUtils.write(token, "test123", "UTF-8");
+		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+		HttpGet get=new HttpGet(url);
+		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
+			System.out.println(getStatusDesc(response));
+			assertEquals(200, response.getCode());
 		}
 	}
 	

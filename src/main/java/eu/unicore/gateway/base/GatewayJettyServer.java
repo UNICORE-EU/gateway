@@ -13,6 +13,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import eu.unicore.gateway.Gateway;
 import eu.unicore.gateway.forwarding.ProtocolUpgradeFilter;
+import eu.unicore.gateway.util.AcmeFilter;
 import eu.unicore.gateway.util.FileWatcher;
 import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.security.canl.CredentialProperties;
@@ -48,6 +49,7 @@ public class GatewayJettyServer extends JettyServerBase {
 		ServletContextHandler root = new ServletContextHandler(getServer(), "/", 
 				ServletContextHandler.SESSIONS);
 		ProtocolUpgradeFilter.ensureFilter(root.getServletContext(), gateway);
+		AcmeFilter.ensureFilter(root.getServletContext(), gateway);
 		ServletHolder servletHolder = new ServletHolder(new Servlet(gateway));
 		root.addServlet(servletHolder, "/*");
 		URL u = getClass().getResource("/eu/unicore/gateway");
@@ -56,7 +58,7 @@ public class GatewayJettyServer extends JettyServerBase {
 		root.addServlet(DefaultServlet.class,"/resources/*");
 		return root;
 	}
-	
+
 	@Override
 	protected void initServer() throws ConfigurationException{
 		super.initServer();

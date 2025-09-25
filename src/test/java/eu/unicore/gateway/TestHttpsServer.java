@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.net.URL;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -76,4 +77,30 @@ public class TestHttpsServer {
 			assertTrue(resp.contains("Gateway"));
 		}
 	}
+
+	@Test
+	public void testAcmeFiltering() throws Exception {
+		String url="http://localhost:64455/SSL-SITE/service";
+		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+		HttpGet get = new HttpGet(url);
+ 		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
+			System.out.println(new StatusLine(response));
+			String resp = EntityUtils.toString(response.getEntity());
+			System.out.println(resp);
+			int status=response.getCode();
+			assertEquals(HttpStatus.SC_NOT_FOUND, status);
+		}
+ 		url="http://localhost:64455/.well-known/acme-challenge/tokentest.txt";
+ 		get = new HttpGet(url);
+ 		File token = new File("target", "tokentest.txt");
+ 		FileUtils.write(token, "test123", "UTF-8");
+ 		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
+			System.out.println(new StatusLine(response));
+			String resp = EntityUtils.toString(response.getEntity());
+			System.out.println(resp);
+			int status=response.getCode();
+			assertEquals(HttpStatus.SC_OK, status);
+		}
+	}
+	
 }

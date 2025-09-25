@@ -52,7 +52,7 @@ public class TestAcmeRenderer {
 			assertEquals("test123", bos.toString("UTF-8").strip());
 		}
 	}
-	
+
 	@Test
 	public void testNoFile() throws Exception {
 		GatewayProperties p = new GatewayProperties("src/test/resources/gateway.properties");
