@@ -12,7 +12,7 @@ public class TestGateway {
 				"src/test/resources/security.properties"
 		};
 		Gateway.main(args);
-		Gateway.instance.reloadConfig();
+		Gateway.instance.getJettyServer().reloadCredential();;
 		Gateway.instance.stopGateway();
 	}
 

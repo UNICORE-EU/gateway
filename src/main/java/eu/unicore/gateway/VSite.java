@@ -189,21 +189,13 @@ public class VSite implements Site {
 	}
 
 	@Override
-	public boolean accept(String uri)
+	public boolean accept(String uri) throws URISyntaxException
 	{
-		try
-		{
-			XURI xuri = new XURI(new URI(uri));
-			String sitename = xuri.getPathElement(index);
-			boolean decision = (sitename != null && sitename.equalsIgnoreCase(getName()));
-			if(decision)numberOfRequests.incrementAndGet();
-			return decision;
-		}
-		catch (URISyntaxException e)
-		{
-			LogUtil.logException("Cannot parse the URI <" + uri + ">",e);
-			return false;
-		}
+		XURI xuri = new XURI(new URI(uri));
+		String sitename = xuri.getPathElement(index);
+		boolean decision = (sitename != null && sitename.equalsIgnoreCase(getName()));
+		if(decision)numberOfRequests.incrementAndGet();
+		return decision;
 	}
 
 	@Override
@@ -235,15 +227,9 @@ public class VSite implements Site {
 		if (getClass() != obj.getClass())
 			return false;
 		VSite other = (VSite) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
+		if (!name.equals(other.name))
 			return false;
-		if (realURI == null) {
-			if (other.realURI != null)
-				return false;
-		} else if (!realURI.equals(other.realURI))
+		if (!realURI.equals(other.realURI))
 			return false;
 		return true;
 	}

@@ -10,27 +10,26 @@ import eu.unicore.gateway.util.LogUtil;
 public class DynamicSiteOrganiser extends BaseSiteOrganiser 
 {
 	private static final Logger logger=LogUtil.getLogger(LogUtil.GATEWAY,DynamicSiteOrganiser.class);
-	private String exclPattern;
-	private String inclPattern;
-	
-	protected DynamicSiteOrganiser(Gateway gw, String exclPattern, String inclPattern)
+	private final String exclPattern;
+	private final String inclPattern;
+
+	public DynamicSiteOrganiser(Gateway gw, String exclPattern, String inclPattern)
 	{
 		super(gw);
 		this.exclPattern = exclPattern;
 		this.inclPattern = inclPattern;
 	}
 
-	
 	public boolean register(String name, URI realURI){
 		try{
 			checkExclusion(realURI);
 			checkInclusion(realURI);
-			Site existingSite=sites.get(name);
+			Site existingSite = sites.get(name);
 			if(existingSite!=null && existingSite instanceof MultiSite){
 				((MultiSite)existingSite).registerVsite(realURI);
 			}
 			else{
-				VSite newSite=new VSite(gateway.getHostURI(), name, realURI.toString(), gateway.getSecurityProperties());
+				VSite newSite = new VSite(gateway.getHostURI(), name, realURI.toString(), gateway.getSecurityProperties());
 				sites.put(name,newSite);
 			}
 			return true;
@@ -41,12 +40,12 @@ public class DynamicSiteOrganiser extends BaseSiteOrganiser
 		}
 		return false;
 	}
-	
+
 	/**
 	 * checks if the given URI is forbidden to register
 	 * @param uri
 	 */
-	protected void checkExclusion(URI uri){
+	void checkExclusion(URI uri){
 		if(exclPattern==null)return;
 		//check if exclusion pattern
 		String[]chk=exclPattern.split(" +");
@@ -59,12 +58,12 @@ public class DynamicSiteOrganiser extends BaseSiteOrganiser
 		}
 		return;
 	}
-	
+
 	/**
 	 * checks if the given URI is allowed to register
 	 * @param uri
 	 */
-	protected void checkInclusion(URI uri){
+	void checkInclusion(URI uri){
 		if(inclPattern==null)return;
 		String[]chk=inclPattern.split(" +");
 		String test=uri.toString().toLowerCase();
@@ -76,9 +75,8 @@ public class DynamicSiteOrganiser extends BaseSiteOrganiser
 		//not allowed
 		throw new IllegalArgumentException("Registration not allowed, URL does not contain one of '"+inclPattern+"'");
 	}
-	
 
-	//unit testing use
+	// unit testing use
 	void register(Site site){
 		sites.put(site.getName(),site);
 	}

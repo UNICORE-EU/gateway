@@ -31,58 +31,58 @@ public class RoundRobin implements SelectionStrategy {
 	private long lastChecked=-1;
 
 	//sites available for selection
-	List<VSite>sitesUp=new ArrayList<VSite>();
-	
+	List<VSite>sitesUp = new ArrayList<VSite>();
+
 	//how often to check site health (millis)
 	private int interval=5000;
 
 	//node health status map (key: node uri, value: true=up, false=down)
-	final Map<String, Boolean>health=new HashMap<String, Boolean>();
+	final Map<String, Boolean>health = new HashMap<String, Boolean>();
 	
-	final Random random=new Random();
-	
+	private final Random random = new Random();
+
+	@Override
 	public void init(MultiSite parent, Map<String, String> params) {
 		this.parent=parent;
 		String intervalS=params.get(HEALTH_CHECK_INTERVAL);
 		if(intervalS!=null){
 			interval=Integer.parseInt(intervalS);
-			log.debug("Health check interval: "+interval+" millis.");
+			log.debug("Health check interval: {} millis", interval);
 		}
 	}
 
+	@Override
 	public VSite select(String clientID) {
 		checkHealth();
-		int size=sitesUp.size();
+		int size = sitesUp.size();
 		if(size==0)return null;
-		int selected=random.nextInt(size);
-		return sitesUp.get(selected);
+		return sitesUp.get(random.nextInt(size));
 	}
 
-	protected synchronized void checkHealth(){
-		List<VSite>sites=parent.getConfiguredSites();
+	synchronized void checkHealth(){
+		List<VSite>sites = parent.getConfiguredSites();
 		if(lastChecked+interval<System.currentTimeMillis()){
-			Map<String, Boolean>newHealth=new HashMap<String, Boolean>();
-			List<VSite>up=new ArrayList<VSite>();
+			Map<String, Boolean>newHealth = new HashMap<String, Boolean>();
+			List<VSite>up = new ArrayList<VSite>();
 			lastChecked=System.currentTimeMillis();
 			for(VSite v: sites){
-				String key=v.getRealURI().toString();
-				boolean newState=v.ping();
-				Boolean oldStateB=health.get(key);
+				String key = v.getRealURI().toString();
+				boolean newState = v.ping();
+				Boolean oldStateB = health.get(key);
 				boolean oldState=oldStateB==null? false: oldStateB.booleanValue();
 				if(newState!=oldState){
-					String state=newState?"UP":"DOWN";
-					log.info("Vsite "+parent.getName()+" node <"+key+"> is "+state);
+					String state = newState? "UP" : "DOWN";
+					log.info("Vsite {} node <{}> is {}", parent.getName(), key, state);
 				}
 				newHealth.put(key, Boolean.valueOf(newState));
 				if(newState){
 					up.add(v);
 				}
 			}
-			sitesUp=up;
+			sitesUp = up;
 			health.clear();
 			health.putAll(newHealth);
 			return;
 		}
 	}
-
 }

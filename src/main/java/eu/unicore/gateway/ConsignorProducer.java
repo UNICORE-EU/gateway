@@ -32,8 +32,8 @@ public class ConsignorProducer implements IConsignorProducer
 	private static final int CACHE_SIZE = 8;
 	private PrivateKey myKey;
 	private String alg;
-	private boolean doSigned;
-	private LinkedHashMap<Key, Header> cache;
+	private final boolean doSigned;
+	private final LinkedHashMap<Key, Header> cache;
 
 	public ConsignorProducer(boolean doSigned, AuthnAndTrustProperties securityProperties) 
 		throws KeyStoreException, NoSuchAlgorithmException, CertificateException, 

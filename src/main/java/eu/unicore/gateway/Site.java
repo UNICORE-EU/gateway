@@ -1,5 +1,7 @@
 package eu.unicore.gateway;
 
+import java.net.URISyntaxException;
+
 /**
  * a Site
  */
@@ -31,7 +33,7 @@ public interface Site {
 	 * 
 	 * @param uri
 	 */
-	public boolean accept(String uri);
+	public boolean accept(String uri) throws URISyntaxException;
 
 	/**
 	 * select a VSite from this Site based on the given client identifier (for example, the client IP)

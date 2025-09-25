@@ -103,6 +103,11 @@ public class Gateway
 		return consignorProducer;
 	}
 
+	public GatewayJettyServer getJettyServer()
+	{
+		return jetty;
+	}
+
 	public URI getHostURI() 
 	{
 		return hostURI;

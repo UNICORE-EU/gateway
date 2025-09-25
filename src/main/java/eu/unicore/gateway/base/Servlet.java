@@ -76,8 +76,9 @@ public class Servlet extends HttpServlet {
 
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException{
-		String clientIP=req.getRemoteAddr();
-		String clientName="n/a";
+		String clientIP = req.getRemoteAddr();
+		String clientName = "n/a";
+		String method = req.getMethod();
 		try{
 			X509Certificate[] certPath = (X509Certificate[]) req.getAttribute("jakarta.servlet.request.X509Certificate");
 			if (certPath != null){
@@ -86,15 +87,7 @@ public class Servlet extends HttpServlet {
 		}catch(Exception ex){}
 		ThreadContext.put(LogUtil.MDC_IP, clientIP);
 		ThreadContext.put(LogUtil.MDC_DN, clientName);
-
-		if(logger.isDebugEnabled()){
-			StringBuilder sb=new StringBuilder();
-			sb.append("Processing request from ").append(clientIP);
-			if(clientName!=null){
-				sb.append(" Client name: ").append(clientName);
-			}
-			logger.debug(sb.toString());
-		}
+		logger.debug("Processing {} request from ip={} dn={}", method, clientIP, clientName);
 		try{
 			super.service(req, res);
 		}finally{
@@ -106,7 +99,6 @@ public class Servlet extends HttpServlet {
 	@Override
 	protected void doHead(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		logger.debug("Processing HEAD request");
 		doHttp("HEAD", req, resp);
 	}
 
@@ -151,22 +143,22 @@ public class Servlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected void doHttp(String method,HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
+	private void doHttp(String method,HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
 	{
-		SiteOrganiser so = gateway.getSiteOrganiser();     
-		String url=fullRequestURL(req);
-		//check if we can map the request to a virtual site
-		VSite vsite=so.match(url, req.getRemoteAddr());
-		if(vsite!=null){
-			try{
+		SiteOrganiser so = gateway.getSiteOrganiser();   
+		try{
+			String url =fullRequestURL(req);
+			//check if we can map the request to a virtual site
+			VSite vsite = so.match(url, req.getRemoteAddr());
+			if(vsite!=null){
 				performRequestForwarding(method,vsite, url, req, res);
-			}catch(URISyntaxException ue){
-				String msg = Log.createFaultMessage("URI syntax", ue);
-				res.sendError(HttpServletResponse.SC_BAD_REQUEST,msg);
+			}
+			else{
+				res.sendError(HttpServletResponse.SC_NOT_FOUND, "Could not find the requested resource.");
 			}
 		}
-		else{
-			res.sendError(HttpServletResponse.SC_NOT_FOUND,"Could not find the requested resource.");
+		catch(URISyntaxException ue){
+			res.sendError(HttpServletResponse.SC_BAD_REQUEST, "URI syntax");
 		}
 	}
 
@@ -246,7 +238,6 @@ public class Servlet extends HttpServlet {
 						req.getInputStream(), contentLength, contentType);
 				httpWithEntity.setEntity(requestEntity);
 			}
-			
 			try(ClassicHttpResponse response = client.executeOpen(null, http, HttpClientContext.create())){
 				copyResponseHeaders(response, res);
 				res.setStatus(response.getCode());
@@ -262,8 +253,8 @@ public class Servlet extends HttpServlet {
 	
 	private void writeResponseContent(ClassicHttpResponse response, OutputStream os) throws IOException {
 		if(response.getEntity()!=null && response.getEntity().getContent()!=null){
-			InputStream is=response.getEntity().getContent();
-			byte[] buf=new byte[1024];
+			InputStream is = response.getEntity().getContent();
+			byte[] buf = new byte[1024];
 			int r;
 			while((r=is.read(buf))!=-1){
 				os.write(buf, 0, r);
@@ -283,26 +274,21 @@ public class Servlet extends HttpServlet {
 		}
 	}
 
-	public static URI addQueryToURI(URI u, String query) throws IOException
+	public static URI addQueryToURI(URI u, String query) throws URISyntaxException
 	{
-		try 
-		{
-			if(query == null || query.length() == 0){
-				return u;
-			}
-			else{
-				return new URIBuilder(u).setCustomQuery(query).build();
-			}
-		} catch (URISyntaxException e1)
-		{
-			throw new IOException(e1);
+		if(query == null || query.length() == 0){
+			return u;
 		}
+		else{
+			return new URIBuilder(u).setCustomQuery(query).build();
+		}
+
 	}
 
 	private static void copyHeaders(HttpServletRequest req, HttpUriRequestBase method){
-		Enumeration<String> e=req.getHeaderNames();
+		Enumeration<String> e = req.getHeaderNames();
 		while(e.hasMoreElements()){
-			String name=e.nextElement();
+			String name = e.nextElement();
 			if("Host".equalsIgnoreCase(name))continue;
 			Enumeration<String> hdr = req.getHeaders(name);
 			while(hdr.hasMoreElements()){
@@ -320,7 +306,7 @@ public class Servlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
 	{
-		URL url=new URL(fullRequestURL(req));
+		URL url = new URL(fullRequestURL(req));
 		if("/VSITE_REGISTRATION_REQUEST".equals(url.getPath())){
 			handleRegistration(req,res);
 		}
@@ -329,7 +315,7 @@ public class Servlet extends HttpServlet {
 		}
 	}
 
-	protected void handleRegistration(HttpServletRequest req, HttpServletResponse res)throws ServletException,IOException{
+	private void handleRegistration(HttpServletRequest req, HttpServletResponse res)throws ServletException,IOException{
 		if(!properties.isDynamicRegistrationEnabled()){
 			res.sendError(HttpServletResponse.SC_FORBIDDEN,"Dynamic registration is disabled.");
 		}
@@ -365,8 +351,8 @@ public class Servlet extends HttpServlet {
 	 * @param req - a {@link HttpServletRequest}
 	 */
 	public static String fullRequestURL(HttpServletRequest req){
-		String query=req.getQueryString();
-		StringBuffer requestURL=req.getRequestURL();
+		String query = req.getQueryString();
+		StringBuffer requestURL = req.getRequestURL();
 		if(query!=null){
 			requestURL.append("?");
 			requestURL.append(query);

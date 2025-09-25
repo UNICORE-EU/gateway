@@ -11,23 +11,23 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class DefaultPageRenderer {
-	
+
 	private final Gateway gateway;
-	
+
 	public DefaultPageRenderer(Gateway gateway){
 		this.gateway = gateway;
 	}
-	
+
 	/**
 	 * show the default Gateway page ("monkey page")
 	 */
 	public void doGETDefaultGWPage(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		SiteOrganiser so = gateway.getSiteOrganiser();  
-		PrintWriter out=res.getWriter();
+		PrintWriter out = res.getWriter();
 		res.setContentType("text/html");
 		X509Certificate[] certs = (X509Certificate[]) req.getAttribute("jakarta.servlet.request.X509Certificate");
-		String clientIP=req.getRemoteAddr();
-		
+		String clientIP = req.getRemoteAddr();
+
 		out.println("<html><link rel='stylesheet' type='text/css' href='resources/gateway.css'/>"+
 				"<title>UNICORE Gateway</title><body>");
 		StringBuilder top = new StringBuilder();
@@ -39,8 +39,8 @@ public class DefaultPageRenderer {
 			.append(certs[0].getSubjectX500Principal().getName()).append("</p>");
 		}
 		top.append("<p class='username'>Your IP address: ").append(clientIP).append("</p></div>");
-		
-		out.println(getContentDiv(top.toString()));
+
+		out.println(getContent(top.toString()));
 		out.println("<br/>");
 		if(!gateway.getProperties().isDetailedWebPageDisabled()){
 			SortOrder ordering = SortOrder.NONE;
@@ -52,19 +52,17 @@ public class DefaultPageRenderer {
 					}catch(Exception ex) {}
 				}
 			}
-			out.println(getContentDiv(so.toHTMLString(ordering)));
+			out.println(getContent(so.toHTMLString(ordering)));
 		}
 		else{
-			out.println(getContentDiv("<br/>Detailed site listing disabled.<br/>"));
+			out.println(getContent("<br/>Detailed site listing disabled.<br/>"));
 		}
 		out.println("<br/>");
-
 		out.println(getFooter());
-
 		out.println("</html></body>");
 	}
 
-	private String getContentDiv(String content){
+	private String getContent(String content){
 		String s="<div id='content'><b class='rtop'><b class='r1'></b><b class='r2'>"+
 				"</b> <b class='r3'></b> <b class='r4'></b></b>"+content+
 				"<b class=<'rbottom'><b class='r4'></b> <b class='r3'></b> <b class='r2'></b> <b class='r1'></b></b></div>";

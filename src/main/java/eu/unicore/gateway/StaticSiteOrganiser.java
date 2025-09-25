@@ -3,7 +3,6 @@ package eu.unicore.gateway;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -18,11 +17,11 @@ import eu.unicore.util.configuration.ConfigurationException;
  */
 public class StaticSiteOrganiser extends BaseSiteOrganiser
 {
-	private static final Logger log = LogUtil.getLogger(LogUtil.GATEWAY, 
-		StaticSiteOrganiser.class);
-	private ConnectionsProperties props;
 
-	
+	private static final Logger log = LogUtil.getLogger(LogUtil.GATEWAY, StaticSiteOrganiser.class);
+
+	private final ConnectionsProperties props;
+
 	public StaticSiteOrganiser(Gateway gw, File connections) throws ConfigurationException, IOException
 	{      
 		super(gw);
@@ -37,24 +36,21 @@ public class StaticSiteOrganiser extends BaseSiteOrganiser
 	}
 
 	@Override
-	public VSite match(String wsato, String clientIP) {
+	public VSite match(String targetURL, String clientIP) throws URISyntaxException{
 		rereadConnectionsFile();
-		return super.match(wsato, clientIP);
+		return super.match(targetURL, clientIP);
 	}
 
 	private void rereadConnectionsFile()
 	{
-		try
-		{
-			if(!props.reloadIfChanged())
-				return;
-		} catch (IOException e1)
-		{
-			LogUtil.logException("I/O problem reading connections file", e1, log);
+		try{
+			if(!props.reloadIfChanged())return;
+			readConnectionsFile();
+		}catch(Exception e) {
+			LogUtil.logException("Error reading connections file", e, log);
 		}
-		readConnectionsFile();
 	}
-	
+
 	private void readConnectionsFile()
 	{
 		log.info("Reading connections file.");
@@ -69,25 +65,15 @@ public class StaticSiteOrganiser extends BaseSiteOrganiser
 				{
 					Site site = SiteFactory.buildSite(gateway.getHostURI(), siteName, addr,	gateway.getSecurityProperties());
 					if(sites.put(siteName,site)==null){
-						log.info("Added site : "+site.toString());	
+						log.info("Added site: {}", site);	
 					}
 				}
-				catch (URISyntaxException e)
+				catch (Exception e)
 				{
-					LogUtil.logException("cannot parse " + addr + " from the connections file. ingnoring this entry.",e,log);
-				}
-				catch (UnknownHostException e)
-				{
-					LogUtil.logException("cannot get a Inetaddress for " + addr,e,log);
-				}
-				catch (IOException e)
-				{
-					LogUtil.logException("I/O problem",e,log);
+					LogUtil.logException("Error reading connections file entry: "+
+							siteName+"="+addr,e,log);
 				}
 			}
 		}
 	}
 }
-
-
-

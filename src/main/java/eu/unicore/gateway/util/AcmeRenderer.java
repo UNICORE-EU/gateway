@@ -43,7 +43,7 @@ public class AcmeRenderer {
 		}
 		log.info("Serving token file <{}>", tokenFile.getAbsolutePath());
 		String token = FileUtils.readFileToString(tokenFile,"UTF-8");
-		PrintWriter out=res.getWriter();
+		PrintWriter out = res.getWriter();
 		res.setContentType("text/plain");
 		out.println(token);
 	}

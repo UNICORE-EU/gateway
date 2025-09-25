@@ -18,15 +18,14 @@ import eu.unicore.util.jetty.HttpServerProperties;
 
 public class GatewayProperties extends FilePropertiesHelper
 {
-	private static final Logger log = LogUtil.getLogger(LogUtil.CONFIGURATION,
-		GatewayProperties.class);
+
+	private static final Logger log = LogUtil.getLogger(LogUtil.CONFIGURATION, GatewayProperties.class);
 
 	public static final File FILE_GATEWAY_PROPERTIES = new File("conf" + File.separator
 		+ "gateway.properties");
 
 	public static final String KEY_HOSTNAME = "hostname";
 	public static final String KEY_SIGN_CONSIGNOR_TOKEN = "signConsignorToken";
-
 	public static final String KEY_EXTERNAL_ADDRESS = "externalHostname";
 	public static final String KEY_WEBPAGE_DISABLE = "disableWebpage";
 	public static final String KEY_REG_ENABLED = "registration.enable";
@@ -43,7 +42,6 @@ public class GatewayProperties extends FilePropertiesHelper
 	public static final String KEY_CONN_MAX_TOTAL = "client.maxTotal";
 	public static final String KEY_CONN_MAX_PERHOST = "client.maxPerService";
 
-	
 	public static final String KEY_ACME_ENABLE = "acme.enable";
 	public static final String KEY_ACME_DIR = "acme.tokenDirectory";
 	public static final String KEY_ACME_HTTP_PORT = "acme.httpPort";
@@ -52,7 +50,7 @@ public class GatewayProperties extends FilePropertiesHelper
 
 	@DocumentationReferencePrefix
 	public static final String PREFIX="gateway.";
-	
+
 	@DocumentationReferenceMeta
 	public static final Map<String, PropertyMD> DEFAULTS = new HashMap<>();
 	public static final int DEFAULT_MAX_HDR = 102400;
@@ -118,7 +116,6 @@ public class GatewayProperties extends FilePropertiesHelper
 		DEFAULTS.put("consignorTokenValidity",  new PropertyMD().setDeprecated().setDescription("DEPRECATED, no effect"));
 	}
 
-
 	public GatewayProperties(String name) throws ConfigurationException, IOException
 	{
 		this(new File(name));
@@ -128,7 +125,6 @@ public class GatewayProperties extends FilePropertiesHelper
 	{
 		super(PREFIX, f, DEFAULTS, log);
 	}
-
 	
 	public int getSocketTimeout()
 	{

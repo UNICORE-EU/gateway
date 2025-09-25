@@ -19,7 +19,7 @@ public class GatewayHttpServerProperties extends HttpServerProperties
 
 	@DocumentationReferencePrefix
 	public static final String PREFIX = GatewayProperties.PREFIX + HttpServerProperties.DEFAULT_PREFIX;
-	
+
 	@DocumentationReferenceMeta
 	protected final static Map<String, PropertyMD> defaults = new HashMap<>();
 	static 
@@ -30,7 +30,7 @@ public class GatewayHttpServerProperties extends HttpServerProperties
 		}
 		defaults.putAll(HttpServerProperties.defaults);
 	}
-	
+
 	public GatewayHttpServerProperties(String name) throws ConfigurationException, IOException
 	{
 		this(new File(name));
@@ -39,6 +39,5 @@ public class GatewayHttpServerProperties extends HttpServerProperties
 	public GatewayHttpServerProperties(File f) throws ConfigurationException, IOException
 	{
 		super(FilePropertiesHelper.load(f), PREFIX, defaults);
-		
 	}
 }

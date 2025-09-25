@@ -15,6 +15,7 @@ import java.util.List;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpHead;
+import org.apache.hc.client5.http.classic.methods.HttpOptions;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.classic.methods.HttpPut;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
@@ -38,7 +39,7 @@ import eu.unicore.gateway.properties.GatewayProperties;
 
 public class TestServer {
 	
-	protected static Gateway gw;
+	private static Gateway gw;
 
 	@BeforeAll
 	public static void setUp() throws Exception{
@@ -57,10 +58,26 @@ public class TestServer {
 
 	@Test
 	public void testHead() throws Exception{
-		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL("http://localhost:64433/DEMO-SITE"));
-		HttpHead head = new HttpHead("http://localhost:64433/DEMO-SITE");
+		FakeServer s1 = new FakeServer();
+		s1.start();
+		String s1Url = s1.getURI();
+		int status=doRegister("FAKE1", s1Url);
+		assertEquals(HttpStatus.SC_CREATED,status);
+		String url = "http://localhost:64433/FAKE1";
+		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+		HttpHead head = new HttpHead(url);
 		try(ClassicHttpResponse response = hc.executeOpen(null, head, HttpClientContext.create())){
 			System.out.println("HEAD got reply: " + new StatusLine(response));
+		}
+		s1.stop();
+	}
+
+	@Test
+	public void testOptions() throws Exception{
+		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL("http://localhost:64433/DEMO-SITE"));
+		HttpOptions opts = new HttpOptions("http://localhost:64433/DEMO-SITE");
+		try(ClassicHttpResponse response = hc.executeOpen(null, opts, HttpClientContext.create())){
+			System.out.println("OPTIONS got reply: " + new StatusLine(response));
 		}
 	}
 
@@ -137,7 +154,6 @@ public class TestServer {
 		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
 			assertEquals(HttpStatus.SC_OK, response.getCode());
-	
 			List<String> filteredHeadersForwarded=new ArrayList<>();
 			for(String h: s1.getLatestRequestHeaders()){
 				String string=h.trim();

@@ -138,7 +138,6 @@ public class ProtocolUpgradeFilter implements Filter
 	}
 
 	@Override
-	public void destroy()
-	{
-	}
+	public void destroy(){}
+
 }

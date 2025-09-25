@@ -31,7 +31,7 @@ public class XURI
   
   private LinkedList<String> init()
   {
-	LinkedList<String> pl = new LinkedList<String>();
+	LinkedList<String> pl = new LinkedList<>();
     StringTokenizer tok = new StringTokenizer(getPath(), "/");
     while (tok.hasMoreTokens())
     {
@@ -62,7 +62,6 @@ public class XURI
 	  return sb.toString();
   }
   
-
   public String getPath()
   {
     return getURI().getRawPath();

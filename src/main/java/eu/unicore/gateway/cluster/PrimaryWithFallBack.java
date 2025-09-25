@@ -21,36 +21,38 @@ public class PrimaryWithFallBack implements SelectionStrategy {
 	private static final Logger log = LogUtil.getLogger(LogUtil.GATEWAY,PrimaryWithFallBack.class);
 
 	private long lastChecked=-1;
-	
+
 	//how often to ping (millis) the primary site
-	private int interval=5000;
-	
+	private int interval = 5000;
+
 	private VSite primary;
-	
+
 	private VSite secondary;
-	
+
 	private boolean primaryDown;
-	
+
 	private MultiSite parent;
-	
+
+	@Override
 	public void init(MultiSite parent, Map<String, String> params) {
 		this.parent=parent;
 		String intervalS=params.get(HEALTH_CHECK_INTERVAL);
 		if(intervalS!=null){
-			interval=Integer.parseInt(intervalS);
-			log.debug("Health check interval: "+interval+" millis.");
+			interval = Integer.parseInt(intervalS);
+			log.debug("Health check interval: {} millis.", interval);
 		}
 	}
 
+	@Override
 	public VSite select(String clientID) {
-		List<VSite> sites=parent.getConfiguredSites();
-		if(primary==null)primary=sites.get(0);
-		if(secondary==null && sites.size()>1)secondary=sites.get(1);
+		List<VSite> sites = parent.getConfiguredSites();
+		if(primary==null)primary = sites.get(0);
+		if(secondary==null && sites.size()>1)secondary = sites.get(1);
 		checkHealth();
 		return primaryDown?secondary:primary;
 	}
 
-	protected void checkHealth(){
+	private void checkHealth(){
 		if(lastChecked+interval<System.currentTimeMillis()){
 			lastChecked=System.currentTimeMillis();
 			boolean newState=!primary.ping();
@@ -62,5 +64,4 @@ public class PrimaryWithFallBack implements SelectionStrategy {
 			return;
 		}
 	}
-	
 }

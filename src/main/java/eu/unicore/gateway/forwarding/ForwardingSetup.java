@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 
@@ -48,7 +49,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * establishes a ForwardingConnection to the requested back-end site,
- * and setups the data forwarding from the backend to the client
+ * and setups the data forwarding from the back-end to the client
  *
  * @author schuller
  */
@@ -92,12 +93,17 @@ public class ForwardingSetup {
 		SiteOrganiser so = gateway.getSiteOrganiser();     
 		String url = Servlet.fullRequestURL(request);
 		String clientIP = request.getRemoteAddr();
-		VSite vsite = so.match(url,clientIP);
+		VSite vsite = null;
+		try{
+			vsite = so.match(url,clientIP);
+		}catch(URISyntaxException ue) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "URI syntax");
+			return false;
+		}
 		if(vsite==null){
 			response.sendError(404, "The requested resource could not be found");
 			return false;
 		}
-
 		// protocol upgrade handshake with VSite
 		SocketChannel vsiteChannel = null;
 		try{

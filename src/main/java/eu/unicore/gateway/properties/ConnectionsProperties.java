@@ -11,11 +11,15 @@ import eu.unicore.util.Log;
 import eu.unicore.util.configuration.ConfigurationException;
 import eu.unicore.util.configuration.FilePropertiesHelper;
 
-
-
+/**
+ * Provides access to the Gateway connections file, which contains the list
+ * of configured back-end VSites
+ */
 public class ConnectionsProperties extends FilePropertiesHelper
 {
+
 	public static final Logger log = Log.getLogger(Log.CONFIGURATION, ConnectionsProperties.class);
+
 	public static final File FILE_CONNECTIONS_PROPERTIES = new File(
 		"conf" + File.separator + "connections.properties");
 
@@ -23,23 +27,23 @@ public class ConnectionsProperties extends FilePropertiesHelper
 	{
 		super("", f, null, log);
 	}
-	
+
 	public Iterator<Object> getEntries()
 	{
 		return properties.keySet().iterator();
 	}
-	
+
 	public String getSite(String name)
 	{
 		return properties.getProperty(name, null);
 	}
-	
+
 	@Override
 	protected void checkConstraints(Properties props)
 	{
 		//Do nothing - those properties are not constrained and keys are unknown
 	}
-	
+
 	@Override
 	protected void findUnknown(Properties props)
 	{

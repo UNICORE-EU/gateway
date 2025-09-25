@@ -1,5 +1,6 @@
 package eu.unicore.gateway;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +18,8 @@ import eu.unicore.gateway.cluster.MultiSite;
 
 public abstract class BaseSiteOrganiser implements SiteOrganiser
 {
-	protected Gateway gateway;
+	protected final Gateway gateway;
+
 	protected final Map<String,Site> sites = new ConcurrentHashMap<>();
 
 	protected BaseSiteOrganiser(Gateway gw)
@@ -32,7 +34,7 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser
 	}
 
 	@Override
-	public VSite match(String targetURL, String clientIP)
+	public VSite match(String targetURL, String clientIP) throws URISyntaxException
 	{
 		synchronized(sites){
 			for (Site site : getSites())

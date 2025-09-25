@@ -1,5 +1,6 @@
 package eu.unicore.gateway;
 
+import java.net.URISyntaxException;
 import java.util.Collection;
 
 import org.apache.hc.client5.http.classic.HttpClient;
@@ -26,14 +27,14 @@ public interface SiteOrganiser
 	public Collection<Site> getSites();
 
 	/**
-	 * select a matching vsite. The client IP may be ignored, or it may be used
+	 * select a matching VSite. The client IP may be ignored, or it may be used
 	 * in load balancing configurations to achieve IP affinity
 	 * 
-	 * @param wsato - destination, usually obtained as value of the WS-Addressing To header
+	 * @param targetURL - destination
 	 * @param clientIP - the IP of the client
 	 * @return matching vsite
 	 */
-	public VSite match(String wsato, String clientIP);
+	public VSite match(String targetURL, String clientIP) throws URISyntaxException;
 
 	/**
 	 * get a HTML representation of this site organiser
