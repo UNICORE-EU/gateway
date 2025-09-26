@@ -36,6 +36,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import eu.unicore.gateway.SiteOrganiser.SortOrder;
 import eu.unicore.gateway.base.Servlet;
 import eu.unicore.gateway.properties.GatewayProperties;
 
@@ -278,14 +279,17 @@ public class TestServer {
 	}
 	
 	@Test
-	public void testShowVersion()throws Exception{
+	public void testDefaultGWPage()throws Exception{
 		String url="http://localhost:64433/";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
-		HttpGet get=new HttpGet(url);
-		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
-			assertEquals(HttpStatus.SC_OK, response.getCode());
-			String res = EntityUtils.toString(response.getEntity());
-			assert res.contains("Version: "+Gateway.VERSION);
+		for(SortOrder s: new SortOrder[] {SortOrder.NAME, SortOrder.REQUESTS, SortOrder.MESSAGE, SortOrder.ADDRESS}) {
+			url="http://localhost:64433?sort="+s;
+			HttpGet get=new HttpGet(url);
+			try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
+				assertEquals(HttpStatus.SC_OK, response.getCode());
+				String res = EntityUtils.toString(response.getEntity());
+				assert res.contains("Version: "+Gateway.VERSION);
+			}
 		}
 	}
 

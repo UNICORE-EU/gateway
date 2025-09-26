@@ -13,6 +13,7 @@ public class TestGateway {
 		};
 		Gateway.main(args);
 		Gateway.instance.getJettyServer().reloadCredential();;
+		Gateway.instance.getSiteOrganiser().reloadConfig();
 		Gateway.instance.stop();
 	}
 

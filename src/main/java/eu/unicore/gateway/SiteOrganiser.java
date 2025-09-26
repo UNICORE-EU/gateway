@@ -18,7 +18,7 @@ public interface SiteOrganiser
 {
 
 	public enum SortOrder {
-		NONE, NAME, REQUESTS, MESSAGE
+		NONE, NAME, REQUESTS, MESSAGE, ADDRESS
 	};
 
 	/**

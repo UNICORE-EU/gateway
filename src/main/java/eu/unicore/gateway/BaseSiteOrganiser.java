@@ -79,15 +79,13 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser
 		String href;
 		formatter.format("<tr class='heading'>"
 				+ "<td><a class='heading' href=\"?sort=NAME\">Site name</a></td>"
-				+ "<td>Address</td>"
+				+ "<td><a href=\"?sort=ADDRESS\">Address</a></td>"
 				+ "<td><a href=\"?sort=REQUESTS\">Requests served</a></td>"
 				+ "<td>Status</td>"
 				+ "<td><a href=\"?sort=MESSAGE\">Message</a></td></tr>");
 		List<Site> sites = new ArrayList<>();
 		sites.addAll(getSites());
-		if(SortOrder.NONE!=order) {
-			Collections.sort(sites, getSorter(order));
-		}
+		Collections.sort(sites, getSorter(order));
 		for (Site site : sites)
 		{
 			css=even?"even":"odd";
@@ -133,6 +131,19 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser
 			return (a,b)->{
 				return a.getStatusMessage().compareTo(b.getStatusMessage());
 			};
+		case ADDRESS:
+			return (a,b)->{
+				String addrA = "n/a";
+				String addrB = "n/a";
+				if(a instanceof VSite) {
+					addrA = ((VSite)a).getRealURI().toString();
+				}
+				if(b instanceof VSite) {
+					addrB = ((VSite)b).getRealURI().toString();
+				}
+				return addrA.compareTo(addrB);
+			};
+			
 		case NAME:
 		default:
 			return (a,b)->{
