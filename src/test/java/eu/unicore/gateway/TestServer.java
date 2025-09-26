@@ -55,7 +55,7 @@ public class TestServer {
 	@AfterAll
 	public static void tearDown()throws Exception{
 		Thread.sleep(2000);
-		gw.stopGateway();
+		gw.stop();
 	}
 
 	@Test

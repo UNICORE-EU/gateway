@@ -67,7 +67,7 @@ public class TestForwarding {
 
 	@AfterEach
 	protected void tearDown()throws Exception{
-		gw.stopGateway();
+		gw.stop();
 	}
 	
 	@Test

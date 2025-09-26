@@ -41,7 +41,7 @@ public class TestHttpsServer {
 	public static void tearDown()throws Exception{
 		Thread.sleep(1000);
 		backend.stop();
-		gw.stopGateway();
+		gw.stop();
 	}
 
 	@Test
