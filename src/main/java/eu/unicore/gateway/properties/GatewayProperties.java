@@ -217,4 +217,10 @@ public class GatewayProperties extends FilePropertiesHelper
 	{
 		return getFileValue(KEY_ACME_DIR, true);
 	}
+
+	public int getAcmePort()
+	{
+		return getIntValue(KEY_ACME_HTTP_PORT);
+	}
+	
 }

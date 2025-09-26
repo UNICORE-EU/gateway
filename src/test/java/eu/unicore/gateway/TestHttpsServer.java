@@ -32,7 +32,7 @@ public class TestHttpsServer {
 		File sp = new File("src/test/resources/security.properties");
 		File cp = new File("src/test/resources/connection.properties");
 		gw = new Gateway(gp, cp, sp);
-		gw.startGateway();
+		gw.start();
 		backend = FakeHttpsServer.getInstance();
 		backend.start();
 	}

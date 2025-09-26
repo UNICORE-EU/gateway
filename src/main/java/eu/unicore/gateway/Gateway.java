@@ -147,8 +147,7 @@ public class Gateway
 	}
 
 	private URL getAcmeHttpURL(URL mainURL) throws MalformedURLException {
-		int port = gatewayProperties.getIntValue(GatewayProperties.KEY_ACME_HTTP_PORT);
-		return new URL("http://"+mainURL.getHost()+":"+port);
+		return new URL("http://"+mainURL.getHost()+":"+gatewayProperties.getAcmePort());
 	}
 
 	//the version of the gateway jar
@@ -159,7 +158,7 @@ public class Gateway
 	public static final String RELEASE_VERSION = Gateway.class.getPackage().getSpecificationVersion() != null ? 
 			 Gateway.class.getPackage().getSpecificationVersion() : "DEVELOPMENT";
 			
-	public final String getHeader() {
+	public static final String getHeader() {
 		String lineSep = System.getProperty("line.separator");
 		String s = lineSep
 				+ " _    _ _   _ _____ _____ ____  _____  ______"
@@ -178,28 +177,29 @@ public class Gateway
 	}
 	
 
-	public void startGateway() throws Exception
+	public void start() throws Exception
 	{
-		String message=getHeader();
-		log.info(message);
-		System.out.println(message);
 		URL mainURL = new URL(gatewayProperties.getHostname());
 		URL[] urls = new URL[] { mainURL };
 		if(gatewayProperties.isAcmeEnabled()) {
+			log.info("Enabling ACME / Let's Encrypt support, token challenge directory: {}",
+					gatewayProperties.getAcmeDirectory());
 			boolean isSSL = gatewayProperties.getHostname().toLowerCase().startsWith("https");
 			if(isSSL) {
+				URL acmeURL = getAcmeHttpURL(mainURL);
+				log.info("Adding ACME HTTP listener {}", acmeURL);
 				// must add plain http listener for ACME
 				urls = new URL[] { mainURL , getAcmeHttpURL(mainURL)};
 			}
 		}
 		jetty = new GatewayJettyServer(urls, this);
 		jetty.start();
-		message = "UNICORE Gateway startup complete.";
+		String message = "UNICORE Gateway startup complete.";
 		log.info(message);
 		System.out.println(message);
 	}	
 
-	public void stopGateway() throws Exception
+	public void stop() throws Exception
 	{
 		jetty.stop();
 		String message = "UNICORE Gateway stopped.";
@@ -231,6 +231,10 @@ public class Gateway
 	
 	public static void main(String[] args) throws Exception
 	{
+		String message = getHeader();
+		log.info(message);
+		System.out.println(message);
+
 		checkLogSystem();
 		File gwProperties = GatewayProperties.FILE_GATEWAY_PROPERTIES;
 		File connProperties = ConnectionsProperties.FILE_CONNECTIONS_PROPERTIES;
@@ -244,7 +248,7 @@ public class Gateway
 		try
 		{
 			instance = new Gateway(gwProperties, connProperties, secProperties);
-			instance.startGateway();
+			instance.start();
 		} catch(Exception e)
 		{
 			log.fatal("FATAL ERROR starting the Gateway, exiting", e);
