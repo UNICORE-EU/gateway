@@ -23,7 +23,7 @@
     <seclib.version>7.2.1</seclib.version>
     <httpclient.version>5.5</httpclient.version>
     <jetty.version>11.0.26</jetty.version>
-    <commons-codec.version>1.19.0</commons-codec.version>
+    <commons-codec.version>1.20.0</commons-codec.version>
     <junit.version>5.12.0</junit.version>
     <junit.p.version>1.12.0</junit.p.version>
     <jmock.version>2.13.1</jmock.version>

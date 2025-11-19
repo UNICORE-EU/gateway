@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -35,7 +34,7 @@ public class FileWatcher implements Runnable{
 	@Override
 	public void run(){
 		if(target.exists() && target.lastModified()>=lastAccessed){
-			lastAccessed=System.currentTimeMillis();
+			lastAccessed = System.currentTimeMillis();
 			action.run();
 		}
 	}
@@ -47,13 +46,10 @@ public class FileWatcher implements Runnable{
 	private ScheduledExecutorService executor;
 	private synchronized ScheduledExecutorService getExecutor() {
 		if(executor==null) {
-			executor = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-				@Override
-				public Thread newThread(Runnable r) {
-					Thread t = new Thread(r);
-					t.setName("GWFileWatcherThread");
-					return t;
-				}
+			executor = Executors.newSingleThreadScheduledExecutor( r -> {
+				Thread t = new Thread(r);
+				t.setName("GWFileWatcherThread");
+				return t;
 			});
 		}
 		return executor;
