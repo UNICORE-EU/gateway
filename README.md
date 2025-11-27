@@ -1,5 +1,7 @@
 # UNICORE Gateway
 
+[![Unit tests](https://github.com/UNICORE-EU/gateway/actions/workflows/maven.yml/badge.svg)](https://github.com/UNICORE-EU/gateway/actions/workflows/maven.yml)
+
 This repository contains the source code for the UNICORE Gateway.
 
 The UNICORE Gateway is an (optional) server component that

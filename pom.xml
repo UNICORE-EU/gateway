@@ -17,10 +17,10 @@
 
   <properties>
     <!-- release version numbers (for the Linux packaging) -->
-    <package.version>10.3.0</package.version>
+    <package.version>10.3.1</package.version>
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
-    <seclib.version>7.2.1</seclib.version>
+    <seclib.version>7.3.0</seclib.version>
     <httpclient.version>5.5</httpclient.version>
     <jetty.version>11.0.26</jetty.version>
     <commons-codec.version>1.20.0</commons-codec.version>
