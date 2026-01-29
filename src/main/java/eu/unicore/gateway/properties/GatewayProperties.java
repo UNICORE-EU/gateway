@@ -41,6 +41,8 @@ public class GatewayProperties extends FilePropertiesHelper
 	public static final String KEY_PROTO_EXPECTCONTINUE = "client.expectContinue";
 	public static final String KEY_CONN_MAX_TOTAL = "client.maxTotal";
 	public static final String KEY_CONN_MAX_PERHOST = "client.maxPerService";
+	public static final String KEY_CLIENT_CREDENTIAL = "client.credential";
+	public static final String KEY_CLIENT_TRUSTSTORE  = "client.truststore";
 
 	public static final String KEY_ACME_ENABLE = "acme.enable";
 	public static final String KEY_ACME_DIR = "acme.tokenDirectory";
@@ -109,7 +111,10 @@ public class GatewayProperties extends FilePropertiesHelper
 				setDescription("Properties with this prefix are used to configure the Gateway's SSL credential. See separate documentation."));
 		DEFAULTS.put("truststore", new PropertyMD().setCanHaveSubkeys().setHidden().
 				setDescription("Properties with this prefix are used to configure the Gateway's SSL truststore. See separate documentation."));
-
+		DEFAULTS.put(KEY_CLIENT_CREDENTIAL, new PropertyMD().setCanHaveSubkeys().setCategory(cliCat).
+				setDescription("Properties with this prefix are used to configure the SSL credential used for client calls. See separate documentation."));
+		DEFAULTS.put(KEY_CLIENT_TRUSTSTORE, new PropertyMD().setCanHaveSubkeys().setCategory(cliCat).
+				setDescription("Properties with this prefix are used to configure the SSL truststore used for client calls. See separate documentation."));
 		// Deprecated
 		DEFAULTS.put("soapMaxHeader", new PropertyMD().setDescription("DEPRECATED, no effect"));
 		DEFAULTS.put("consignorTokenTimeTolerance", new PropertyMD().setDeprecated().setDescription("DEPRECATED, no effect"));

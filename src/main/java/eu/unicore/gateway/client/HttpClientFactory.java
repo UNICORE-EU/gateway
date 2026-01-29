@@ -37,7 +37,6 @@ public class HttpClientFactory
 	private final HttpClientProperties clientProperties;
 	private final DefaultClientConfiguration clientCfg;
 
-
 	public HttpClientFactory(IAuthnAndTrustConfiguration securityprops, GatewayProperties props) throws Exception {
 		Properties properties = new Properties();
 		properties.setProperty(HttpClientProperties.CONNECT_TIMEOUT, ""+props.getConnectionTimeout());
@@ -51,11 +50,9 @@ public class HttpClientFactory
 		clientCfg.setSslEnabled(sslEnabled);
 		clientCfg.setSslAuthn(sslEnabled && securityprops.getCredential() != null);
 		clientCfg.setHttpClientProperties(clientProperties);
-		
 		this.keepAlive=props.isKeepAlive();
 		this.enableGzip=props.isGzipEnabled();
 		this.useExpectContinue=props.isExpectContinueEnabled();
-		
 		log.debug("Configured Gateway's client factory: [ssl={} sslAuthn={}]",
 				clientCfg.isSslEnabled(), clientCfg.doSSLAuthn());
 	}
