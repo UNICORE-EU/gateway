@@ -20,8 +20,7 @@ public class ConnectionsProperties extends FilePropertiesHelper
 
 	public static final Logger log = Log.getLogger(Log.CONFIGURATION, ConnectionsProperties.class);
 
-	public static final File FILE_CONNECTIONS_PROPERTIES = new File(
-		"conf" + File.separator + "connections.properties");
+	public static final File FILE_CONNECTIONS_PROPERTIES = new File("conf", "connections.properties");
 
 	public ConnectionsProperties(File f) throws ConfigurationException, IOException
 	{

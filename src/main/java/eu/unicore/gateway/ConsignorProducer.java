@@ -10,10 +10,10 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.message.BasicHeader;
 
@@ -102,7 +102,7 @@ public class ConsignorProducer implements IConsignorProducer
 		Signature signature = Signature.getInstance(alg);
 		signature.initSign(myKey);
 		signature.update(hashedToken);
-		return new String(Base64.encodeBase64(signature.sign())); 
+		return Base64.getEncoder().encodeToString(signature.sign());
 	}
 
 	private byte[] hash(byte[]data) throws GeneralSecurityException {

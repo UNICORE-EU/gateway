@@ -21,18 +21,20 @@ public class GatewayProperties extends FilePropertiesHelper
 
 	private static final Logger log = LogUtil.getLogger(LogUtil.CONFIGURATION, GatewayProperties.class);
 
-	public static final File FILE_GATEWAY_PROPERTIES = new File("conf" + File.separator
-		+ "gateway.properties");
+	public static final File FILE_GATEWAY_PROPERTIES = new File("conf", "gateway.properties");
 
 	public static final String KEY_HOSTNAME = "hostname";
 	public static final String KEY_SIGN_CONSIGNOR_TOKEN = "signConsignorToken";
 	public static final String KEY_EXTERNAL_ADDRESS = "externalHostname";
 	public static final String KEY_WEBPAGE_DISABLE = "disableWebpage";
+
+	// dynamic vsite registration properties
 	public static final String KEY_REG_ENABLED = "registration.enable";
 	public static final String KEY_REG_INCL = "registration.allow";
 	public static final String KEY_REG_EXCL = "registration.deny";
 	public static final String KEY_REG_SECRET = "registration.secret";
 
+	// client properties
 	public static final String KEY_SOCKET_TIMEOUT = "client.socketTimeout";
 	public static final String KEY_CHUNKED = "client.chunked";
 	public static final String KEY_CONN_TIMEOUT = "client.connectionTimeout";
@@ -41,19 +43,19 @@ public class GatewayProperties extends FilePropertiesHelper
 	public static final String KEY_PROTO_EXPECTCONTINUE = "client.expectContinue";
 	public static final String KEY_CONN_MAX_TOTAL = "client.maxTotal";
 	public static final String KEY_CONN_MAX_PERHOST = "client.maxPerService";
+	public static final String KEY_CLIENT_CREDENTIAL = "client.credential";
+	public static final String KEY_CLIENT_TRUSTSTORE  = "client.truststore";
 
+	// acme / let's encrypt properties
 	public static final String KEY_ACME_ENABLE = "acme.enable";
 	public static final String KEY_ACME_DIR = "acme.tokenDirectory";
 	public static final String KEY_ACME_HTTP_PORT = "acme.httpPort";
-
-	public static final File FILE_JETTY_PROPERTIES = GatewayProperties.FILE_GATEWAY_PROPERTIES;
 
 	@DocumentationReferencePrefix
 	public static final String PREFIX="gateway.";
 
 	@DocumentationReferenceMeta
 	public static final Map<String, PropertyMD> DEFAULTS = new HashMap<>();
-	public static final int DEFAULT_MAX_HDR = 102400;
 	static 
 	{
 		DocumentationCategory consigCat = new DocumentationCategory("Passing Consignor info", "1");
@@ -62,6 +64,11 @@ public class GatewayProperties extends FilePropertiesHelper
 		
 		DEFAULTS.put(KEY_HOSTNAME, new PropertyMD().setMandatory().
 				setDescription("external gateway bind address"));
+		DEFAULTS.put("credential", new PropertyMD().setCanHaveSubkeys().setHidden().
+				setDescription("Properties with this prefix are used to configure the Gateway's SSL credential. See separate documentation."));
+		DEFAULTS.put("truststore", new PropertyMD().setCanHaveSubkeys().setHidden().
+				setDescription("Properties with this prefix are used to configure the Gateway's SSL truststore. See separate documentation."));
+
 		DEFAULTS.put(KEY_REG_ENABLED, 		new PropertyMD("false").setDescription(
 				"Whether dynamic registration of sites is enabled."));
 		DEFAULTS.put(KEY_REG_EXCL, 		new PropertyMD().setDescription(
@@ -105,11 +112,10 @@ public class GatewayProperties extends FilePropertiesHelper
 		DEFAULTS.put(HttpServerProperties.DEFAULT_PREFIX, new PropertyMD().setCanHaveSubkeys().setHidden().
 				setDescription("Properties with this prefix are used to configure advanced Gateway's Jetty HTTP server settings. See separate documentation."));
 		
-		DEFAULTS.put("credential", new PropertyMD().setCanHaveSubkeys().setHidden().
-				setDescription("Properties with this prefix are used to configure the Gateway's SSL credential. See separate documentation."));
-		DEFAULTS.put("truststore", new PropertyMD().setCanHaveSubkeys().setHidden().
-				setDescription("Properties with this prefix are used to configure the Gateway's SSL truststore. See separate documentation."));
-
+		DEFAULTS.put(KEY_CLIENT_CREDENTIAL, new PropertyMD().setCanHaveSubkeys().setCategory(cliCat).
+				setDescription("Properties with this prefix are used to configure the SSL credential used for client calls. See separate documentation."));
+		DEFAULTS.put(KEY_CLIENT_TRUSTSTORE, new PropertyMD().setCanHaveSubkeys().setCategory(cliCat).
+				setDescription("Properties with this prefix are used to configure the SSL truststore used for client calls. See separate documentation."));
 		// Deprecated
 		DEFAULTS.put("soapMaxHeader", new PropertyMD().setDescription("DEPRECATED, no effect"));
 		DEFAULTS.put("consignorTokenTimeTolerance", new PropertyMD().setDeprecated().setDescription("DEPRECATED, no effect"));

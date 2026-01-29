@@ -23,7 +23,6 @@
     <seclib.version>7.3.1</seclib.version>
     <httpclient.version>5.6</httpclient.version>
     <jetty.version>11.0.26</jetty.version>
-    <commons-codec.version>1.20.0</commons-codec.version>
     <junit.version>5.12.0</junit.version>
     <junit.p.version>1.12.0</junit.p.version>
     <jmock.version>2.13.1</jmock.version>
@@ -54,11 +53,6 @@
       <artifactId>jmock-junit5</artifactId>
       <version>${jmock.version}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-	<artifactId>commons-codec</artifactId>
-	<version>${commons-codec.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents.client5</groupId>

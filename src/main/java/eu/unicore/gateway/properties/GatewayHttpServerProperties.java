@@ -15,7 +15,6 @@ import eu.unicore.util.jetty.HttpServerProperties;
 
 public class GatewayHttpServerProperties extends HttpServerProperties
 {
-	public static final File FILE_JETTY_PROPERTIES = GatewayProperties.FILE_GATEWAY_PROPERTIES;
 
 	@DocumentationReferencePrefix
 	public static final String PREFIX = GatewayProperties.PREFIX + HttpServerProperties.DEFAULT_PREFIX;

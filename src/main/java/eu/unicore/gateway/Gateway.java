@@ -74,13 +74,25 @@ public class Gateway
 		log.info(organiser.toString());
 	}
 
-	public void configureSecurity() throws Exception {
+	private void configureSecurity() throws Exception {
 		securityProperties = new AuthnAndTrustProperties(_securityConfigFile,
 				GatewayProperties.PREFIX + TruststoreProperties.DEFAULT_PREFIX,
 				GatewayProperties.PREFIX + CredentialProperties.DEFAULT_PREFIX);
 		boolean doSign = gatewayProperties.isSignConsignor();
 		consignorProducer = new ConsignorProducer(doSign, securityProperties);
-		clientFactory = new HttpClientFactory(securityProperties, gatewayProperties);
+		AuthnAndTrustProperties clientPKISettings;
+		// try to load separate client settings
+		try {
+			clientPKISettings = new AuthnAndTrustProperties(_securityConfigFile,
+				"gateway.client.truststore.", "gateway.client.credential.");
+				String dn = clientPKISettings.getCredential().getSubjectName();
+				String issuer = clientPKISettings.getCredential().getCertificate().getIssuerX500Principal().getName();
+				log.info("Using separate credential {} issued by {} for client calls.", dn, issuer);
+		}catch(Exception e) {
+			log.info("Using container's server credential/truststore for client calls.");
+			clientPKISettings = securityProperties;
+		}
+		clientFactory = new HttpClientFactory(clientPKISettings, gatewayProperties);
 	}
 
 	public String upSince()
@@ -228,7 +240,7 @@ public class Gateway
 	}
 
 	static Gateway instance;
-	
+
 	public static void main(String[] args) throws Exception
 	{
 		String message = getHeader();
@@ -245,12 +257,10 @@ public class Gateway
 			connProperties = new File(args[1]);
 		if (args.length > 2)
 			secProperties = new File(args[2]);
-		try
-		{
+		try {
 			instance = new Gateway(gwProperties, connProperties, secProperties);
 			instance.start();
-		} catch(Exception e)
-		{
+		} catch(Exception e) {
 			log.fatal("FATAL ERROR starting the Gateway, exiting", e);
 			System.err.println("FATAL ERROR starting the Gateway, exiting");
 			e.printStackTrace();
