@@ -17,7 +17,7 @@
 
   <properties>
     <!-- release version numbers (for the Linux packaging) -->
-    <package.version>10.4.0</package.version>
+    <package.version>10.4.1</package.version>
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
     <seclib.version>7.3.1</seclib.version>
