@@ -61,7 +61,7 @@ public class GatewayProperties extends FilePropertiesHelper
 		DocumentationCategory consigCat = new DocumentationCategory("Passing Consignor info", "1");
 		DocumentationCategory cliCat = new DocumentationCategory("Gateway -> Site client", "2");
 		DocumentationCategory advCat = new DocumentationCategory("Advanced", "3");
-		
+
 		DEFAULTS.put(KEY_HOSTNAME, new PropertyMD().setMandatory().
 				setDescription("external gateway bind address"));
 		DEFAULTS.put("credential", new PropertyMD().setCanHaveSubkeys().setHidden().
@@ -69,37 +69,37 @@ public class GatewayProperties extends FilePropertiesHelper
 		DEFAULTS.put("truststore", new PropertyMD().setCanHaveSubkeys().setHidden().
 				setDescription("Properties with this prefix are used to configure the Gateway's SSL truststore. See separate documentation."));
 
-		DEFAULTS.put(KEY_REG_ENABLED, 		new PropertyMD("false").setDescription(
+		DEFAULTS.put(KEY_REG_ENABLED, new PropertyMD("false").setDescription(
 				"Whether dynamic registration of sites is enabled."));
-		DEFAULTS.put(KEY_REG_EXCL, 		new PropertyMD().setDescription(
+		DEFAULTS.put(KEY_REG_EXCL, new PropertyMD().setDescription(
 				"Space separated list of denied hosts for dynamic registration."));
-		DEFAULTS.put(KEY_REG_INCL, 		new PropertyMD().setDescription(
+		DEFAULTS.put(KEY_REG_INCL, new PropertyMD().setDescription(
 				"Space separated list of allowed hosts for dynamic registration."));
-		DEFAULTS.put(KEY_REG_SECRET, 		new PropertyMD().setDescription(
+		DEFAULTS.put(KEY_REG_SECRET, new PropertyMD().setDescription(
 				"Required secret for dynamic registration."));
 
-		DEFAULTS.put(KEY_WEBPAGE_DISABLE, 	new PropertyMD("false").setCategory(advCat).setDescription(
+		DEFAULTS.put(KEY_WEBPAGE_DISABLE, new PropertyMD("false").setCategory(advCat).setDescription(
 				"Whether the (so called monkey) status web page should be disabled."));
-		DEFAULTS.put(KEY_EXTERNAL_ADDRESS, 	new PropertyMD((String)null).setCategory(advCat).setDescription(
+		DEFAULTS.put(KEY_EXTERNAL_ADDRESS, new PropertyMD((String)null).setCategory(advCat).setDescription(
 				"External address of the gateway, when it is accessible through a frontend server as Apache HTTP."));
-		DEFAULTS.put(KEY_CONN_MAX_PERHOST, 	new PropertyMD("20").setCategory(cliCat).setDescription(
+		DEFAULTS.put(KEY_CONN_MAX_PERHOST, new PropertyMD("20").setCategory(cliCat).setDescription(
 				"Maximum allowed number of connections per backend site."));
-		DEFAULTS.put(KEY_CONN_MAX_TOTAL, 	new PropertyMD("100").setCategory(cliCat).setDescription(
+		DEFAULTS.put(KEY_CONN_MAX_TOTAL, new PropertyMD("100").setCategory(cliCat).setDescription(
 				"Maximum total number of connections to backend sites allowed."));
-		DEFAULTS.put(KEY_CHUNKED, 		new PropertyMD("true").setCategory(cliCat).setDescription(
+		DEFAULTS.put(KEY_CHUNKED, new PropertyMD("true").setCategory(cliCat).setDescription(
 				"Controls whether chunked passing of HTTP requests to backend sites is supported."));
-		DEFAULTS.put(KEY_CONN_GZIP, 		new PropertyMD("true").setCategory(cliCat).setDescription(
+		DEFAULTS.put(KEY_CONN_GZIP,	new PropertyMD("true").setCategory(cliCat).setDescription(
 				"Controls whether support for compression is announced to backend sites."));
-		DEFAULTS.put(KEY_CONN_KEEPALIVE, 	new PropertyMD("true").setCategory(cliCat).setDescription(
+		DEFAULTS.put(KEY_CONN_KEEPALIVE, new PropertyMD("true").setCategory(cliCat).setDescription(
 				"Whether to keep alive the connections to backend sites."));
-		DEFAULTS.put(KEY_CONN_TIMEOUT, 		new PropertyMD("30000").setCategory(cliCat).setDescription(
+		DEFAULTS.put(KEY_CONN_TIMEOUT, new PropertyMD("30000").setCategory(cliCat).setDescription(
 				"Connection timeout, used when connecting to backend sites."));
-		DEFAULTS.put(KEY_SOCKET_TIMEOUT, 	new PropertyMD("30000").setCategory(cliCat).setDescription(
+		DEFAULTS.put(KEY_SOCKET_TIMEOUT, new PropertyMD("30000").setCategory(cliCat).setDescription(
 				"Connection timeout, used when connecting to backend sites."));
-		DEFAULTS.put(KEY_PROTO_EXPECTCONTINUE, 	new PropertyMD("true").setCategory(cliCat).setDescription(
+		DEFAULTS.put(KEY_PROTO_EXPECTCONTINUE, new PropertyMD("true").setCategory(cliCat).setDescription(
 				"Controls whether the HTTP expect-continue mechanism is enabled on connections to backend sites."));
 
-		DEFAULTS.put(KEY_SIGN_CONSIGNOR_TOKEN, 	new PropertyMD("false").setCategory(consigCat).setDescription(
+		DEFAULTS.put(KEY_SIGN_CONSIGNOR_TOKEN, new PropertyMD("false").setCategory(consigCat).setDescription(
 				"Controls whether information about the authenticated client (the consignor) passed to backend sites should be signed, or not. Signing is slower, but is required when sites may be reached directly, bypassing the Gateway."));
 
 		DEFAULTS.put(KEY_ACME_ENABLE, new PropertyMD("false").setBoolean().
@@ -111,15 +111,16 @@ public class GatewayProperties extends FilePropertiesHelper
 
 		DEFAULTS.put(HttpServerProperties.DEFAULT_PREFIX, new PropertyMD().setCanHaveSubkeys().setHidden().
 				setDescription("Properties with this prefix are used to configure advanced Gateway's Jetty HTTP server settings. See separate documentation."));
-		
+
 		DEFAULTS.put(KEY_CLIENT_CREDENTIAL, new PropertyMD().setCanHaveSubkeys().setCategory(cliCat).
 				setDescription("Properties with this prefix are used to configure the SSL credential used for client calls. See separate documentation."));
 		DEFAULTS.put(KEY_CLIENT_TRUSTSTORE, new PropertyMD().setCanHaveSubkeys().setCategory(cliCat).
 				setDescription("Properties with this prefix are used to configure the SSL truststore used for client calls. See separate documentation."));
+
 		// Deprecated
 		DEFAULTS.put("soapMaxHeader", new PropertyMD().setDescription("DEPRECATED, no effect"));
 		DEFAULTS.put("consignorTokenTimeTolerance", new PropertyMD().setDeprecated().setDescription("DEPRECATED, no effect"));
-		DEFAULTS.put("consignorTokenValidity",  new PropertyMD().setDeprecated().setDescription("DEPRECATED, no effect"));
+		DEFAULTS.put("consignorTokenValidity", new PropertyMD().setDeprecated().setDescription("DEPRECATED, no effect"));
 	}
 
 	public GatewayProperties(String name) throws ConfigurationException, IOException
@@ -131,12 +132,12 @@ public class GatewayProperties extends FilePropertiesHelper
 	{
 		super(PREFIX, f, DEFAULTS, log);
 	}
-	
+
 	public int getSocketTimeout()
 	{
 		return getIntValue(KEY_SOCKET_TIMEOUT);
 	}
-	
+
 	public int getConnectionTimeout()
 	{
 		return getIntValue(KEY_CONN_TIMEOUT);
@@ -151,7 +152,7 @@ public class GatewayProperties extends FilePropertiesHelper
 	{
 		return getBooleanValue(KEY_CONN_GZIP);
 	}
-	
+
 	public boolean isExpectContinueEnabled()
 	{
 		return getBooleanValue(KEY_PROTO_EXPECTCONTINUE);
@@ -161,26 +162,27 @@ public class GatewayProperties extends FilePropertiesHelper
 	{
 		return getIntValue(KEY_CONN_MAX_TOTAL);
 	}
+
 	public int getMaxPerServiceConnections()
 	{
 		return getIntValue(KEY_CONN_MAX_PERHOST);
 	}	
-	
+
 	public String getHostname()
 	{
 		return getValue(GatewayProperties.KEY_HOSTNAME);
 	}
-	
+
 	public String getExternalHostname()
 	{
 		return getValue(GatewayProperties.KEY_EXTERNAL_ADDRESS);
 	}
-	
+
 	public boolean isSignConsignor()
 	{
 		return getBooleanValue(KEY_SIGN_CONSIGNOR_TOKEN);
 	}
-	
+
 	public boolean isDynamicRegistrationEnabled() 
 	{
 		boolean enabled = getBooleanValue(KEY_REG_ENABLED);
@@ -193,17 +195,17 @@ public class GatewayProperties extends FilePropertiesHelper
 		}
 		return enabled;
 	}
-	
+
 	public boolean isDetailedWebPageDisabled() 
 	{
 		return getBooleanValue(KEY_WEBPAGE_DISABLE);
 	}
-	
+
 	public boolean isChunkedDispatch()
 	{
 		return getBooleanValue(KEY_CHUNKED);
 	}
-	
+
 	public String getRegistrationExcludes()
 	{
 		return getValue(KEY_REG_EXCL);
@@ -228,5 +230,5 @@ public class GatewayProperties extends FilePropertiesHelper
 	{
 		return getIntValue(KEY_ACME_HTTP_PORT);
 	}
-	
+
 }
