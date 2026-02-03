@@ -31,6 +31,7 @@ public class Gateway
 	private ConsignorProducer consignorProducer;
 	private GatewayProperties gatewayProperties;
 	private AuthnAndTrustProperties securityProperties;
+	private AuthnAndTrustProperties clientPKISettings;
 	private GatewayHttpServerProperties jettyProperties;
 	private HttpClientFactory clientFactory;
 	private URI hostURI;
@@ -78,9 +79,6 @@ public class Gateway
 		securityProperties = new AuthnAndTrustProperties(_securityConfigFile,
 				GatewayProperties.PREFIX + TruststoreProperties.DEFAULT_PREFIX,
 				GatewayProperties.PREFIX + CredentialProperties.DEFAULT_PREFIX);
-		boolean doSign = gatewayProperties.isSignConsignor();
-		consignorProducer = new ConsignorProducer(doSign, securityProperties);
-		AuthnAndTrustProperties clientPKISettings;
 		// try to load separate client settings
 		try {
 			clientPKISettings = new AuthnAndTrustProperties(_securityConfigFile,
@@ -93,6 +91,8 @@ public class Gateway
 			clientPKISettings = securityProperties;
 		}
 		clientFactory = new HttpClientFactory(clientPKISettings, gatewayProperties);
+		boolean doSign = gatewayProperties.isSignConsignor();
+		consignorProducer = new ConsignorProducer(doSign, clientPKISettings);
 	}
 
 	public String upSince()
@@ -147,12 +147,12 @@ public class Gateway
 
 	public void reloadConfig() {
 		try{
-			consignorProducer.reinit(securityProperties);
+			consignorProducer.reinit(clientPKISettings);
 		}catch(Exception e) {
 			log.error("Error reloading consignorProducer", e);
 		}	
 		try {
-			clientFactory = new HttpClientFactory(securityProperties, gatewayProperties);
+			clientFactory = new HttpClientFactory(clientPKISettings, gatewayProperties);
 		}catch(Exception e) {
 			log.error("Error reloading clientFactory config", e);
 		}
