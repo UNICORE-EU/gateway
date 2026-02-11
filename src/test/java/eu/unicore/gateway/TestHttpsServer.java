@@ -49,7 +49,7 @@ public class TestHttpsServer {
 		String url="https://localhost:64433/SSL-SITE/service";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpPost post= gw.getClientFactory().makePostMethod(url, 
-				new ByteArrayEntity(TestServer.getBody(url), ContentType.APPLICATION_SOAP_XML));
+				new ByteArrayEntity(TestServer.getBody(), ContentType.APPLICATION_SOAP_XML));
 		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
 			System.out.println(new StatusLine(response));
 			String resp = EntityUtils.toString(response.getEntity());
@@ -60,7 +60,7 @@ public class TestHttpsServer {
 			assertTrue(resp.contains("OKOKOK"));
 		}
 	}
-	
+
 	@Test
 	public void testGetWithSignedAssertionForwarding() throws Exception {
 		String url="https://localhost:64433/SSL-SITE/service";

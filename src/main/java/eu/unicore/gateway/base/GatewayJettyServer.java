@@ -5,19 +5,16 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.ee10.servlet.ResourceServlet;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 
 import eu.unicore.gateway.Gateway;
 import eu.unicore.gateway.forwarding.ProtocolUpgradeFilter;
-import eu.unicore.gateway.util.AcmeFilter;
+import eu.unicore.gateway.util.AcmeHandler;
 import eu.unicore.gateway.util.FileWatcher;
-import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.security.canl.CredentialProperties;
-import eu.unicore.util.Log;
 import eu.unicore.util.configuration.ConfigurationException;
 import eu.unicore.util.jetty.JettyServerBase;
 
@@ -30,8 +27,6 @@ import eu.unicore.util.jetty.JettyServerBase;
  * @author K. Benedyczak
  */
 public class GatewayJettyServer extends JettyServerBase {
-
-	private static final Logger logger=LogUtil.getLogger(Log.HTTP_SERVER, GatewayJettyServer.class);
 
 	private final Gateway gateway;
 
@@ -46,17 +41,30 @@ public class GatewayJettyServer extends JettyServerBase {
 	@Override
 	protected Handler createRootHandler() throws ConfigurationException
 	{
-		ServletContextHandler root = new ServletContextHandler(getServer(), "/", 
-				ServletContextHandler.SESSIONS);
+		ServletContextHandler root = new ServletContextHandler("/",	ServletContextHandler.SESSIONS);
 		ProtocolUpgradeFilter.ensureFilter(root.getServletContext(), gateway);
-		AcmeFilter.ensureFilter(root.getServletContext(), gateway);
 		ServletHolder servletHolder = new ServletHolder(new Servlet(gateway));
 		root.addServlet(servletHolder, "/*");
-		URL u = getClass().getResource("/eu/unicore/gateway");
-		root.setResourceBase(u.toString());
-		logger.debug("Adding resources servlet, base={}", u);
-		root.addServlet(DefaultServlet.class,"/resources/*");
+		ServletHolder resHolder = new ServletHolder(new ResourceServlet());
+		URL u = getClass().getResource("/eu/unicore/gateway/resources");
+		resHolder.setInitParameter("baseResource", u.toString());
+		root.addServlet(resHolder, "/resources/*");
 		return root;
+	}
+
+	@Override
+	protected Handler configureHandlers(Handler root) {
+		if(gateway.getProperties().isAcmeEnabled() &&
+				gateway.getProperties().getHostname().toLowerCase().startsWith("https")) 
+		{
+			AcmeHandler h = new AcmeHandler();
+			h.setHandler(super.configureHandlers(root));
+			return h;
+			
+		}
+		else{
+			return super.configureHandlers(root);
+		}
 	}
 
 	@Override

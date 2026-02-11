@@ -5,10 +5,11 @@ import java.util.EnumSet;
 import java.util.Objects;
 
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.ee10.servlet.FilterHolder;
+import org.eclipse.jetty.ee10.servlet.FilterMapping;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHandler;
 import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.servlet.FilterHolder;
-import org.eclipse.jetty.servlet.FilterMapping;
-import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.annotation.ManagedObject;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.thread.AutoLock;
@@ -46,9 +47,9 @@ public class ProtocolUpgradeFilter implements Filter
 
 	private static FilterHolder getFilter(ServletContext servletContext)
 	{
-		ContextHandler contextHandler = Objects.requireNonNull(ContextHandler.getContextHandler(servletContext));
-		ServletHandler servletHandler = contextHandler.getChildHandlerByClass(ServletHandler.class);
-		return servletHandler.getFilter(ProtocolUpgradeFilter.class.getName());
+		ContextHandler contextHandler = Objects.requireNonNull(ServletContextHandler.getServletContextHandler(servletContext));
+        ServletHandler servletHandler = contextHandler.getDescendant(ServletHandler.class);
+        return servletHandler.getFilter(ProtocolUpgradeFilter.class.getName());
 	}
 
 	/**
@@ -63,8 +64,8 @@ public class ProtocolUpgradeFilter implements Filter
 			if (existingFilter != null)
 				return;
 
-			ContextHandler contextHandler = Objects.requireNonNull(ContextHandler.getContextHandler(servletContext));
-			ServletHandler servletHandler = contextHandler.getChildHandlerByClass(ServletHandler.class);
+			ContextHandler contextHandler = Objects.requireNonNull(ServletContextHandler.getServletContextHandler(servletContext));
+	        ServletHandler servletHandler = contextHandler.getDescendant(ServletHandler.class);
 
 			final String pathSpec = "/*";
 			FilterHolder holder = new FilterHolder(new ProtocolUpgradeFilter(gateway));
@@ -96,22 +97,33 @@ public class ProtocolUpgradeFilter implements Filter
 
 	private ForwardingSetup mapper;
 
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
-	{		
-		HttpServletRequest httpreq = (HttpServletRequest)request;
-		HttpServletResponse httpresp = (HttpServletResponse)response;
-		if (mapper.upgrade(httpreq, httpresp))
-		{
-			return;
-		}
-		// Otherwise, handle normally
-		chain.doFilter(request, response);
-	}
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
+    {
+    	HttpServletRequest httpRequest = (HttpServletRequest)request;
+    	HttpServletResponse httpResponse = (HttpServletResponse)response;
+        // Do preliminary check before proceeding to attempt an upgrade.
+        if (ForwardingSetup.validateRequest(httpRequest))
+        {
+            if (mapper.upgrade(httpRequest, httpResponse))
+            {
+            	return;
+            }
+        }
+        // If we reach this point, it means we had an incoming request to upgrade
+        // but something went wrong
+        if (response.isCommitted())
+            return;
 
+        // Handle normally
+        chain.doFilter(request, response);
+    }
 	@Override
 	public void init(FilterConfig config) throws ServletException
 	{
 		  mapper = ForwardingSetup.ensureMappings(config.getServletContext(), gateway);
 	}
+	
+	
+	
 }

@@ -3,8 +3,8 @@ package eu.unicore.gateway;
 import java.net.URL;
 import java.util.Properties;
 
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.servlet.ServletContextHandler;
 
 import eu.unicore.security.canl.AuthnAndTrustProperties;
 import eu.unicore.security.canl.CredentialProperties;
@@ -27,10 +27,9 @@ public class FakeHttpsServer extends JettyServerBase
 
 	@Override
 	protected Handler createRootHandler() throws ConfigurationException {
-		ServletContextHandler root = new ServletContextHandler(getServer(), "/", ServletContextHandler.SESSIONS); 
-		return root; 
+		return new ServletContextHandler("/", ServletContextHandler.SESSIONS); 
 	}
-	
+
 	public static Properties getSecureProperties()
 	{
 		Properties p = new Properties();

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.SocketChannel;
@@ -41,7 +40,7 @@ public class TestForwarding {
 	protected Gateway gw;
 
 	protected EchoEndpointServer echo;
-	
+
 	protected String getScheme() {
 		return "http";
 	}
@@ -69,7 +68,7 @@ public class TestForwarding {
 	protected void tearDown()throws Exception{
 		gw.stop();
 	}
-	
+
 	@Test
 	public void testPortForwarding() throws Exception{
 		echo.setStatusCode(101);
@@ -86,16 +85,18 @@ public class TestForwarding {
 		System.out.println("Got socket connected to: "+ remote.getRemoteAddress() +
 				" local address: " + remote.getLocalAddress());
 		assertTrue(echo.getLatestQuery().contains("?port=1234"));
-		PrintWriter w = new PrintWriter(new OutputStreamWriter(ChannelUtils.newOutputStream(remote, 65536)), true);
-		Reader r = new InputStreamReader(ChannelUtils.newInputStream(remote, 65536));
-		BufferedReader br = new BufferedReader(r);
-		for(int i=0; i<10; i++) {
-			String out = "test_"+i;
-			w.println(out);
-			System.out.println("---> "+out);
-			String line = br.readLine();
-			System.out.println("<--- "+line);
-			assertEquals(out, line);
+
+		try(PrintWriter w = new PrintWriter(new OutputStreamWriter(ChannelUtils.newOutputStream(remote, 65536)), true);
+				BufferedReader br = new BufferedReader(new InputStreamReader(ChannelUtils.newInputStream(remote, 65536))))
+		{
+			for(int i=0; i<10; i++) {
+				String out = "test_"+i;
+				w.println(out);
+				System.out.println("---> "+out);
+				String line = br.readLine();
+				System.out.println("<--- "+line);
+				assertEquals(out, line);
+			}
 		}
 	}
 
@@ -121,7 +122,7 @@ public class TestForwarding {
 		};
 		echo.stop();
 	}
-	
+
 	private int doRegister(String name, String address)throws Exception{
 		String url = getScheme()+"://localhost:64433/VSITE_REGISTRATION_REQUEST";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));

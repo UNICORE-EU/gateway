@@ -189,7 +189,6 @@ public class EchoEndpointServer implements Runnable {
 		while(!stopping){
 			try {
 			    if(socket==null)socket = serverSocket.accept();
-
 				parseHttp(socket.getInputStream());
 				log.info("Handling request.");
 				String status="HTTP/1.1 "+statusCode+" "+HttpStatus.getMessage(statusCode)+"\n";
@@ -208,7 +207,10 @@ public class EchoEndpointServer implements Runnable {
 						socket.getOutputStream().write((line+"\n").getBytes());
 						socket.getOutputStream().flush();
 					}
-					if(n<0)break;
+					if(n<=0) {
+						stopping=true;
+						break;
+					}
 				}
 			}catch(Exception ex){ 
 				ex.printStackTrace();

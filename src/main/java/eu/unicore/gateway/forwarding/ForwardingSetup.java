@@ -18,15 +18,17 @@ import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.core5.http.Header;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.ee10.servlet.ServletCoreRequest;
+import org.eclipse.jetty.ee10.servlet.ServletCoreResponse;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.PreEncodedHttpField;
+import org.eclipse.jetty.io.EndPoint;
 import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.HttpChannel;
-import org.eclipse.jetty.server.HttpTransport;
+import org.eclipse.jetty.server.HttpStream;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 
@@ -41,8 +43,6 @@ import eu.unicore.util.httpclient.DefaultClientConfiguration;
 import eu.unicore.util.httpclient.HttpUtils;
 import eu.unicore.util.jetty.forwarding.Forwarder;
 import eu.unicore.util.jetty.forwarding.ForwardingConnection;
-import eu.unicore.util.jetty.forwarding.UpgradeHttpServletRequest;
-import eu.unicore.util.jetty.forwarding.UpgradeHttpServletResponse;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -86,9 +86,6 @@ public class ForwardingSetup {
 
 	public boolean upgrade(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
-		if (!validateRequest(request))
-			return false;
-
 		// find VSite to forward to
 		SiteOrganiser so = gateway.getSiteOrganiser();     
 		String url = Servlet.fullRequestURL(request);
@@ -111,24 +108,20 @@ public class ForwardingSetup {
 		}catch(Exception e) {
 			throw new IOException(e);
 		}
-		Request baseRequest = Request.getBaseRequest(request);
-		Response baseResponse = baseRequest.getResponse();
+		Request baseRequest = ServletCoreRequest.wrap(request);
+	    Response baseResponse = ServletCoreResponse.wrap(baseRequest, response, false);
+
 		int httpStatus = response.getStatus();
 		if(httpStatus==101) {
 			ForwardingConnection toClient = createForwardingConnection(baseRequest, vsiteChannel);
 			logger.debug("forwarding-connection {} to vsite {}", toClient, vsiteChannel);
-			if (toClient == null)
+			if (toClient == null) {
 				throw new IOException("not upgraded: no connection");
-			HttpChannel httpChannel = baseRequest.getHttpChannel();
-			httpChannel.getConnector().getEventListeners().forEach(toClient::addEventListener);
-
-			baseRequest.setHandled(true);
+			}
+			Connector connector = baseRequest.getConnectionMetaData().getConnector();
+			connector.getEventListeners().forEach(toClient::addEventListener);
 			prepare101Response(baseResponse);
-			baseResponse.flushBuffer();
-			baseRequest.setAttribute(HttpTransport.UPGRADE_CONNECTION_ATTRIBUTE, toClient);
-			// Save state from request/response and remove reference to the base request/response.
-			new UpgradeHttpServletRequest(request).upgrade();
-			new UpgradeHttpServletResponse(response).upgrade();
+			baseRequest.setAttribute(HttpStream.UPGRADE_CONNECTION_ATTRIBUTE, toClient);
 			Forwarder.get().attach(toClient);
 			logger.info("Forwarding to {}, connection={}", vsite, toClient);
 		}
@@ -142,7 +135,7 @@ public class ForwardingSetup {
 		return true;
 	}
 
-	protected boolean validateRequest(HttpServletRequest request)
+	public static boolean validateRequest(HttpServletRequest request)
 	{
 		return
 				HttpMethod.GET.is(request.getMethod())
@@ -154,22 +147,20 @@ public class ForwardingSetup {
 
 	protected ForwardingConnection createForwardingConnection(Request baseRequest, SocketChannel vsiteChannel)
 	{
-		HttpChannel httpChannel = baseRequest.getHttpChannel();
-		Connector connector = httpChannel.getConnector();
-		return new ForwardingConnection(httpChannel.getEndPoint(),
-				connector.getExecutor(),
-				vsiteChannel);
+		Connector connector = baseRequest.getConnectionMetaData().getConnector();
+		EndPoint ep  = baseRequest.getConnectionMetaData().getConnection().getEndPoint();
+		return new ForwardingConnection(ep, connector.getExecutor(), vsiteChannel);
 	}
 
 	protected void prepareErrorResponse(Response response, int code, String message) throws IOException
 	{
-		response.sendError(code, message);
+		response.setStatus(code);
 	}
 
 	protected void prepare101Response(Response response)
 	{
 		response.setStatus(HttpServletResponse.SC_SWITCHING_PROTOCOLS);
-		HttpFields.Mutable responseFields = response.getHttpFields();
+		HttpFields.Mutable responseFields = response.getHeaders();
 		responseFields.put(UPGRADE_HDR);
 		responseFields.put(CONNECTION_HDR);
 	}

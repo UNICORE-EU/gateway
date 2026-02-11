@@ -114,7 +114,7 @@ public class TestServer {
 		String url="http://localhost:64433/FAKE1/test";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpPost post=new HttpPost(url);
-		byte[] originalRequestBody = getNonSOAPPostBody();
+		byte[] originalRequestBody = getBody();
 		post.setEntity(new ByteArrayEntity(originalRequestBody, ContentType.APPLICATION_JSON));
 		String userName = "demouser";
 		String password = "test123";
@@ -294,6 +294,16 @@ public class TestServer {
 	}
 
 	@Test
+	public void testDefaultGWPageLoadResources()throws Exception{
+		String url="http://localhost:64433/resources/unicore_logo.gif";
+		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+		HttpGet get=new HttpGet(url);
+		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
+			assertEquals(HttpStatus.SC_OK, response.getCode());
+		}
+	}
+
+	@Test
 	public void testPut()throws Exception{
 		FakeServer s1=new FakeServer();
 		s1.start();
@@ -304,7 +314,7 @@ public class TestServer {
 		String url="http://localhost:64433/FAKE1/test";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpPut put=new HttpPut(url);
-		AbstractHttpEntity entity = new ByteArrayEntity(getBody(url), ContentType.WILDCARD, true);
+		AbstractHttpEntity entity = new ByteArrayEntity(getBody(), ContentType.WILDCARD, true);
 		put.setEntity(entity);
 		s1.setStatusCode(HttpStatus.SC_NO_CONTENT);
 		try(ClassicHttpResponse response = hc.executeOpen(null, put, HttpClientContext.create())){
@@ -325,7 +335,7 @@ public class TestServer {
 		String url="http://localhost:64433/FAKE1/test";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpPut put=new HttpPut(url);
-		AbstractHttpEntity entity = new ByteArrayEntity(getBody(url), ContentType.APPLICATION_JSON, true);
+		AbstractHttpEntity entity = new ByteArrayEntity(getBody(), ContentType.APPLICATION_JSON, true);
 		put.setEntity(entity);
 		s1.setStatusCode(HttpStatus.SC_NO_CONTENT);
 		try(ClassicHttpResponse response = hc.executeOpen(null, put, HttpClientContext.create())){
@@ -334,34 +344,8 @@ public class TestServer {
 		}
 		s1.stop();
 	}
-	
-	/**
-	 * get a minimalistic SOAP message
-	 * @param to - WS Addressing To header
-	 */
-	public static byte[] getBody(String to)throws IOException{
-		ByteArrayOutputStream bos=new ByteArrayOutputStream();
-		OutputStreamWriter wr=new OutputStreamWriter(bos);
 
-		wr.write("<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\n"+
-				"xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" \n"+
-				"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"+
-				"<soap:Header>");
-		wr.write("<wsa:To xmlns:wsa=\"http://www.w3.org/2005/08/addressing\">");
-		wr.write(to);
-		wr.write("</wsa:To>\n");
-		wr.write("</soap:Header>");
-		wr.write("<soap:Body>test</soap:Body>");
-		wr.write("</soap:Envelope>");
-		wr.flush();
-		return bos.toByteArray();
-	}
-
-	/**
-	 * get a small non-SOAP message
-	 * @param to - WS Addressing To header
-	 */
-	public static byte[] getNonSOAPPostBody()throws IOException{
+	static byte[] getBody()throws IOException{
 		ByteArrayOutputStream bos=new ByteArrayOutputStream();
 		OutputStreamWriter wr=new OutputStreamWriter(bos);
 		wr.write("{foo: bar, ham: spam}\n");
