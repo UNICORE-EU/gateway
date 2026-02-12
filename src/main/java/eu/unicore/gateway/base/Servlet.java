@@ -37,7 +37,7 @@ import eu.unicore.gateway.SiteOrganiser;
 import eu.unicore.gateway.VSite;
 import eu.unicore.gateway.properties.GatewayProperties;
 import eu.unicore.gateway.util.AcmeRenderer;
-import eu.unicore.gateway.util.DefaultPageRenderer;
+import eu.unicore.gateway.util.FrontPageRenderer;
 import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.util.Log;
 import jakarta.servlet.ServletException;
@@ -107,7 +107,7 @@ public class Servlet extends HttpServlet {
 	{
 		URL u = new URL(req.getRequestURL().toString());
 		if("/".equals(u.getPath())){
-			new DefaultPageRenderer(gateway).doGETDefaultGWPage(req, res);
+			new FrontPageRenderer(gateway).getFrontPage(req, res);
 		}
 		else if(u.getPath().startsWith("/.well-known/acme-challenge/")) {
 			String file = new File(u.getPath()).getName();

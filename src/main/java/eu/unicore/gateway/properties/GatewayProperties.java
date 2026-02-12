@@ -27,6 +27,7 @@ public class GatewayProperties extends FilePropertiesHelper
 	public static final String KEY_SIGN_CONSIGNOR_TOKEN = "signConsignorToken";
 	public static final String KEY_EXTERNAL_ADDRESS = "externalHostname";
 	public static final String KEY_WEBPAGE_DISABLE = "disableWebpage";
+	public static final String KEY_WEBPAGE_SHOW_ADDRESSES = "showServiceAddresses";
 
 	// dynamic vsite registration properties
 	public static final String KEY_REG_ENABLED = "registration.enable";
@@ -80,6 +81,9 @@ public class GatewayProperties extends FilePropertiesHelper
 
 		DEFAULTS.put(KEY_WEBPAGE_DISABLE, new PropertyMD("false").setCategory(advCat).setDescription(
 				"Whether the (so called monkey) status web page should be disabled."));
+		DEFAULTS.put(KEY_WEBPAGE_SHOW_ADDRESSES, new PropertyMD("false").setCategory(advCat).setDescription(
+				"Whether to show the addresses of back-end services on the web page."));
+
 		DEFAULTS.put(KEY_EXTERNAL_ADDRESS, new PropertyMD((String)null).setCategory(advCat).setDescription(
 				"External address of the gateway, when it is accessible through a frontend server as Apache HTTP."));
 		DEFAULTS.put(KEY_CONN_MAX_PERHOST, new PropertyMD("20").setCategory(cliCat).setDescription(
@@ -199,6 +203,11 @@ public class GatewayProperties extends FilePropertiesHelper
 	public boolean isDetailedWebPageDisabled() 
 	{
 		return getBooleanValue(KEY_WEBPAGE_DISABLE);
+	}
+
+	public boolean isShowServiceAdresses()
+	{
+		return getBooleanValue(KEY_WEBPAGE_SHOW_ADDRESSES);
 	}
 
 	public boolean isChunkedDispatch()

@@ -17,10 +17,6 @@ import org.apache.hc.client5.http.classic.HttpClient;
 public interface SiteOrganiser
 {
 
-	public enum SortOrder {
-		NONE, NAME, REQUESTS, MESSAGE, ADDRESS
-	};
-
 	/**
 	 * get the current set of sites
 	 */
@@ -35,11 +31,6 @@ public interface SiteOrganiser
 	 * @return matching vsite
 	 */
 	public VSite match(String targetURL, String clientIP) throws URISyntaxException;
-
-	/**
-	 * get a HTML representation of this site organiser
-	 */
-	public String toHTMLString(SortOrder ordering);
 
 	/**
 	 *  reload configuration - for example due to config changes

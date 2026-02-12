@@ -36,9 +36,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import eu.unicore.gateway.SiteOrganiser.SortOrder;
 import eu.unicore.gateway.base.Servlet;
 import eu.unicore.gateway.properties.GatewayProperties;
+import eu.unicore.gateway.util.FrontPageRenderer.SortOrder;
 
 public class TestServer {
 	

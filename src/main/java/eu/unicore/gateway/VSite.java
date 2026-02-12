@@ -47,7 +47,6 @@ public class VSite implements Site {
 			});
 
 	private final String name;
-	private final URI virtualURI;
 	private final int index;
 	private final boolean isSecure;
 	private final URI realURI;
@@ -67,22 +66,16 @@ public class VSite implements Site {
 		this.realURI = new URI(uri);
 		this.inetaddress = InetAddress.getByName(realURI.getHost());
 		this.name = name;
-		this.virtualURI = new URI(gatewayURI+"/"+name);
 		index = new XURI(gatewayURI).countPathElements();
 		isSecure = "HTTPS".equalsIgnoreCase(realURI.getScheme());
 		this.securityCfg = securityCfg;
-		log.info("New virtual site: <{}> at <{}>", virtualURI, uri);
+		log.info("New virtual site: <{}> at <{}>", name, uri);
 	}
 
 	@Override
 	public String getName()
 	{
 		return name;
-	}
-
-	public URI getVirtualURI()
-	{
-		return virtualURI;
 	}
 
 	public URI getRealURI()
@@ -206,7 +199,7 @@ public class VSite implements Site {
 	@Override
 	public String toString()
 	{
-		return "VSite ::: name=" + getName() + ", virtualuri=" + getVirtualURI() + ", " + "realuri="+getRealURI().toString()+", inetaddress="+getInetAddress();
+		return "VSite ::: name=" + getName() + ", realuri="+getRealURI().toString()+", inetaddress="+getInetAddress();
 	}
 
 	@Override
