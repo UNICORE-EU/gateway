@@ -17,7 +17,7 @@ import eu.unicore.security.canl.TruststoreProperties;
 public class TestInsertConsignor
 {
 	public static final Logger log = LogUtil.getLogger("gateway", TestInsertConsignor.class);
-	private File secProps = new File("src/test/resources/security.properties");
+	private File secProps = new File("src/test/resources/gateway.properties");
 
 	@Test
 	public void testConsignorHTTPHeader() throws Exception

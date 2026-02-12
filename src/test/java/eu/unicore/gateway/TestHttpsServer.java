@@ -29,9 +29,8 @@ public class TestHttpsServer {
 	@BeforeAll
 	public static void setUp() throws Exception {
 		File gp = new File("src/test/resources/gateway-ssl.properties");
-		File sp = new File("src/test/resources/security.properties");
 		File cp = new File("src/test/resources/connection.properties");
-		gw = new Gateway(gp, cp, sp);
+		gw = new Gateway(gp, cp);
 		gw.start();
 		backend = FakeHttpsServer.getInstance();
 		backend.start();

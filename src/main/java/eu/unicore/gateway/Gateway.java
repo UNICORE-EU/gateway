@@ -38,7 +38,12 @@ public class Gateway
 
 	private File _securityConfigFile;
 
-	public Gateway(File mainProperties, File connections, File secProperties) throws Exception
+	public Gateway(File mainProperties, File connections) throws Exception
+	{
+		this(mainProperties, connections, null);
+	}
+
+	private Gateway(File mainProperties, File connections, File secProperties) throws Exception
 	{
 		configureGateway(mainProperties, connections, secProperties);
 		upSince = new Date().toString();
@@ -225,13 +230,7 @@ public class Gateway
 	static void checkLogSystem() {
 		if(System.getProperty("log4j.configurationFile")==null) {
 			System.err.println("***");
-			if(System.getProperty("log4j.configuration")!=null) {
-				System.err.println("*** Outdated log4j configuration - logging might not work as expected.");
-				System.err.println("*** Please remove -Dlog4j.configuration=...");
-			}
-			else {
-				System.err.println("*** NO log4j configuration set - will use defaults.");
-			}
+			System.err.println("*** NO log4j configuration set - will use defaults.");
 			System.err.println("***");
 			System.err.println("*** Please configure log4j with -Dlog4j.configurationFile=file:/path/to/config");
 			System.err.println("*** and check the manual or server distribution for example configurations.");

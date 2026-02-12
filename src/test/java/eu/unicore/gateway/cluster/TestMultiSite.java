@@ -28,7 +28,7 @@ public class TestMultiSite {
 	@Test
 	public void testBasicConfig()throws Exception{
 		String desc="foo=bar;spam=ham";
-		File spFile = new File("src/test/resources/security.properties");
+		File spFile = new File("src/test/resources/gateway.properties");
 		AuthnAndTrustProperties sp=new AuthnAndTrustProperties(spFile,
 				GatewayProperties.PREFIX + TruststoreProperties.DEFAULT_PREFIX, 
 				GatewayProperties.PREFIX + CredentialProperties.DEFAULT_PREFIX);
@@ -42,7 +42,7 @@ public class TestMultiSite {
 	@Test
 	public void testSetupSites()throws Exception{
 		String desc = "vsites=http://localhost:8000 http://localhost:8010;spam=ham";
-		File spFile = new File("src/test/resources/security.properties");
+		File spFile = new File("src/test/resources/gateway.properties");
 		AuthnAndTrustProperties sp=new AuthnAndTrustProperties(spFile,
 				GatewayProperties.PREFIX + TruststoreProperties.DEFAULT_PREFIX, 
 				GatewayProperties.PREFIX + CredentialProperties.DEFAULT_PREFIX);
@@ -55,7 +55,7 @@ public class TestMultiSite {
 	@Test
 	public void testReadConfig()throws Exception{
 		String desc = "config=src/test/resources/cluster.config";
-		File spFile = new File("src/test/resources/security.properties");
+		File spFile = new File("src/test/resources/gateway.properties");
 		AuthnAndTrustProperties sp=new AuthnAndTrustProperties(spFile,
 				GatewayProperties.PREFIX + TruststoreProperties.DEFAULT_PREFIX, 
 				GatewayProperties.PREFIX + CredentialProperties.DEFAULT_PREFIX);
@@ -69,7 +69,7 @@ public class TestMultiSite {
 	@Test
 	public void testCreateStrategy()throws Exception{
 		String desc = "config=src/test/resources/cluster.config";
-		File spFile = new File("src/test/resources/security.properties");
+		File spFile = new File("src/test/resources/gateway.properties");
 		AuthnAndTrustProperties sp=new AuthnAndTrustProperties(spFile,
 				GatewayProperties.PREFIX + TruststoreProperties.DEFAULT_PREFIX, 
 				GatewayProperties.PREFIX + CredentialProperties.DEFAULT_PREFIX);
@@ -86,7 +86,7 @@ public class TestMultiSite {
 
 	@Test
 	public void testMultiSitePing()throws Exception{
-		File spFile = new File("src/test/resources/security.properties");
+		File spFile = new File("src/test/resources/gateway.properties");
 		AuthnAndTrustProperties sp=new AuthnAndTrustProperties(spFile,
 				GatewayProperties.PREFIX + TruststoreProperties.DEFAULT_PREFIX, 
 				GatewayProperties.PREFIX + CredentialProperties.DEFAULT_PREFIX);
@@ -114,7 +114,7 @@ public class TestMultiSite {
 
 	@Test
 	public void testDynamicRegistration()throws Exception{
-		File spFile = new File("src/test/resources/security.properties");
+		File spFile = new File("src/test/resources/gateway.properties");
 		AuthnAndTrustProperties sp=new AuthnAndTrustProperties(spFile,
 				GatewayProperties.PREFIX + TruststoreProperties.DEFAULT_PREFIX, 
 				GatewayProperties.PREFIX + CredentialProperties.DEFAULT_PREFIX);
@@ -146,7 +146,7 @@ public class TestMultiSite {
 
 	@Test
 	public void testDefaultSelectionStrategy()throws Exception{
-		File spFile = new File("src/test/resources/security.properties");
+		File spFile = new File("src/test/resources/gateway.properties");
 		AuthnAndTrustProperties sp=new AuthnAndTrustProperties(spFile,
 				GatewayProperties.PREFIX + TruststoreProperties.DEFAULT_PREFIX, 
 				GatewayProperties.PREFIX + CredentialProperties.DEFAULT_PREFIX);

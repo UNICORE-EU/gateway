@@ -20,7 +20,7 @@ public class TestRoundRobinStrategy {
 	
 	@Test
 	public void testRoundRobin()throws Exception{
-		File spFile = new File("src/test/resources/security.properties");
+		File spFile = new File("src/test/resources/gateway.properties");
 		AuthnAndTrustProperties sp=new AuthnAndTrustProperties(spFile,
 				GatewayProperties.PREFIX + TruststoreProperties.DEFAULT_PREFIX, 
 				GatewayProperties.PREFIX + CredentialProperties.DEFAULT_PREFIX);

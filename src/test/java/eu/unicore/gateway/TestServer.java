@@ -47,9 +47,8 @@ public class TestServer {
 	@BeforeAll
 	public static void setUp() throws Exception{
 		File gp = new File("src/test/resources/gateway.properties");
-		File sp = new File("src/test/resources/security.properties");
 		File cp = new File("src/test/resources/connection.properties");
-		gw = new Gateway(gp, cp, sp);
+		gw = new Gateway(gp, cp);
 		gw.start();
 	}
 

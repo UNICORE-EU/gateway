@@ -56,9 +56,8 @@ public class TestForwarding {
 	@BeforeEach
 	protected void setUp() throws Exception{
 		File gp = new File(getPropertiesLoc());
-		File sp = new File("src/test/resources/security.properties");
 		File cp = new File("src/test/resources/connection.properties");
-		gw = new Gateway(gp, cp, sp);
+		gw = new Gateway(gp, cp);
 		gw.start();
 		echo = new EchoEndpointServer();
 		echo.start();

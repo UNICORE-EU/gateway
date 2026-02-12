@@ -38,11 +38,8 @@ public class FakeHttpsServer extends JettyServerBase
 		p.setProperty("k." + CredentialProperties.PROP_LOCATION, "src/test/resources/certs/gateway.jks");
 		p.setProperty("k." + CredentialProperties.PROP_FORMAT, "JKS");
 		p.setProperty("k." + CredentialProperties.PROP_PASSWORD, "the!gateway");
-		p.setProperty("t." + TruststoreProperties.PROP_TYPE, 
-				TruststoreProperties.TruststoreType.keystore.toString());
-		p.setProperty("t." + TruststoreProperties.PROP_KS_PATH, "src/test/resources/certs/gateway-truststore.jks");
-		p.setProperty("t." + TruststoreProperties.PROP_KS_TYPE, "JKS");
-		p.setProperty("t." + TruststoreProperties.PROP_KS_PASSWORD, "the!gateway");
+		p.setProperty("t." + TruststoreProperties.PROP_TYPE, "directory");
+		p.setProperty("t.directoryLocations.1", "src/test/resources/certs/cacert.pem");
 		p.setProperty("t." + TruststoreProperties.PROP_UPDATE, "-1");
 		return p;
 	}

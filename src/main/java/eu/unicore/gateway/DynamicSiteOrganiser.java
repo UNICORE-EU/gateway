@@ -1,6 +1,8 @@
 package eu.unicore.gateway;
 
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +22,7 @@ public class DynamicSiteOrganiser extends BaseSiteOrganiser
 		this.inclPattern = inclPattern;
 	}
 
-	public boolean register(String name, URI realURI){
+	public boolean register(String name, URI realURI) throws UnknownHostException, URISyntaxException {
 		try{
 			checkExclusion(realURI);
 			checkInclusion(realURI);
@@ -34,11 +36,9 @@ public class DynamicSiteOrganiser extends BaseSiteOrganiser
 			}
 			return true;
 		}catch(IllegalArgumentException ae){
-			logger.warn("Registration of <"+name+"> at "+realURI+" is not possible.",ae);
-		}catch(Exception e){
-			LogUtil.logException("Can't process registration of <"+name+"> at "+realURI,e,logger);
+			logger.warn("Cannot register <{}> at <{}>: {}", name, realURI, ae.getMessage());
+			return false;
 		}
-		return false;
 	}
 
 	/**
@@ -46,17 +46,15 @@ public class DynamicSiteOrganiser extends BaseSiteOrganiser
 	 * @param uri
 	 */
 	void checkExclusion(URI uri){
-		if(exclPattern==null)return;
-		//check if exclusion pattern
-		String[]chk=exclPattern.split(" +");
-		String test=uri.toString().toLowerCase();
-		for(String pattern: chk){
-			if(test.contains(pattern.toLowerCase())){
-				//forbidden
-				throw new IllegalArgumentException("Registration forbidden, URL contains '"+pattern+"'");
+		if(exclPattern!=null) {
+			String[]chk = exclPattern.split(" +");
+			String test = uri.toString().toLowerCase();
+			for(String pattern: chk){
+				if(test.contains(pattern.toLowerCase())){
+					throw new IllegalArgumentException("URL contains '"+pattern+"'");
+				}
 			}
 		}
-		return;
 	}
 
 	/**
@@ -64,16 +62,16 @@ public class DynamicSiteOrganiser extends BaseSiteOrganiser
 	 * @param uri
 	 */
 	void checkInclusion(URI uri){
-		if(inclPattern==null)return;
-		String[]chk=inclPattern.split(" +");
-		String test=uri.toString().toLowerCase();
-		for(String pattern: chk){
-			if(test.contains(pattern.toLowerCase())){
-				return;
+		if(inclPattern!=null) {
+			String[]chk = inclPattern.split(" +");
+			String test = uri.toString().toLowerCase();
+			for(String pattern: chk){
+				if(test.contains(pattern.toLowerCase())){
+					return;
+				}
 			}
+			throw new IllegalArgumentException("URL does not contain one of '"+inclPattern+"'");
 		}
-		//not allowed
-		throw new IllegalArgumentException("Registration not allowed, URL does not contain one of '"+inclPattern+"'");
 	}
 
 	// unit testing use
