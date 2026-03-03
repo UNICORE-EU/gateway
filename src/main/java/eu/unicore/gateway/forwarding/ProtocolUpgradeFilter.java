@@ -123,7 +123,5 @@ public class ProtocolUpgradeFilter implements Filter
 	{
 		  mapper = ForwardingSetup.ensureMappings(config.getServletContext(), gateway);
 	}
-	
-	
-	
+
 }

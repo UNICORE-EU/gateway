@@ -97,7 +97,7 @@ public class Gateway
 		}
 		clientFactory = new HttpClientFactory(clientPKISettings, gatewayProperties);
 		boolean doSign = gatewayProperties.isSignConsignor();
-		consignorProducer = new ConsignorProducer(doSign, clientPKISettings);
+		consignorProducer = new ConsignorProducer(doSign, securityProperties);
 	}
 
 	public String upSince()
