@@ -106,18 +106,17 @@ public class FrontPageRenderer {
 				else {
 					uri = baseURL+"/"+name;
 				}
-				href="<a href='"+uri+"'>"+uri+"</a>";
+				href = uri;
 			}
 			else{
 				StringBuilder hr=new StringBuilder();
 				for(VSite v: ((MultiSite)site).getConfiguredSites()){
 					String vsiteUri = showServiceAddresses ?
 							v.getRealURI().toString() : baseURL+"/"+v.getName();
-					hr.append("<a href='").append(vsiteUri).append("'>");
-					hr.append(vsiteUri).append("</a>");
+					hr.append(vsiteUri);
 					hr.append("<br/>");
 				}
-				href=hr.toString();
+				href = hr.toString();
 			}
 			int numRequests = site.getNumberOfRequests();
 			image = site.ping() ? "resources/happymonkey.png" : "resources/sadmonkey.png";

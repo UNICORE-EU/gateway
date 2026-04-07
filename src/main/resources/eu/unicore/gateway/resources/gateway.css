@@ -30,7 +30,7 @@
  margin-right: auto;
 }
 
-.td { padding: 5px; }
+th, td { padding: 5px; }
 
 .even { background: #FFFFFF }
 
