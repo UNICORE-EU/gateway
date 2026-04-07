@@ -14,7 +14,7 @@ public class TestSiteFactory {
 
 	@Test
 	public void testVsite()throws Exception{
-		Site s1=SiteFactory.buildSite(new URI("http://localhost"),"test", "http://localhost", null);
+		Site s1=SiteFactory.buildSite(new URI("http://localhost"),"test", "http://localhost:8080", null);
 		assertNotNull(s1);
 		assertTrue(s1 instanceof VSite);
 	}

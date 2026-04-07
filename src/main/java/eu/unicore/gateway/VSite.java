@@ -1,7 +1,7 @@
 package eu.unicore.gateway;
 
 import java.net.ConnectException;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -14,7 +14,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.io.IOUtils;
@@ -50,7 +49,7 @@ public class VSite implements Site {
 	private final int index;
 	private final boolean isSecure;
 	private final URI realURI;
-	private final InetAddress inetaddress;
+	private final InetSocketAddress inetAddress;
 	private final AuthnAndTrustProperties securityCfg;
 
 	private final AtomicInteger numberOfRequests = new AtomicInteger(0);
@@ -58,13 +57,13 @@ public class VSite implements Site {
 	private volatile boolean isUp = false;
 	private volatile long lastPing = 0;
 	private long pingDelay = 30*1000;
-	private long pingTimeout = 10*1000;
+	private int pingTimeout = 10*1000;
 
 	public VSite(URI gatewayURI, String name, String uri, AuthnAndTrustProperties securityCfg) throws UnknownHostException, URISyntaxException{
 		if(uri==null)throw new IllegalArgumentException("URI can't be null.");
 		if(name==null || name.trim().length()==0)throw new IllegalArgumentException("VSite needs a name.");
 		this.realURI = new URI(uri);
-		this.inetaddress = InetAddress.getByName(realURI.getHost());
+		this.inetAddress = new InetSocketAddress(realURI.getHost(), realURI.getPort());
 		this.name = name;
 		index = new XURI(gatewayURI).countPathElements();
 		isSecure = "HTTPS".equalsIgnoreCase(realURI.getScheme());
@@ -81,11 +80,6 @@ public class VSite implements Site {
 	public URI getRealURI()
 	{
 		return realURI;
-	}
-
-	public InetAddress getInetAddress() 
-	{
-		return inetaddress;
 	}
 
 	@Override
@@ -129,28 +123,24 @@ public class VSite implements Site {
 		Future<Boolean> res = pingService.submit( ()-> {
 				Socket s = null;
 				try{
-					if(isSecure){
-						s = getSocketFactory().createSocket(getRealURI().getHost(), getRealURI().getPort());
-						((SSLSocket)s).getSession();
-					}else{
-						s = new Socket(getInetAddress(), getRealURI().getPort());
-					}
+					s = isSecure ? getSocketFactory().createSocket() : new Socket();
+					s.connect(inetAddress, pingTimeout);
 					errorMessage="OK";
 					if(!isUp){
-						log.info("VSite '{}' @ {} is up.", name, getRealURI());
+						log.info("VSite '{}' @ {} is up.", name, realURI);
 						isUp = true;
 					}
 					return Boolean.TRUE;
 				}catch(ConnectException ce){
 					if(isUp){
-						log.info("VSite '{}' @ {} is down.", name, getRealURI());
+						log.info("VSite '{}' @ {} is down.", name, realURI);
 						isUp = false;
 					}
 					errorMessage="Site is down: connection refused.";
 				}catch(Exception e){
 					if(isUp) {
 						String msg = Log.getDetailMessage(e);
-						log.info("VSite '{}' @ {} is unavailable: {}", name, getRealURI(),msg);
+						log.info("VSite '{}' @ {} is unavailable: {}", name, realURI, msg);
 						errorMessage="Site unavailable: " + msg;
 						isUp = false;
 					}
@@ -163,7 +153,7 @@ public class VSite implements Site {
 			}
 		);
 		try{
-			return res.get(pingTimeout, TimeUnit.MILLISECONDS);
+			return res.get(1000+pingTimeout, TimeUnit.MILLISECONDS);
 		}catch(Exception tex){
 			errorMessage = "Timeout";
 			isUp = false;
@@ -199,7 +189,7 @@ public class VSite implements Site {
 	@Override
 	public String toString()
 	{
-		return "VSite ::: name=" + getName() + ", realuri="+getRealURI().toString()+", inetaddress="+getInetAddress();
+		return "VSite ::: name=" + getName() + ", realuri=" + getRealURI().toString() + ", inetaddress=" + inetAddress;
 	}
 
 	@Override

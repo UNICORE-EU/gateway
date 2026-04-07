@@ -248,13 +248,11 @@ public class TestServer {
 	
 	@Test
 	public void testGetWithVSiteOffline()throws Exception{
-		int status=doRegister("FAKE1","http://some_offline_site");
+		int status = doRegister("FAKE1", "http://localhost:12345");
 		assertEquals(HttpStatus.SC_CREATED,status);
-	
-		String url="http://localhost:64433/FAKE1/rest/core";
+		String url = "http://localhost:64433/FAKE1/rest/core";
 		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
-		HttpGet get=new HttpGet(url);
-
+		HttpGet get = new HttpGet(url);
 		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
 			System.out.println(getStatusDesc(response));
 			String errorBody = EntityUtils.toString(response.getEntity());

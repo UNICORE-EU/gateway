@@ -111,11 +111,11 @@ public class ConsignorProducer implements IConsignorProducer
 		return md.digest();
 	}
 
-	private static class Key{
+	public static final class Key {
 
-		private X509Certificate cert;
+		private final X509Certificate cert;
 
-		private String ip;
+		private final String ip;
 
 		public Key(X509Certificate cert,String ip){
 			this.cert=cert;
