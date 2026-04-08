@@ -35,8 +35,9 @@ import org.apache.logging.log4j.ThreadContext;
 import eu.unicore.gateway.Gateway;
 import eu.unicore.gateway.SiteOrganiser;
 import eu.unicore.gateway.VSite;
+import eu.unicore.gateway.acme.AcmeRenderer;
 import eu.unicore.gateway.properties.GatewayProperties;
-import eu.unicore.gateway.util.AcmeRenderer;
+import eu.unicore.gateway.tokens.TokenGenerator;
 import eu.unicore.gateway.util.FrontPageRenderer;
 import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.util.Log;
@@ -111,7 +112,10 @@ public class Servlet extends HttpServlet {
 		}
 		else if(u.getPath().startsWith("/.well-known/acme-challenge/")) {
 			String file = new File(u.getPath()).getName();
-			new AcmeRenderer(properties).handleAcmeRequest(file, req, res);
+			new AcmeRenderer(properties).handleRequest(file, req, res);
+		}
+		else if(u.getPath().startsWith("/token/")) {
+			new TokenGenerator(properties).handleRequest(req, res);
 		}
 		else{
 			doHttp("GET", req, res);

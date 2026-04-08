@@ -5,14 +5,23 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.ee10.servlet.ResourceServlet;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.io.ClientConnector;
+import org.eclipse.jetty.security.Constraint;
+import org.eclipse.jetty.security.LoginService;
+import org.eclipse.jetty.security.SecurityHandler;
+import org.eclipse.jetty.security.openid.OpenIdConfiguration;
+import org.eclipse.jetty.security.openid.OpenIdLoginService;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import eu.unicore.gateway.Gateway;
+import eu.unicore.gateway.acme.AcmeHandler;
 import eu.unicore.gateway.forwarding.ProtocolUpgradeFilter;
-import eu.unicore.gateway.util.AcmeHandler;
 import eu.unicore.gateway.util.FileWatcher;
 import eu.unicore.security.canl.CredentialProperties;
 import eu.unicore.util.configuration.ConfigurationException;
@@ -54,17 +63,15 @@ public class GatewayJettyServer extends JettyServerBase {
 
 	@Override
 	protected Handler configureHandlers(Handler root) {
+		Handler r = super.configureHandlers(root);
 		if(gateway.getProperties().isAcmeEnabled() &&
 				gateway.getProperties().getHostname().toLowerCase().startsWith("https")) 
 		{
 			AcmeHandler h = new AcmeHandler();
-			h.setHandler(super.configureHandlers(root));
-			return h;
-			
+			h.setHandler(r);
+			r = h;
 		}
-		else{
-			return super.configureHandlers(root);
-		}
+		return r;
 	}
 
 	@Override
@@ -83,6 +90,25 @@ public class GatewayJettyServer extends JettyServerBase {
 				throw new ConfigurationException("", fe);
 			}
 		}
+		configureOIDC();
+	}
+
+	private void configureOIDC() {
+		SecurityHandler.PathMapped securityHandler = new SecurityHandler.PathMapped();
+		getServer().insertHandler(securityHandler);
+		securityHandler.put("/token/*", Constraint.ANY_USER);
+		ClientConnector connector = new ClientConnector();
+		connector.setSslContextFactory(new SslContextFactory.Client(true));
+		HttpClient client = new HttpClient(new HttpClientTransportOverHTTP(connector));
+		OpenIdConfiguration openIdConfig = new OpenIdConfiguration.Builder()
+				.clientId("oauth-client")
+				.clientSecret("test123")
+				.issuer("https://localhost:2443/oauth2")
+				.tokenEndpoint("https://localhost:2443/oauth2/token")
+				.httpClient(client)
+				.build();
+		LoginService loginService = new OpenIdLoginService(openIdConfig);
+		securityHandler.setLoginService(loginService);
 	}
 
 	@Override

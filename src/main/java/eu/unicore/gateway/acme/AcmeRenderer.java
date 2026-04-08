@@ -1,4 +1,4 @@
-package eu.unicore.gateway.util;
+package eu.unicore.gateway.acme;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Logger;
 
 import eu.unicore.gateway.properties.GatewayProperties;
+import eu.unicore.gateway.util.LogUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -29,7 +30,7 @@ public class AcmeRenderer {
 	/**
 	 * return the named file from the directory that holds the ACME token
 	 */
-	public void handleAcmeRequest(String file, HttpServletRequest req, HttpServletResponse res) throws IOException {
+	public void handleRequest(String file, HttpServletRequest req, HttpServletResponse res) throws IOException {
 		if(!gatewayProperties.isAcmeEnabled()) {
 			// acme disabled - 404
 			res.sendError(404, "Not found");

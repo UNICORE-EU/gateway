@@ -12,6 +12,7 @@ import org.jmock.Mockery;
 import org.jmock.junit5.JUnit5Mockery;
 import org.junit.jupiter.api.Test;
 
+import eu.unicore.gateway.acme.AcmeRenderer;
 import eu.unicore.gateway.properties.GatewayProperties;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -26,7 +27,7 @@ public class TestAcmeRenderer {
 		context.checking(new Expectations() {{
 			oneOf(res).sendError(404, "Not found");
 		}});
-		r.handleAcmeRequest("foo", null, res);
+		r.handleRequest("foo", null, res);
 		context.assertIsSatisfied();
 	}
 
@@ -46,7 +47,7 @@ public class TestAcmeRenderer {
 				oneOf(res).getWriter();will(returnValue(out));
 				oneOf(res).setContentType("text/plain");
 			}});
-			r.handleAcmeRequest("tokentest.txt", null, res);
+			r.handleRequest("tokentest.txt", null, res);
 			context.assertIsSatisfied();
 			out.flush();
 			assertEquals("test123", bos.toString("UTF-8").strip());
@@ -64,7 +65,7 @@ public class TestAcmeRenderer {
 		context.checking(new Expectations() {{
 			oneOf(res).sendError(404, "Not found");
 		}});
-		r.handleAcmeRequest("no_such_file", null, res);
+		r.handleRequest("no_such_file", null, res);
 		context.assertIsSatisfied();
 	}
 }
