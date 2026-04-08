@@ -63,7 +63,7 @@ public class StaticSiteOrganiser extends BaseSiteOrganiser
 				String addr = props.getSite(siteName); 
 				try
 				{
-					Site site = SiteFactory.buildSite(gateway.getHostURI(), siteName, addr,	gateway.getSecurityProperties());
+					Site site = SiteFactory.buildSite(gateway.getHostURI(), siteName, addr);
 					if(sites.put(siteName,site)==null){
 						log.info("Added site: {}", site);	
 					}

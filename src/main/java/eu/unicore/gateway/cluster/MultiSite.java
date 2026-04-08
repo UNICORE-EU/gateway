@@ -17,7 +17,6 @@ import eu.unicore.gateway.Site;
 import eu.unicore.gateway.VSite;
 import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.gateway.util.XURI;
-import eu.unicore.security.canl.AuthnAndTrustProperties;
 import eu.unicore.util.configuration.ConfigurationException;
 
 /**
@@ -33,17 +32,15 @@ public class MultiSite implements Site {
 	private final URI gatewayURI;
 	private final URI virtualURI;
 	private final int index;
-	private final AuthnAndTrustProperties securityCfg;
 	private int numberOfRequests=0;
 	private final Map<String,String> params;
 	private final List<VSite>configuredSites;
 	private final SelectionStrategy selectionStrategy;
 
-	public MultiSite(URI gatewayURI, String name, String desc, AuthnAndTrustProperties securityCfg) 
+	public MultiSite(URI gatewayURI, String name, String desc) 
 			throws UnknownHostException, URISyntaxException, IOException{
 		this.name = name;
 		this.gatewayURI = gatewayURI;
-		this.securityCfg = securityCfg;
 		virtualURI = new URI(gatewayURI+"/"+name);
 		index = new XURI(gatewayURI).countPathElements();
 		log.info("new multi-site: {}", virtualURI);
@@ -125,7 +122,7 @@ public class MultiSite implements Site {
 				return;
 			}
 		}
-		VSite v = new VSite(gatewayURI,name,address.toString(),securityCfg);
+		VSite v = new VSite(gatewayURI,name,address.toString());
 		registerVsite(v);
 	}
 
@@ -169,7 +166,7 @@ public class MultiSite implements Site {
 		}
 		String[] vsites=siteDesc.split("\\s+");
 		for(String vsite: vsites){
-			VSite v = new VSite(gatewayURI,name,vsite,securityCfg);
+			VSite v = new VSite(gatewayURI,name,vsite);
 			configuredSites.add(v);
 			log.info("Configured vsite {} for <{}>", vsite, getName());
 		}

@@ -6,7 +6,7 @@
   <packaging>jar</packaging>
   <description>UNICORE web services gateway</description>
   <inceptionYear>2004</inceptionYear>
-  <version>2.4.1-SNAPSHOT</version>
+  <version>2.4.1</version>
   <name>UNICORE Gateway</name>
   
   <parent>
@@ -17,7 +17,7 @@
 
   <properties>
     <!-- release version numbers (for the Linux packaging) -->
-    <package.version>11.0.0</package.version>
+    <package.version>11.0.1</package.version>
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
     <seclib.version>8.1.2</seclib.version>

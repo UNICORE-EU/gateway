@@ -14,7 +14,7 @@ public class TestSiteFactory {
 
 	@Test
 	public void testVsite()throws Exception{
-		Site s1=SiteFactory.buildSite(new URI("http://localhost"),"test", "http://localhost:8080", null);
+		Site s1=SiteFactory.buildSite(new URI("http://localhost"),"test", "http://localhost:8080");
 		assertNotNull(s1);
 		assertTrue(s1 instanceof VSite);
 	}
@@ -22,7 +22,7 @@ public class TestSiteFactory {
 	@Test
 	public void testMsite()throws Exception{
 		Site s1=SiteFactory.buildSite(new URI("http://localhost"),"test", 
-				"multisite: vsites=http://localhost:8010 http://localhost:8011", null);
+				"multisite: vsites=http://localhost:8010 http://localhost:8011");
 		assertNotNull(s1);
 		assertTrue(s1 instanceof MultiSite);
 	}

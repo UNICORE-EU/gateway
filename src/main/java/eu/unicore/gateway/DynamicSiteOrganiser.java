@@ -31,8 +31,7 @@ public class DynamicSiteOrganiser extends BaseSiteOrganiser
 				((MultiSite)existingSite).registerVsite(realURI);
 			}
 			else{
-				VSite newSite = new VSite(gateway.getHostURI(), name, realURI.toString(), gateway.getSecurityProperties());
-				sites.put(name,newSite);
+				sites.put(name, new VSite(gateway.getHostURI(), name, realURI.toString()));
 			}
 			return true;
 		}catch(IllegalArgumentException ae){

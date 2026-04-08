@@ -246,7 +246,8 @@ public class Servlet extends HttpServlet {
 				os.flush();
 			}
 		}catch(Exception e){
-			LogUtil.logException("Error performing "+http.getMethod()+" request.", e, logger);
+			LogUtil.logException("Error performing "+http.getMethod()+
+					" request to <"+vsite.getName()+">", e, logger);
 			res.sendError(503, Log.createFaultMessage("Could not perform request", e));
 		}
 	}

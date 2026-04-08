@@ -12,20 +12,15 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
 
-import eu.emi.security.authn.x509.impl.SocketFactoryCreator2;
 import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.gateway.util.XURI;
-import eu.unicore.security.canl.AuthnAndTrustProperties;
 import eu.unicore.util.Log;
-import eu.unicore.util.httpclient.HostnameMismatchCallbackImpl;
-import eu.unicore.util.httpclient.ServerHostnameCheckingMode;
 
 public class VSite implements Site {
 
@@ -47,10 +42,8 @@ public class VSite implements Site {
 
 	private final String name;
 	private final int index;
-	private final boolean isSecure;
 	private final URI realURI;
 	private final InetSocketAddress inetAddress;
-	private final AuthnAndTrustProperties securityCfg;
 
 	private final AtomicInteger numberOfRequests = new AtomicInteger(0);
 	private String errorMessage="OK";
@@ -59,15 +52,13 @@ public class VSite implements Site {
 	private long pingDelay = 30*1000;
 	private int pingTimeout = 10*1000;
 
-	public VSite(URI gatewayURI, String name, String uri, AuthnAndTrustProperties securityCfg) throws UnknownHostException, URISyntaxException{
+	public VSite(URI gatewayURI, String name, String uri) throws UnknownHostException, URISyntaxException{
 		if(uri==null)throw new IllegalArgumentException("URI can't be null.");
 		if(name==null || name.trim().length()==0)throw new IllegalArgumentException("VSite needs a name.");
 		this.realURI = new URI(uri);
 		this.inetAddress = new InetSocketAddress(realURI.getHost(), realURI.getPort());
 		this.name = name;
-		index = new XURI(gatewayURI).countPathElements();
-		isSecure = "HTTPS".equalsIgnoreCase(realURI.getScheme());
-		this.securityCfg = securityCfg;
+		this.index = new XURI(gatewayURI).countPathElements();
 		log.info("New virtual site: <{}> at <{}>", name, uri);
 	}
 
@@ -93,20 +84,9 @@ public class VSite implements Site {
 		return errorMessage;
 	}
 
-	private SSLSocketFactory socketFactory = null;
-	
-	private synchronized SSLSocketFactory getSocketFactory() {
-		if(socketFactory==null) {
-			socketFactory = new SocketFactoryCreator2(
-					securityCfg.getCredential(), securityCfg.getValidator(),
-					new HostnameMismatchCallbackImpl(ServerHostnameCheckingMode.NONE))
-					.getSocketFactory();
-		}
-		return socketFactory;
-	}
-
+	@Override
 	public void reloadConfig() {
-		socketFactory=null;
+		// N/A
 	}
 
 	// for testing
@@ -114,16 +94,19 @@ public class VSite implements Site {
 		pingDelay = -1;
 	}
 
+	private final AtomicBoolean pingInProgress = new AtomicBoolean(false);
+
 	@Override
 	public boolean ping()
 	{
-		if(lastPing+pingDelay>System.currentTimeMillis()) {
+		if(pingInProgress.get() || lastPing+pingDelay>System.currentTimeMillis()) {
 			return isUp;
 		}
+		pingInProgress.set(true);
 		Future<Boolean> res = pingService.submit( ()-> {
 				Socket s = null;
 				try{
-					s = isSecure ? getSocketFactory().createSocket() : new Socket();
+					s = new Socket();
 					s.connect(inetAddress, pingTimeout);
 					errorMessage="OK";
 					if(!isUp){
@@ -147,13 +130,15 @@ public class VSite implements Site {
 				}
 				finally{
 					lastPing = System.currentTimeMillis();
+					pingInProgress.set(false);
 					IOUtils.closeQuietly(s);
 				}
 				return Boolean.FALSE;
 			}
 		);
 		try{
-			return res.get(1000+pingTimeout, TimeUnit.MILLISECONDS);
+			// use a timeout here, too, just to be on the super-safe side
+			return res.get(3 * pingTimeout, TimeUnit.MILLISECONDS);
 		}catch(Exception tex){
 			errorMessage = "Timeout";
 			isUp = false;

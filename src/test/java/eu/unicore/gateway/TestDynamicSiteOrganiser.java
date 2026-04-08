@@ -13,25 +13,17 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import eu.unicore.gateway.cluster.MultiSite;
-import eu.unicore.gateway.properties.GatewayProperties;
 import eu.unicore.gateway.util.FrontPageRenderer;
 import eu.unicore.gateway.util.FrontPageRenderer.SortOrder;
-import eu.unicore.security.canl.AuthnAndTrustProperties;
-import eu.unicore.security.canl.CredentialProperties;
-import eu.unicore.security.canl.TruststoreProperties;
 
 public class TestDynamicSiteOrganiser {
 	
 	private static Gateway gw;
-	private static AuthnAndTrustProperties sp;
 
 	@BeforeAll
 	public static void setUp() throws Exception{
 		File gp = new File("src/test/resources/gateway.properties");
 		File cp = new File("src/test/resources/connection.properties");
-		sp = new AuthnAndTrustProperties(gp,
-				GatewayProperties.PREFIX + TruststoreProperties.DEFAULT_PREFIX, 
-				GatewayProperties.PREFIX + CredentialProperties.DEFAULT_PREFIX);
 		gw = new Gateway(gp, cp);
 		gw.start();
 	}
@@ -45,7 +37,7 @@ public class TestDynamicSiteOrganiser {
 	@Test
 	public void testDynamicRegistration()throws Exception{
 		String gwURL = "http://foo";
-		MultiSite ms = new MultiSite(new URI(gwURL), "test", null, sp);
+		MultiSite ms = new MultiSite(new URI(gwURL), "test", null);
 		DynamicSiteOrganiser dso = gw.getDynamicSiteOrganiser();
 		dso.register(ms);
 		assertEquals(0, ms.getConfiguredSites().size());
