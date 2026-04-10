@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
 
 import eu.unicore.gateway.util.LogUtil;
@@ -104,9 +103,7 @@ public class VSite implements Site {
 		}
 		pingInProgress.set(true);
 		Future<Boolean> res = pingService.submit( ()-> {
-				Socket s = null;
-				try{
-					s = new Socket();
+				try(Socket s = new Socket()) {
 					s.connect(inetAddress, pingTimeout);
 					errorMessage="OK";
 					if(!isUp){
@@ -131,7 +128,6 @@ public class VSite implements Site {
 				finally{
 					lastPing = System.currentTimeMillis();
 					pingInProgress.set(false);
-					IOUtils.closeQuietly(s);
 				}
 				return Boolean.FALSE;
 			}
