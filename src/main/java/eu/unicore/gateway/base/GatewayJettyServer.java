@@ -6,14 +6,17 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.ee10.servlet.ResourceServlet;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.servlet.SessionHandler;
 import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.security.Constraint;
 import org.eclipse.jetty.security.LoginService;
 import org.eclipse.jetty.security.SecurityHandler;
+import org.eclipse.jetty.security.openid.OpenIdAuthenticator;
 import org.eclipse.jetty.security.openid.OpenIdConfiguration;
 import org.eclipse.jetty.security.openid.OpenIdLoginService;
 import org.eclipse.jetty.server.Handler;
@@ -58,6 +61,8 @@ public class GatewayJettyServer extends JettyServerBase {
 		URL u = getClass().getResource("/eu/unicore/gateway/resources");
 		resHolder.setInitParameter("baseResource", u.toString());
 		root.addServlet(resHolder, "/resources/*");
+		root.setSecurityHandler(configureOIDC());
+		root.setSessionHandler(new SessionHandler());
 		return root;
 	}
 
@@ -90,25 +95,33 @@ public class GatewayJettyServer extends JettyServerBase {
 				throw new ConfigurationException("", fe);
 			}
 		}
-		configureOIDC();
 	}
 
-	private void configureOIDC() {
+	private SecurityHandler configureOIDC() {
 		SecurityHandler.PathMapped securityHandler = new SecurityHandler.PathMapped();
-		getServer().insertHandler(securityHandler);
 		securityHandler.put("/token/*", Constraint.ANY_USER);
 		ClientConnector connector = new ClientConnector();
 		connector.setSslContextFactory(new SslContextFactory.Client(true));
-		HttpClient client = new HttpClient(new HttpClientTransportOverHTTP(connector));
+		HttpClient client = new HttpClient(new HttpClientTransportOverHTTP(connector))
+		{
+			@Override
+			protected void doStart() throws Exception
+			{
+				super.doStart();
+				getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
+			}
+		};
 		OpenIdConfiguration openIdConfig = new OpenIdConfiguration.Builder()
-				.clientId("oauth-client")
-				.clientSecret("test123")
+				.clientId("oauth-client2")
+				.clientSecret("70916334-b7ed-42c6-9a57-8485f633103b")
 				.issuer("https://localhost:2443/oauth2")
-				.tokenEndpoint("https://localhost:2443/oauth2/token")
 				.httpClient(client)
+				.authenticateNewUsers(true)
 				.build();
 		LoginService loginService = new OpenIdLoginService(openIdConfig);
 		securityHandler.setLoginService(loginService);
+		securityHandler.setAuthenticator(new OpenIdAuthenticator(openIdConfig));
+		return securityHandler;
 	}
 
 	@Override

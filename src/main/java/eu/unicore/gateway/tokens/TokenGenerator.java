@@ -31,9 +31,6 @@ public class TokenGenerator {
 		this.gatewayProperties = gatewayProperties;
 	}
 
-	/**
-	 * return the named file from the directory that holds the ACME token
-	 */
 	public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		PrintWriter out = res.getWriter();
 		res.setContentType("text/plain");
