@@ -112,10 +112,11 @@ public class GatewayJettyServer extends JettyServerBase {
 			}
 		};
 		OpenIdConfiguration openIdConfig = new OpenIdConfiguration.Builder()
-				.clientId("oauth-client2")
-				.clientSecret("70916334-b7ed-42c6-9a57-8485f633103b")
+				.clientId("03045d3d-38f5-403e-a94a-e9cf8215ce54")
+				.clientSecret("2010dec5-219b-4fad-bbd3-826fd1f644a0")
 				.issuer("https://localhost:2443/oauth2")
 				.httpClient(client)
+				.authenticationMethod("client_secret_basic")
 				.authenticateNewUsers(true)
 				.build();
 		LoginService loginService = new OpenIdLoginService(openIdConfig);
