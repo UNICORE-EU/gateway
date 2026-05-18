@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>eu.unicore</groupId>
   <artifactId>gateway</artifactId>
   <packaging>jar</packaging>
   <description>UNICORE web services gateway</description>
@@ -17,12 +16,12 @@
 
   <properties>
     <!-- release version numbers (for the Linux packaging) -->
-    <package.version>11.0.1</package.version>
+    <package.version>11.0.2</package.version>
     <package.release>1</package.release>
     <specification.version>${package.version}</specification.version>
     <seclib.version>8.1.2</seclib.version>
     <httpclient.version>5.6.1</httpclient.version>
-    <jetty.version>12.1.8</jetty.version>
+    <jetty.version>12.1.9</jetty.version>
     <junit.version>5.12.0</junit.version>
     <junit.p.version>1.12.0</junit.p.version>
     <jmock.version>2.13.1</jmock.version>
