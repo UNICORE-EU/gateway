@@ -14,6 +14,7 @@ import eu.unicore.gateway.Site;
 import eu.unicore.gateway.SiteOrganiser;
 import eu.unicore.gateway.VSite;
 import eu.unicore.gateway.cluster.MultiSite;
+import eu.unicore.gateway.tokens.TokenGenerator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -179,6 +180,10 @@ public class FrontPageRenderer {
 		sb.append("<div id='footer'><hr/> Version: "+Gateway.RELEASE_VERSION+" Up since: ").append(gateway.upSince());
 		if(gateway.getProperties().isDynamicRegistrationEnabled()){
 			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;<a href='resources/register.html'>register a site</a>");
+		}
+		if(gateway.getProperties().isAPITokenGeneratorEnabled()){
+			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;<a href='"+TokenGenerator.PATH
+					+ "'>create an API token</a>");
 		}
 		sb.append("</div>");
 		return sb.toString();

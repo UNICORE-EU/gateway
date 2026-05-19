@@ -8,11 +8,13 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jetty.ee10.servlet.ResourceServlet;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.servlet.SessionHandler;
 import org.eclipse.jetty.server.Handler;
 
 import eu.unicore.gateway.Gateway;
+import eu.unicore.gateway.acme.AcmeHandler;
 import eu.unicore.gateway.forwarding.ProtocolUpgradeFilter;
-import eu.unicore.gateway.util.AcmeHandler;
+import eu.unicore.gateway.tokens.Configuration;
 import eu.unicore.gateway.util.FileWatcher;
 import eu.unicore.security.canl.CredentialProperties;
 import eu.unicore.util.configuration.ConfigurationException;
@@ -49,22 +51,24 @@ public class GatewayJettyServer extends JettyServerBase {
 		URL u = getClass().getResource("/eu/unicore/gateway/resources");
 		resHolder.setInitParameter("baseResource", u.toString());
 		root.addServlet(resHolder, "/resources/*");
+		if(gateway.getProperties().isAPITokenGeneratorEnabled()) {
+			root.setSecurityHandler(Configuration.configureOIDC(gateway.getProperties()));
+			root.setSessionHandler(new SessionHandler());
+		}
 		return root;
 	}
 
 	@Override
 	protected Handler configureHandlers(Handler root) {
+		Handler r = super.configureHandlers(root);
 		if(gateway.getProperties().isAcmeEnabled() &&
 				gateway.getProperties().getHostname().toLowerCase().startsWith("https")) 
 		{
 			AcmeHandler h = new AcmeHandler();
-			h.setHandler(super.configureHandlers(root));
-			return h;
-			
+			h.setHandler(r);
+			r = h;
 		}
-		else{
-			return super.configureHandlers(root);
-		}
+		return r;
 	}
 
 	@Override
@@ -72,12 +76,13 @@ public class GatewayJettyServer extends JettyServerBase {
 		super.initServer();
 		CredentialProperties cProps = gateway.getSecurityProperties().getCredentialProperties(); 
 		if(cProps.isDynamicalReloadEnabled()) {
-			String path = cProps.getValue(CredentialProperties.PROP_LOCATION);
 			try{
-				FileWatcher fw = new FileWatcher(new File(path), () -> {
-					gateway.getSecurityProperties().reloadCredential();
-					reloadCredential();
-				});
+				FileWatcher fw = new FileWatcher(
+						new File(cProps.getValue(CredentialProperties.PROP_LOCATION)),
+						() -> {
+							gateway.getSecurityProperties().reloadCredential();
+							reloadCredential();
+							});
 				fw.schedule(10, TimeUnit.SECONDS);	
 			}catch(FileNotFoundException fe) {
 				throw new ConfigurationException("", fe);

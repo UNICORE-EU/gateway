@@ -43,6 +43,12 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser {
 	}
 
 	@Override
+	public Site getSite(String name)
+	{
+		return sites.get(name);
+	}
+
+	@Override
 	public void reloadConfig() {
 		for(Site s: sites.values()) {
 			s.reloadConfig();
