@@ -52,6 +52,9 @@ public class GatewayProperties extends FilePropertiesHelper
 	public static final String KEY_ACME_DIR = "acme.tokenDirectory";
 	public static final String KEY_ACME_HTTP_PORT = "acme.httpPort";
 
+	// OIDC server properties for API token generation
+	public static final String KEY_API_TOKEN_PROPERTIES = "apitokens.";
+
 	@DocumentationReferencePrefix
 	public static final String PREFIX="gateway.";
 
@@ -115,6 +118,9 @@ public class GatewayProperties extends FilePropertiesHelper
 
 		DEFAULTS.put(HttpServerProperties.DEFAULT_PREFIX, new PropertyMD().setCanHaveSubkeys().setHidden().
 				setDescription("Properties with this prefix are used to configure advanced Gateway's Jetty HTTP server settings. See separate documentation."));
+
+		DEFAULTS.put(KEY_API_TOKEN_PROPERTIES, new PropertyMD().setCanHaveSubkeys().setHidden().
+				setDescription("Properties with this prefix are used to configure the API token generator facility. See separate documentation."));
 
 		DEFAULTS.put(KEY_CLIENT_CREDENTIAL, new PropertyMD().setCanHaveSubkeys().setCategory(cliCat).
 				setDescription("Properties with this prefix are used to configure the SSL credential used for client calls. See separate documentation."));
@@ -238,6 +244,12 @@ public class GatewayProperties extends FilePropertiesHelper
 	public int getAcmePort()
 	{
 		return getIntValue(KEY_ACME_HTTP_PORT);
+	}
+
+	public boolean isAPITokenGeneratorEnabled()
+	{
+		return !isDetailedWebPageDisabled() && Boolean.parseBoolean(
+				getRawProperty(PREFIX+KEY_API_TOKEN_PROPERTIES+"enable"));
 	}
 
 }

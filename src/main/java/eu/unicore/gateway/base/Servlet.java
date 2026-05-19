@@ -107,15 +107,16 @@ public class Servlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
 	{
 		URL u = new URL(req.getRequestURL().toString());
-		if("/".equals(u.getPath())){
+		String path = u.getPath();
+		if("/".equals(path)){
 			new FrontPageRenderer(gateway).getFrontPage(req, res);
 		}
-		else if(u.getPath().startsWith("/.well-known/acme-challenge/")) {
+		else if(path.startsWith("/.well-known/acme-challenge/")) {
 			String file = new File(u.getPath()).getName();
 			new AcmeRenderer(properties).handleRequest(file, req, res);
 		}
-		else if(u.getPath().startsWith("/token/")) {
-			new TokenGenerator(properties).handleRequest(req, res);
+		else if(path.contains(TokenGenerator.PATH)) {
+			new TokenGenerator(properties, gateway.getSiteOrganiser()).handleRequest(req, res);
 		}
 		else{
 			doHttp("GET", req, res);

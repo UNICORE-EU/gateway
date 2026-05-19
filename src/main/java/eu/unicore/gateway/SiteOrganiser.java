@@ -42,4 +42,9 @@ public interface SiteOrganiser
 	 */
 	public HttpClient getHTTPClient(VSite site) throws Exception;
 
+	/**
+	 * get a site by name
+	 */
+	public Site getSite(String name);
+
 }
