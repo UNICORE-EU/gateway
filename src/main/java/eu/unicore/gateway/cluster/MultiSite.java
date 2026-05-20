@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +37,9 @@ public class MultiSite implements Site {
 	private final Map<String,String> params;
 	private final List<VSite>configuredSites;
 	private final SelectionStrategy selectionStrategy;
+	private final Map<String,String>meta;
 
-	public MultiSite(URI gatewayURI, String name, String desc) 
+	public MultiSite(URI gatewayURI, String name, String desc, Map<String,String>meta) 
 			throws UnknownHostException, URISyntaxException, IOException{
 		this.name = name;
 		this.gatewayURI = gatewayURI;
@@ -49,6 +51,7 @@ public class MultiSite implements Site {
 		parseDescription(desc);
 		configureSites();
 		selectionStrategy = configureSelectionStrategy();
+		this.meta = meta;
 	}
 
 	@Override
@@ -122,8 +125,7 @@ public class MultiSite implements Site {
 				return;
 			}
 		}
-		VSite v = new VSite(gatewayURI,name,address.toString());
-		registerVsite(v);
+		registerVsite(new VSite(gatewayURI, name, address.toString(), null));
 	}
 
 	void registerVsite(VSite vsite){
@@ -166,7 +168,7 @@ public class MultiSite implements Site {
 		}
 		String[] vsites=siteDesc.split("\\s+");
 		for(String vsite: vsites){
-			VSite v = new VSite(gatewayURI,name,vsite);
+			VSite v = new VSite(gatewayURI,name,vsite,null);
 			configuredSites.add(v);
 			log.info("Configured vsite {} for <{}>", vsite, getName());
 		}
@@ -211,6 +213,11 @@ public class MultiSite implements Site {
 		for(Site s: configuredSites) {
 			s.reloadConfig();
 		}
+	}
+
+	@Override
+	public Map<String,String>getMetadata(){
+		return meta!=null? meta : Collections.emptyMap();
 	}
 
 }

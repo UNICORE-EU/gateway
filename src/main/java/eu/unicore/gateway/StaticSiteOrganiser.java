@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.logging.log4j.Logger;
 
@@ -56,14 +55,12 @@ public class StaticSiteOrganiser extends BaseSiteOrganiser
 		log.info("Reading connections file.");
 		synchronized(sites){
 			sites.clear();
-			Iterator<?> it = props.getEntries();
-			while (it.hasNext())
+			for(String siteName: props.getSiteNames())
 			{
-				String siteName = (String) it.next();
-				String addr = props.getSite(siteName); 
+				String addr = props.getSiteAddress(siteName); 
 				try
 				{
-					Site site = SiteFactory.buildSite(gateway.getHostURI(), siteName, addr);
+					Site site = SiteFactory.buildSite(gateway.getHostURI(), siteName, addr, props.getSiteInfo(siteName));
 					if(sites.put(siteName,site)==null){
 						log.info("Added site: {}", site);	
 					}

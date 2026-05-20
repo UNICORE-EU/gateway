@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.net.URI;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -16,7 +17,7 @@ import eu.unicore.gateway.cluster.MultiSite;
 import eu.unicore.gateway.util.FrontPageRenderer;
 import eu.unicore.gateway.util.FrontPageRenderer.SortOrder;
 
-public class TestDynamicSiteOrganiser {
+public class TestSiteOrganiser {
 	
 	private static Gateway gw;
 
@@ -35,9 +36,19 @@ public class TestDynamicSiteOrganiser {
 	}
 
 	@Test
+	public void testBasic()throws Exception{
+		SiteOrganiser dso = gw.getSiteOrganiser();
+		assertEquals(2, dso.getSites().size());
+		VSite demo = (VSite)dso.getSite("DEMO-SITE");
+		Map<String,String>meta = demo.getMetadata();
+		assertEquals(2, meta.size());
+		assertEquals("bar", meta.get("foo"));
+	}
+
+	@Test
 	public void testDynamicRegistration()throws Exception{
 		String gwURL = "http://foo";
-		MultiSite ms = new MultiSite(new URI(gwURL), "test", null);
+		MultiSite ms = new MultiSite(new URI(gwURL), "test", null, null);
 		DynamicSiteOrganiser dso = gw.getDynamicSiteOrganiser();
 		dso.register(ms);
 		assertEquals(0, ms.getConfiguredSites().size());

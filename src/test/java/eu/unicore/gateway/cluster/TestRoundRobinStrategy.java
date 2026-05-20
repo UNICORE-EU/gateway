@@ -20,7 +20,7 @@ public class TestRoundRobinStrategy {
 		String param1="strategy="+SelectionStrategy.ROUND_ROBIN_STRATEGY;
 		
 		String vsiteName="test";
-		MultiSite ms=new MultiSite(gwURI,vsiteName,param+";"+param1); 
+		MultiSite ms=new MultiSite(gwURI,vsiteName,param+";"+param1, null); 
 		FakeServer s1=new FakeServer();
 		FakeServer s2=new FakeServer();
 		FakeServer s3=new FakeServer();
@@ -29,13 +29,13 @@ public class TestRoundRobinStrategy {
 		s3.start();
 		Thread.sleep(2000);
 
-		VSite v1=new VSite(gwURI,vsiteName,s1.getURI());
+		VSite v1=new VSite(gwURI,vsiteName,s1.getURI(), null);
 		v1.disablePingDelay();
 		ms.registerVsite(v1);
-		VSite v2=new VSite(gwURI,vsiteName,s2.getURI());
+		VSite v2=new VSite(gwURI,vsiteName,s2.getURI(), null);
 		v2.disablePingDelay();
 		ms.registerVsite(v2);
-		VSite v3=new VSite(gwURI,vsiteName,s3.getURI());
+		VSite v3=new VSite(gwURI,vsiteName,s3.getURI(), null);
 		v3.disablePingDelay();
 		ms.registerVsite(v3);
 

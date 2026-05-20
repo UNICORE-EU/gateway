@@ -288,7 +288,6 @@ public class Servlet extends HttpServlet {
 		else{
 			return new URIBuilder(u).setCustomQuery(query).build();
 		}
-
 	}
 
 	private static void copyHeaders(HttpServletRequest req, HttpUriRequestBase method){

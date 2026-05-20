@@ -23,7 +23,7 @@ public class TestMultiSite {
 	@Test
 	public void testBasicConfig()throws Exception{
 		String desc="foo=bar;spam=ham";
-		MultiSite ms=new MultiSite(new URI("http://foo"),"test",desc); 
+		MultiSite ms=new MultiSite(new URI("http://foo"),"test",desc, null); 
 		Map<String,String>p=ms.getParams();
 		assertEquals(2,p.entrySet().size());
 		assertEquals("bar",p.get("foo"));
@@ -33,7 +33,7 @@ public class TestMultiSite {
 	@Test
 	public void testSetupSites()throws Exception{
 		String desc = "vsites=http://localhost:8000 http://localhost:8010;spam=ham";
-		MultiSite ms = new MultiSite(new URI("http://foo"),"test",desc); 
+		MultiSite ms = new MultiSite(new URI("http://foo"),"test",desc, null); 
 		List<VSite>sites = ms.getConfiguredSites();
 		assertEquals(2, sites.size());
 		ms.reloadConfig();
@@ -42,18 +42,18 @@ public class TestMultiSite {
 	@Test
 	public void testReadConfig()throws Exception{
 		String desc = "config=src/test/resources/cluster.config";
-		MultiSite ms=new MultiSite(new URI("http://foo"),"test",desc); 
+		MultiSite ms=new MultiSite(new URI("http://foo"),"test",desc, null); 
 		List<VSite>sites = ms.getConfiguredSites();
 		assertEquals(2, sites.size());
 		final String err = "no_equal_signs";
 		assertThrows(ConfigurationException.class,
-				()->new MultiSite(new URI("http://foo"),"test",err));
+				()->new MultiSite(new URI("http://foo"),"test",err, null));
 	}
 
 	@Test
 	public void testCreateStrategy()throws Exception{
 		String desc = "config=src/test/resources/cluster.config";
-		MultiSite ms = new MultiSite(new URI("http://foo"),"test",desc); 
+		MultiSite ms = new MultiSite(new URI("http://foo"),"test",desc, null);
 		List<VSite>sites = ms.getConfiguredSites();
 		assertEquals(2, sites.size());
 		SelectionStrategy s=ms.getSelectionStrategy();
@@ -62,13 +62,13 @@ public class TestMultiSite {
 
 		final String err = "strategy=no_such_class";
 		assertThrows(ConfigurationException.class,
-				()->new MultiSite(new URI("http://foo"),"test",err));
+				()->new MultiSite(new URI("http://foo"),"test",err, null));
 	}
 
 	@Test
 	public void testMultiSitePing()throws Exception{
 		URI gwURI = new URI("http://foo");
-		MultiSite ms=new MultiSite(gwURI,"test",null); 
+		MultiSite ms=new MultiSite(gwURI,"test",null, null); 
 		assertTrue(ms.accept(gwURI+"/test"));
 		assertFalse(ms.accept(gwURI+"/other"));
 
@@ -77,8 +77,8 @@ public class TestMultiSite {
 		v1.start();
 		v2.start();
 		Thread.sleep(2000);
-		ms.registerVsite(new VSite(gwURI,"site",v1.getURI()));
-		ms.registerVsite(new VSite(gwURI,"site",v2.getURI()));
+		ms.registerVsite(new VSite(gwURI,"site",v1.getURI(), null));
+		ms.registerVsite(new VSite(gwURI,"site",v2.getURI(), null));
 
 		List<VSite>sites = ms.getConfiguredSites();
 		assertEquals(2, sites.size());
@@ -92,7 +92,7 @@ public class TestMultiSite {
 	@Test
 	public void testDynamicRegistration()throws Exception{
 		URI gwURI = new URI("http://foo");
-		MultiSite ms = new MultiSite(gwURI,"test",null);
+		MultiSite ms = new MultiSite(gwURI,"test",null,null);
 		assertEquals(0,ms.getConfiguredSites().size());
 		FakeServer s1=new FakeServer();
 		FakeServer s2=new FakeServer();
@@ -121,17 +121,17 @@ public class TestMultiSite {
 	public void testDefaultSelectionStrategy()throws Exception{
 		URI gwURI=new URI("http://foo");
 		String param=SelectionStrategy.HEALTH_CHECK_INTERVAL+"=1000";
-		MultiSite ms=new MultiSite(gwURI,"test",param); 
+		MultiSite ms=new MultiSite(gwURI,"test",param,null); 
 		FakeServer s1=new FakeServer();
 		FakeServer s2=new FakeServer();
 		s1.start();
 		s2.start();
 		Thread.sleep(2000);
 
-		VSite v1=new VSite(gwURI,"site",s1.getURI());
+		VSite v1=new VSite(gwURI,"site",s1.getURI(),null);
 		v1.disablePingDelay();
 		ms.registerVsite(v1);
-		VSite v2=new VSite(gwURI,"site",s2.getURI());
+		VSite v2=new VSite(gwURI,"site",s2.getURI(),null);
 		v2.disablePingDelay();
 		ms.registerVsite(v2);
 

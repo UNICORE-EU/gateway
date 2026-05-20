@@ -1,6 +1,8 @@
 package eu.unicore.gateway;
 
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * a Site
@@ -45,5 +47,12 @@ public interface Site {
 	 * reload configuration - for example due to config changes
 	 */
 	public void reloadConfig();
+
+	/**
+	 * additional info about the site
+	 */
+	public default Map<String,String> getMetadata(){
+		return Collections.emptyMap();
+	}
 
 }

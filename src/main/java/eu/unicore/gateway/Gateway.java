@@ -77,7 +77,6 @@ public class Gateway
 				gatewayProperties.getRegistrationIncludes());
 			organiser.addSiteOrganiser(dynamicOrganiser);
 		}
-		log.info(organiser.toString());
 	}
 
 	private void configureSecurity() throws Exception {

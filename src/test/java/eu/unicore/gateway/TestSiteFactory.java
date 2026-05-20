@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -14,15 +16,19 @@ public class TestSiteFactory {
 
 	@Test
 	public void testVsite()throws Exception{
-		Site s1=SiteFactory.buildSite(new URI("http://localhost"),"test", "http://localhost:8080");
+		Map<String,String>meta = new HashMap<>();
+		meta.put("foo", "bar");
+		Site s1 = SiteFactory.buildSite(new URI("http://localhost"),"test", "http://localhost:8080", meta);
 		assertNotNull(s1);
 		assertTrue(s1 instanceof VSite);
 	}
 
 	@Test
 	public void testMsite()throws Exception{
-		Site s1=SiteFactory.buildSite(new URI("http://localhost"),"test", 
-				"multisite: vsites=http://localhost:8010 http://localhost:8011");
+		Map<String,String>meta = new HashMap<>();
+		meta.put("foo", "bar");
+		Site s1 = SiteFactory.buildSite(new URI("http://localhost"),"test", 
+				"multisite: vsites=http://localhost:8010 http://localhost:8011", meta);
 		assertNotNull(s1);
 		assertTrue(s1 instanceof MultiSite);
 	}
