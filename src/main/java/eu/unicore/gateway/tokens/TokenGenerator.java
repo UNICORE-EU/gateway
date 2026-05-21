@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
 
@@ -14,9 +13,6 @@ import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.jetty.ee10.servlet.ServletCoreRequest;
-import org.eclipse.jetty.security.AuthenticationState;
-import org.eclipse.jetty.server.Request;
 
 import eu.unicore.gateway.Gateway;
 import eu.unicore.gateway.Site;
@@ -40,6 +36,8 @@ public class TokenGenerator {
 
 	public static final String PATH = "/generate-token";
 	public static final String CREATE = "/generate-token/create";
+	public static final String TOKEN_URL = "tokenURL";
+	static final String _ATTR_OIDC = "org.eclipse.jetty.security.openid.response";
 
 	private final GatewayProperties gatewayProperties;
 	private final SiteOrganiser sites;
@@ -51,11 +49,18 @@ public class TokenGenerator {
 
 	public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		if(!gatewayProperties.isAPITokenGeneratorEnabled()) {
-			// disabled - 404
 			res.sendError(404, "Not found");
 			return;
 		}
 		try {
+			HttpSession session = req.getSession(false);
+			@SuppressWarnings("unchecked")
+			Map<String, String> oidcResponse = (Map<String, String>)session.getAttribute(_ATTR_OIDC);
+			String accessToken = oidcResponse.get("access_token");
+			if(accessToken==null) {
+				res.sendError(401, "Not authenticated");
+				return;
+			}
 			URL url = new URL(req.getRequestURL().toString());
 			PrintWriter out = res.getWriter();
 			res.setContentType("text/html");
@@ -63,15 +68,6 @@ public class TokenGenerator {
 					"<title>UNICORE Gateway</title><body>");
 			out.println(getContent(getHeader()));
 			out.println("<br/>");
-			Request baseRequest = ServletCoreRequest.wrap(req);
-			Principal userPrincipal = AuthenticationState.getUserPrincipal(baseRequest);
-			if (userPrincipal != null)
-			{
-				HttpSession session = req.getSession(false);
-				@SuppressWarnings("unchecked")
-				Map<String, String> oidcResponse = (Map<String, String>)session.getAttribute(
-						"org.eclipse.jetty.security.openid.response");
-				String accessToken = oidcResponse.get("access_token");
 				if(CREATE.equals(url.getPath())){
 					Site site = sites.getSite(req.getParameter("site"));
 					String lifetime = req.getParameter("lifetime");
@@ -82,11 +78,6 @@ public class TokenGenerator {
 				else {
 					out.println(getContent(getForm(sites.getSites())));
 				}
-			}
-			else {
-				res.sendError(401, "Not authenticated");
-				return;
-			}
 			out.println("<br/>");
 			out.println(getFooter());
 			out.println("</html></body>");
@@ -99,7 +90,7 @@ public class TokenGenerator {
 	String generateAPIToken(String accessToken, VSite site, String lifetime, String userprefs)
 			throws Exception {
 		HttpClient client = sites.getHTTPClient(site);
-		String tokenURL = site.getMetadata().get("tokenURL");
+		String tokenURL = site.getMetadata().get(TOKEN_URL);
 		if(tokenURL==null) {
 			throw new Exception("No token URL for <"+site.getName()+">");
 		}

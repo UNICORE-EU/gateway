@@ -3,9 +3,9 @@ package eu.unicore.gateway;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import eu.unicore.util.configuration.ConfigurationException;
 
@@ -29,17 +29,26 @@ public class CompositeSiteOrganiser extends StaticSiteOrganiser {
 		siteOrganisers.add(siteOrganiser);
 	} 
 
+	@Override
+	public Site getSite(String name) {
+		for(SiteOrganiser so: siteOrganisers){
+			Site s = so.getSite(name);
+			if(s!=null)return s;
+		}
+		return super.getSite(name);
+	}
+
 	/**
 	 * merge site lists from all registered organisers
 	 */
 	@Override
-	public Set<Site> getSites() {
-		Set<Site>result = new HashSet<>();
+	public Collection<Site> getSites() {
+		Collection<Site>result = new HashSet<>();
+		result.addAll(super.getSites());
 		for(SiteOrganiser so: siteOrganisers){
 			if(so.getSites()!=null)
 				result.addAll(so.getSites());
 		}
-		if(super.getSites()!=null)result.addAll(super.getSites());
 		return result;
 	}
 

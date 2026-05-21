@@ -14,7 +14,7 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser {
 
 	protected final Gateway gateway;
 
-	protected final Map<String,Site> sites = new ConcurrentHashMap<>();
+	protected final Map<String, Site> sites = new ConcurrentHashMap<>();
 
 	protected BaseSiteOrganiser(Gateway gw)
 	{

@@ -3,6 +3,7 @@ package eu.unicore.gateway;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import org.apache.logging.log4j.Logger;
 
@@ -26,12 +27,12 @@ public class DynamicSiteOrganiser extends BaseSiteOrganiser
 		try{
 			checkExclusion(realURI);
 			checkInclusion(realURI);
-			Site existingSite = sites.get(name);
+			Site existingSite = getSite(name);
 			if(existingSite!=null && existingSite instanceof MultiSite){
 				((MultiSite)existingSite).registerVsite(realURI);
 			}
 			else{
-				sites.put(name, new VSite(gateway.getHostURI(), name, realURI.toString(),null));
+				sites.put(name, new VSite(gateway.getHostURI(), name, realURI.toString(), new HashMap<>()));
 			}
 			return true;
 		}catch(IllegalArgumentException ae){
@@ -75,6 +76,6 @@ public class DynamicSiteOrganiser extends BaseSiteOrganiser
 
 	// unit testing use
 	void register(Site site){
-		sites.put(site.getName(),site);
+		sites.put(site.getName(), site);
 	}
 }

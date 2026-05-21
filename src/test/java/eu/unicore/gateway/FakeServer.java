@@ -18,7 +18,7 @@ import eu.unicore.gateway.util.LogUtil;
 /**
  * a fake server replying to HTTP requests
  */
-public class FakeServer implements Runnable {
+public class FakeServer implements Runnable, AutoCloseable {
 
 	private static final Logger log = LogUtil.getLogger(LogUtil.GATEWAY,FakeServer.class);
 
@@ -83,7 +83,12 @@ public class FakeServer implements Runnable {
 		return stopped;
 	}
 
-	private final byte[] answer="Everything is OK, thank you for contacting me.".getBytes();
+	@Override
+	public void close() throws IOException {
+		stop();
+	}
+
+	private byte[] answer="Everything is OK, thank you for contacting me.".getBytes();
 
 	public byte[] getAnswer(){
 		return answer;
@@ -215,5 +220,9 @@ public class FakeServer implements Runnable {
 
 	public void setStatusCode(int statusCode){
 		this.statusCode=statusCode;
+	}
+	
+	public void setAnswer(String answer){
+		this.answer = answer.getBytes();
 	}
 }

@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -52,7 +52,7 @@ public class VSite implements Site {
 	private volatile long lastPing = 0;
 	private long pingDelay = 30*1000;
 	private int pingTimeout = 10*1000;
-	private final Map<String,String>meta;
+	private final Map<String,String>meta = new HashMap<>();
 
 	public VSite(URI gatewayURI, String name, String uri, Map<String,String>meta) throws UnknownHostException, URISyntaxException{
 		if(uri==null)throw new IllegalArgumentException("URI can't be null.");
@@ -61,7 +61,7 @@ public class VSite implements Site {
 		this.inetAddress = new InetSocketAddress(realURI.getHost(), realURI.getPort());
 		this.name = name;
 		this.index = new XURI(gatewayURI).countPathElements();
-		this.meta = meta;
+		if(meta!=null)this.meta.putAll(meta);
 		log.info("New virtual site: <{}> at <{}>", name, uri);
 	}
 
@@ -173,7 +173,7 @@ public class VSite implements Site {
 
 	@Override
 	public Map<String,String>getMetadata(){
-		return meta!=null? meta : Collections.emptyMap();
+		return meta;
 	}
 
 	@Override

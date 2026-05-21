@@ -60,18 +60,18 @@ public class TestServer {
 
 	@Test
 	public void testHead() throws Exception{
-		FakeServer s1 = new FakeServer();
-		s1.start();
-		String s1Url = s1.getURI();
-		int status=doRegister("FAKE1", s1Url);
-		assertEquals(HttpStatus.SC_CREATED,status);
-		String url = "http://localhost:64433/FAKE1";
-		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
-		HttpHead head = new HttpHead(url);
-		try(ClassicHttpResponse response = hc.executeOpen(null, head, HttpClientContext.create())){
-			System.out.println("HEAD got reply: " + new StatusLine(response));
+		try(FakeServer s1=new FakeServer()){
+			s1.start();
+			String s1Url = s1.getURI();
+			int status=doRegister("FAKE1", s1Url);
+			assertEquals(HttpStatus.SC_CREATED,status);
+			String url = "http://localhost:64433/FAKE1";
+			HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+			HttpHead head = new HttpHead(url);
+			try(ClassicHttpResponse response = hc.executeOpen(null, head, HttpClientContext.create())){
+				System.out.println("HEAD got reply: " + new StatusLine(response));
+			}
 		}
-		s1.stop();
 	}
 
 	@Test
@@ -104,40 +104,40 @@ public class TestServer {
 
 	@Test
 	public void testPost()throws Exception{
-		FakeServer s1=new FakeServer();
-		s1.start();
-		String s1Url=s1.getURI();
-		int status=doRegister("FAKE1",s1Url);
-		assertEquals(HttpStatus.SC_CREATED,status);
+		try(FakeServer s1=new FakeServer()){
+			s1.start();
+			String s1Url=s1.getURI();
+			int status=doRegister("FAKE1",s1Url);
+			assertEquals(HttpStatus.SC_CREATED,status);
 
-		String url="http://localhost:64433/FAKE1/test";
-		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
-		HttpPost post=new HttpPost(url);
-		byte[] originalRequestBody = getBody();
-		post.setEntity(new ByteArrayEntity(originalRequestBody, ContentType.APPLICATION_JSON));
-		String userName = "demouser";
-		String password = "test123";
-		
-		post.addHeader(Utils.getBasicAuth(userName, password));
+			String url="http://localhost:64433/FAKE1/test";
+			HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+			HttpPost post=new HttpPost(url);
+			byte[] originalRequestBody = getBody();
+			post.setEntity(new ByteArrayEntity(originalRequestBody, ContentType.APPLICATION_JSON));
+			String userName = "demouser";
+			String password = "test123";
 
-		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
-			System.out.println(getStatusDesc(response));
-			assertEquals(HttpStatus.SC_OK, response.getCode());
+			post.addHeader(Utils.getBasicAuth(userName, password));
 
-			String forwardedRequestBody = s1.getLatestRequestBody();
-			System.out.println(forwardedRequestBody);
-			assertEquals(new String(originalRequestBody), forwardedRequestBody);
+			try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
+				System.out.println(getStatusDesc(response));
+				assertEquals(HttpStatus.SC_OK, response.getCode());
 
-			byte[] responseBody = EntityUtils.toByteArray(response.getEntity());
-			assertTrue(Arrays.equals(s1.getAnswer(), responseBody));
+				String forwardedRequestBody = s1.getLatestRequestBody();
+				System.out.println(forwardedRequestBody);
+				assertEquals(new String(originalRequestBody), forwardedRequestBody);
 
-			// check auth header was forwarded
-			List<String> lastHeaders = s1.getLatestRequestHeaders();
-			checkHeader("Authorization", lastHeaders);
-			checkHeader(Servlet.CONSIGNOR_IP_HEADER, lastHeaders);
-			checkHeader(Servlet.GATEWAY_EXTERNAL_URL+": http://localhost:64433/FAKE1", lastHeaders);
+				byte[] responseBody = EntityUtils.toByteArray(response.getEntity());
+				assertTrue(Arrays.equals(s1.getAnswer(), responseBody));
+
+				// check auth header was forwarded
+				List<String> lastHeaders = s1.getLatestRequestHeaders();
+				checkHeader("Authorization", lastHeaders);
+				checkHeader(Servlet.CONSIGNOR_IP_HEADER, lastHeaders);
+				checkHeader(Servlet.GATEWAY_EXTERNAL_URL+": http://localhost:64433/FAKE1", lastHeaders);
+			}
 		}
-		s1.stop();
 	}
 
 	private void checkHeader(String headerName, List<String> headers){
@@ -149,45 +149,45 @@ public class TestServer {
 	
 	@Test
 	public void testGet()throws Exception{
-		FakeServer s1=new FakeServer();
-		s1.start();
-		String s1Url=s1.getURI();
-		int status=doRegister("FAKE1",s1Url);
-		assertEquals(HttpStatus.SC_CREATED,status);
+		try(FakeServer s1=new FakeServer()){
+			s1.start();
+			String s1Url=s1.getURI();
+			int status=doRegister("FAKE1",s1Url);
+			assertEquals(HttpStatus.SC_CREATED,status);
 
-		String queryPath = "/test";
-		String url="http://localhost:64433/FAKE1"+queryPath;
-		String originalQuery = "GET "+queryPath+" HTTP/1.1";
+			String queryPath = "/test";
+			String url="http://localhost:64433/FAKE1"+queryPath;
+			String originalQuery = "GET "+queryPath+" HTTP/1.1";
 
-		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
-		HttpGet get=new HttpGet(url);
-		get.addHeader("X-testHeader", "test123");
-		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
-			System.out.println(getStatusDesc(response));
-			assertEquals(HttpStatus.SC_OK, response.getCode());
-			List<String> filteredHeadersForwarded=new ArrayList<>();
-			for(String h: s1.getLatestRequestHeaders()){
-				String string=h.trim();
-				if(!string.startsWith("Host:")){
-					filteredHeadersForwarded.add(string);
+			HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+			HttpGet get=new HttpGet(url);
+			get.addHeader("X-testHeader", "test123");
+			try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
+				System.out.println(getStatusDesc(response));
+				assertEquals(HttpStatus.SC_OK, response.getCode());
+				List<String> filteredHeadersForwarded=new ArrayList<>();
+				for(String h: s1.getLatestRequestHeaders()){
+					String string=h.trim();
+					if(!string.startsWith("Host:")){
+						filteredHeadersForwarded.add(string);
+					}
 				}
+				assertEquals(originalQuery, s1.getLatestQuery());
+				assertTrue(filteredHeadersForwarded.contains(Servlet.CONSIGNOR_IP_HEADER+": 127.0.0.1"));
+				assertTrue(filteredHeadersForwarded.contains(Servlet.GATEWAY_EXTERNAL_URL+": http://localhost:64433/FAKE1"));
+				assertTrue(filteredHeadersForwarded.contains("X-testHeader: test123"));
+				assertTrue(Arrays.equals(s1.getAnswer(), EntityUtils.toByteArray(response.getEntity())));
 			}
-			assertEquals(originalQuery, s1.getLatestQuery());
-			assertTrue(filteredHeadersForwarded.contains(Servlet.CONSIGNOR_IP_HEADER+": 127.0.0.1"));
-			assertTrue(filteredHeadersForwarded.contains(Servlet.GATEWAY_EXTERNAL_URL+": http://localhost:64433/FAKE1"));
-			assertTrue(filteredHeadersForwarded.contains("X-testHeader: test123"));
-			assertTrue(Arrays.equals(s1.getAnswer(), EntityUtils.toByteArray(response.getEntity())));
-		}
 
-		int expectedCode=503;
-		s1.setStatusCode(expectedCode);
-		get=new HttpGet(url);
-		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
-			System.out.println(getStatusDesc(response));
-			assertEquals(expectedCode, response.getCode());
-			assertTrue(Arrays.equals(s1.getAnswer(), EntityUtils.toByteArray(response.getEntity())));
+			int expectedCode=503;
+			s1.setStatusCode(expectedCode);
+			get=new HttpGet(url);
+			try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
+				System.out.println(getStatusDesc(response));
+				assertEquals(expectedCode, response.getCode());
+				assertTrue(Arrays.equals(s1.getAnswer(), EntityUtils.toByteArray(response.getEntity())));
+			}
 		}
-		s1.stop();
 	}
 
 	@Test
@@ -205,45 +205,45 @@ public class TestServer {
 
 	@Test
 	public void testGetPathWithSpaces()throws Exception{
-		FakeServer s1=new FakeServer();
-		s1.start();
-		String s1Url=s1.getURI();
-		int status=doRegister("FAKE1",s1Url);
-		assertEquals(HttpStatus.SC_CREATED,status);
-		
-		String queryPath = "/test%20file";
-		String url="http://localhost:64433/FAKE1"+queryPath;
+		try(FakeServer s1=new FakeServer()){
+			s1.start();
+			String s1Url=s1.getURI();
+			int status=doRegister("FAKE1",s1Url);
+			assertEquals(HttpStatus.SC_CREATED,status);
 
-		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
-		HttpGet get=new HttpGet(url);
+			String queryPath = "/test%20file";
+			String url="http://localhost:64433/FAKE1"+queryPath;
 
-		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
-			System.out.println(getStatusDesc(response));
-			assertEquals(200, response.getCode());
+			HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+			HttpGet get=new HttpGet(url);
+
+			try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
+				System.out.println(getStatusDesc(response));
+				assertEquals(200, response.getCode());
+			}
 		}
-		s1.stop();
 	}
 	
 	@Test
 	public void testGetPathWithQuery()throws Exception{
-		FakeServer s1=new FakeServer();
-		s1.start();
-		String s1Url=s1.getURI();
-		int status=doRegister("FAKE1",s1Url);
-		assertEquals(HttpStatus.SC_CREATED,status);
-		
-		String queryPath = "/test?xyz=foo";
-		String url="http://localhost:64433/FAKE1"+queryPath;
+		try(FakeServer s1=new FakeServer()){
+			s1.start();
+			String s1Url=s1.getURI();
+			int status=doRegister("FAKE1",s1Url);
+			assertEquals(HttpStatus.SC_CREATED,status);
 
-		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
-		HttpGet get=new HttpGet(url);
+			String queryPath = "/test?xyz=foo";
+			String url="http://localhost:64433/FAKE1"+queryPath;
 
-		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
-			System.out.println(getStatusDesc(response));
-			assertEquals(200, response.getCode());
-			assertTrue(s1.getLatestQuery().contains("?xyz=foo"));
+			HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+			HttpGet get=new HttpGet(url);
+
+			try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
+				System.out.println(getStatusDesc(response));
+				assertEquals(200, response.getCode());
+				assertTrue(s1.getLatestQuery().contains("?xyz=foo"));
+			}
 		}
-		s1.stop();
 	}
 	
 	@Test
@@ -302,44 +302,44 @@ public class TestServer {
 
 	@Test
 	public void testPut()throws Exception{
-		FakeServer s1=new FakeServer();
-		s1.start();
-		String s1Url=s1.getURI();
-		int status=doRegister("FAKE1",s1Url);
-		assertEquals(HttpStatus.SC_CREATED,status);
+		try(FakeServer s1=new FakeServer()){
+			s1.start();
+			String s1Url=s1.getURI();
+			int status=doRegister("FAKE1",s1Url);
+			assertEquals(HttpStatus.SC_CREATED,status);
 
-		String url="http://localhost:64433/FAKE1/test";
-		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
-		HttpPut put=new HttpPut(url);
-		AbstractHttpEntity entity = new ByteArrayEntity(getBody(), ContentType.WILDCARD, true);
-		put.setEntity(entity);
-		s1.setStatusCode(HttpStatus.SC_NO_CONTENT);
-		try(ClassicHttpResponse response = hc.executeOpen(null, put, HttpClientContext.create())){
-			System.out.println(getStatusDesc(response));
-			assertEquals(HttpStatus.SC_NO_CONTENT, response.getCode());
+			String url="http://localhost:64433/FAKE1/test";
+			HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+			HttpPut put=new HttpPut(url);
+			AbstractHttpEntity entity = new ByteArrayEntity(getBody(), ContentType.WILDCARD, true);
+			put.setEntity(entity);
+			s1.setStatusCode(HttpStatus.SC_NO_CONTENT);
+			try(ClassicHttpResponse response = hc.executeOpen(null, put, HttpClientContext.create())){
+				System.out.println(getStatusDesc(response));
+				assertEquals(HttpStatus.SC_NO_CONTENT, response.getCode());
+			}
 		}
-		s1.stop();
 	}
 
 	@Test
 	public void testPut2()throws Exception{
-		FakeServer s1=new FakeServer();
-		s1.start();
-		String s1Url=s1.getURI();
-		int status=doRegister("FAKE1",s1Url);
-		assertEquals(HttpStatus.SC_CREATED,status);
+		try(FakeServer s1=new FakeServer()){
+			s1.start();
+			String s1Url=s1.getURI();
+			int status=doRegister("FAKE1",s1Url);
+			assertEquals(HttpStatus.SC_CREATED,status);
 
-		String url="http://localhost:64433/FAKE1/test";
-		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
-		HttpPut put=new HttpPut(url);
-		AbstractHttpEntity entity = new ByteArrayEntity(getBody(), ContentType.APPLICATION_JSON, true);
-		put.setEntity(entity);
-		s1.setStatusCode(HttpStatus.SC_NO_CONTENT);
-		try(ClassicHttpResponse response = hc.executeOpen(null, put, HttpClientContext.create())){
-			System.out.println(getStatusDesc(response));
-			assertEquals(HttpStatus.SC_NO_CONTENT, response.getCode());
+			String url="http://localhost:64433/FAKE1/test";
+			HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+			HttpPut put=new HttpPut(url);
+			AbstractHttpEntity entity = new ByteArrayEntity(getBody(), ContentType.APPLICATION_JSON, true);
+			put.setEntity(entity);
+			s1.setStatusCode(HttpStatus.SC_NO_CONTENT);
+			try(ClassicHttpResponse response = hc.executeOpen(null, put, HttpClientContext.create())){
+				System.out.println(getStatusDesc(response));
+				assertEquals(HttpStatus.SC_NO_CONTENT, response.getCode());
+			}
 		}
-		s1.stop();
 	}
 
 	static byte[] getBody()throws IOException{

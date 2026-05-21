@@ -55,7 +55,6 @@ public class ConnectionsProperties
 					Map<String,String>info = new HashMap<>();
 					info.put(addressKey, addr);
 					newSiteMap.put(k, info);
-					System.out.println(newSiteMap);
 				}
 			}
 			// second run: read any additional data
@@ -66,7 +65,6 @@ public class ConnectionsProperties
 					String val = properties.getProperty(k);
 					String[] tok = k.split("\\.", 2);
 					String site = tok[0];
-					System.out.println("site = "+site);
 					String attrName = tok[1];
 					Map<String,String>info = newSiteMap.get(site);
 					if(info!=null) {

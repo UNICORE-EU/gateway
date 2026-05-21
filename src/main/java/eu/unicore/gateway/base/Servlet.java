@@ -325,16 +325,16 @@ public class Servlet extends HttpServlet {
 			res.sendError(HttpServletResponse.SC_FORBIDDEN,"Dynamic registration is disabled.");
 		}
 		else{
-			String name=req.getParameter("name");
-			String address=req.getParameter("address");
+			String name = req.getParameter("name");
+			String address = req.getParameter("address");
 			String secret = req.getParameter("secret");
 			if(!properties.getValue(GatewayProperties.KEY_REG_SECRET).equals(secret)) {
 				res.sendError(HttpServletResponse.SC_FORBIDDEN,"Wrong value for parameter 'secret' for dynamic registration.");
 			}
-			boolean success=true;
+			boolean success = true;
 			try{
-				URI uri=new URI(address);
-				success=gateway.getDynamicSiteOrganiser().register(name,uri);
+				URI uri = new URI(address);
+				success = gateway.getDynamicSiteOrganiser().register(name,uri);
 				if(success){
 					PrintWriter pw=res.getWriter();
 					pw.write("<html><body>Your request was processed successfully. <br/>" +
