@@ -26,28 +26,7 @@ public class Configuration {
 			TokenGeneratorProperties properties = new TokenGeneratorProperties(p);
 			SecurityHandler.PathMapped securityHandler = new SecurityHandler.PathMapped();
 			securityHandler.put(TokenGenerator.PATH+"/*", Constraint.ANY_USER);
-			ClientConnector connector = new ClientConnector();
-			connector.setSslContextFactory(new SslContextFactory.Client(true));
-			HttpClient client = new HttpClient(new HttpClientTransportOverHTTP(connector))
-			{
-				@Override
-				protected void doStart() throws Exception
-				{
-					super.doStart();
-					getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
-				}
-			};
-			OpenIdConfiguration openIdConfig = new OpenIdConfiguration.Builder()
-					.clientId(properties.getClientID())
-					.clientSecret(properties.getClientSecret())
-					.issuer(properties.getIssuer())
-					.tokenEndpoint(properties.getTokenEndpoint())
-					.authorizationEndpoint(properties.getAuthzEndpoint())
-					.authenticationMethod(properties.getJettyAuthMode())
-					.scopes(properties.getScope())
-					.authenticateNewUsers(true)
-					.httpClient(client)
-					.build();
+			OpenIdConfiguration openIdConfig = getOIDCConfig(properties);
 			LoginService loginService = new OpenIdLoginService(openIdConfig);
 			securityHandler.setLoginService(loginService);
 			securityHandler.setAuthenticator(new OpenIdAuthenticator(openIdConfig));
@@ -57,4 +36,28 @@ public class Configuration {
 		}
 	}
 
+	public static OpenIdConfiguration getOIDCConfig(TokenGeneratorProperties properties) {
+		ClientConnector connector = new ClientConnector();
+		connector.setSslContextFactory(new SslContextFactory.Client(true));
+		HttpClient client = new HttpClient(new HttpClientTransportOverHTTP(connector))
+		{
+			@Override
+			protected void doStart() throws Exception
+			{
+				super.doStart();
+				getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
+			}
+		};
+		return new OpenIdConfiguration.Builder()
+				.clientId(properties.getClientID())
+				.clientSecret(properties.getClientSecret())
+				.issuer(properties.getIssuer())
+				.tokenEndpoint(properties.getTokenEndpoint())
+				.authorizationEndpoint(properties.getAuthzEndpoint())
+				.authenticationMethod(properties.getJettyAuthMode())
+				.scopes(properties.getScope())
+				.authenticateNewUsers(true)
+				.httpClient(client)
+				.build();
+	}
 }

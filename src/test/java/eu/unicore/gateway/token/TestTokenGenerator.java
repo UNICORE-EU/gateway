@@ -6,11 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Properties;
 
+import org.eclipse.jetty.security.openid.OpenIdConfiguration;
 import org.junit.jupiter.api.Test;
 
+import eu.unicore.gateway.tokens.Configuration;
 import eu.unicore.gateway.tokens.TokenGeneratorProperties;
 
-public class TestConfiguration {
+public class TestTokenGenerator {
 
 	@Test
 	public void testProperties() throws Exception {
@@ -32,6 +34,10 @@ public class TestConfiguration {
 		assertEquals("my_secret", genProps.getClientSecret());
 		assertArrayEquals(new String[] {"openid", "profile"}, genProps.getScope());
 		assertEquals("client_secret_post", genProps.getJettyAuthMode());
+
+		OpenIdConfiguration oidc = Configuration.getOIDCConfig(genProps);
+		assertEquals("my_client", oidc.getClientId());
+		assertEquals("my_secret", oidc.getClientSecret());
 	}
 
 }

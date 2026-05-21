@@ -34,7 +34,7 @@ public class FakeServer implements Runnable {
 
 	private String latestQuery = "";
 	private String latestRequestBody = "";
-	private List<String> latestHeaders=new ArrayList<String>();
+	private List<String> latestHeaders = new ArrayList<>();
 
 	/**
 	 * creates a FakeServer listening on the given port

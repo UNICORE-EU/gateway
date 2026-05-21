@@ -41,7 +41,7 @@ public class TestSiteOrganiser {
 		assertEquals(2, dso.getSites().size());
 		VSite demo = (VSite)dso.getSite("DEMO-SITE");
 		Map<String,String>meta = demo.getMetadata();
-		assertEquals(2, meta.size());
+		assertEquals(3, meta.size());
 		assertEquals("bar", meta.get("foo"));
 	}
 

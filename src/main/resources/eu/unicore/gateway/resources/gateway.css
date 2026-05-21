@@ -58,10 +58,20 @@ a:visited {
 	text-decoration:underline 
 }
 
+.tokenform { 
+  background: #FFFFFF;
+  margin-left: 5%;
+  inline-size: 90%;
+  padding: 12px;
+ }
 
-.apitoken { background: #FFFFFF }
+.fi { 
+  padding: 2px;
+}
 
 .tokentext {
-	inline-size: 80%;
-	overflow-wrap:break-word}
+  background: #FFFFFF;	
+  margin-left: 5%;
+  inline-size: 90%;
+  overflow-wrap:break-word}
 }

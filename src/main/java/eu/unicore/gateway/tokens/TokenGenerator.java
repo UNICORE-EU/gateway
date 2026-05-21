@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Map;
 
 import org.apache.hc.client5.http.classic.HttpClient;
@@ -17,6 +18,7 @@ import org.eclipse.jetty.ee10.servlet.ServletCoreRequest;
 import org.eclipse.jetty.security.AuthenticationState;
 import org.eclipse.jetty.server.Request;
 
+import eu.unicore.gateway.Gateway;
 import eu.unicore.gateway.Site;
 import eu.unicore.gateway.SiteOrganiser;
 import eu.unicore.gateway.VSite;
@@ -59,9 +61,7 @@ public class TokenGenerator {
 			res.setContentType("text/html");
 			out.println("<html><link rel='stylesheet' type='text/css' href='/resources/gateway.css'/>"+
 					"<title>UNICORE Gateway</title><body>");
-			StringBuilder top = new StringBuilder();
-			top.append("<div id='header'><a href='http://www.unicore.eu'><img src='/resources/unicore_logo.gif' border='0'/></a>");
-			out.println(getContent(top.toString()));
+			out.println(getContent(getHeader()));
 			out.println("<br/>");
 			Request baseRequest = ServletCoreRequest.wrap(req);
 			Principal userPrincipal = AuthenticationState.getUserPrincipal(baseRequest);
@@ -76,22 +76,11 @@ public class TokenGenerator {
 					Site site = sites.getSite(req.getParameter("site"));
 					String lifetime = req.getParameter("lifetime");
 					String userprefs = req.getParameter("userprefs");
-					out.println(getContent("<h3>API token for "+site.getName()+"</h3>"));
-					out.println(getContent("<p>Please store securely and keep confidential!</p>"));
 					String apiToken = generateAPIToken(accessToken, (VSite)site, lifetime, userprefs);
-					StringBuilder body = new StringBuilder();
-					body.append("<div class='tokentext'>"+apiToken+"</div>");
-					body.append("<br/><br/>"
-							+ "<a href='data:,"+apiToken+
-							"' download='UNICORE_API_Token_"+site.getName()+"'>"
-							+ "<button type='button'>Download</button>"
-							+ "</a>");
-					body.append("&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>");
-					out.println(getContent(body.toString()));
+					out.println(getContent(getResultPage(apiToken, site.getName())));
 				}
 				else {
-					out.println(getContent("<h3> Generate UNICORE API token </h3>"));
-					out.println(getContent(getForm()));
+					out.println(getContent(getForm(sites.getSites())));
 				}
 			}
 			else {
@@ -99,19 +88,21 @@ public class TokenGenerator {
 				return;
 			}
 			out.println("<br/>");
+			out.println(getFooter());
 			out.println("</html></body>");
 		}
 		catch(Exception e) {
 			res.sendError(500, Log.createFaultMessage("Error generating token", e));
-
 		}
 	}
 
-	private String generateAPIToken(String accessToken, VSite site, String lifetime, String userprefs)
+	String generateAPIToken(String accessToken, VSite site, String lifetime, String userprefs)
 			throws Exception {
 		HttpClient client = sites.getHTTPClient(site);
-		// TODO URL should be configurable via site metadata
-		String tokenURL = site.getRealURI()+"/rest/core/token?lifetime="+lifetime;
+		String tokenURL = site.getMetadata().get("tokenURL");
+		if(tokenURL==null) {
+			throw new Exception("No token URL for <"+site.getName()+">");
+		}
 		log.info("Generating API token for <{}> via <{}>", site.getName(), tokenURL);
 		HttpGet get = new HttpGet(tokenURL);
 		get.addHeader("Authorization", "Bearer "+accessToken);
@@ -129,29 +120,60 @@ public class TokenGenerator {
 		}
 	}
 
-	private String getForm() {
+	String getResultPage(String apiToken, String siteName) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<div class='apitoken'><form action='"+CREATE+"'>");
-		sb.append("<p>Select a site:<p/>");
+		sb.append("<h4>API token for "+siteName+"</h4>");
+		sb.append("<p>Please store securely and keep confidential!</p>");
+		sb.append("<div class='tokentext'>"+apiToken+"</div>");
+		sb.append("<br/><br/>"
+				+ "<a href='data:,"+apiToken+
+				"' download='UNICORE_API_Token_"+siteName+"'>"
+				+ "<button type='button'>Download</button>"
+				+ "</a>");
+		return sb.toString();
+	}
+
+	String getForm(Collection<Site>sites) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<h4>Generate API token</h4>");
+		sb.append("<p>Select site and set any additional parameters:</p>");
+		sb.append("<div>");
+		sb.append("<form class='tokenform' action='"+CREATE+"'>");
 		boolean first = true;
-		for(Site site: sites.getSites()) {
+		sb.append("<label class='fi'>Site:</label><br/>");
+		for(Site site: sites) {
 			String name = site.getName();
-			sb.append("<input type='radio' id='site_"+name+"' name='site' ");
+			sb.append("<input class='fi' type='radio' id='site_"+name+"' name='site' ");
 			if(first) {
 				sb.append("checked ");
 				first = false;
 			}
-			sb.append("value='"+name+"'>");
-			sb.append("<label for='site_"+name+"'>"+name+"</label><br/>");
+			sb.append("value='"+name+"'/>");
+			sb.append("<label class='fi' for='site_"+name+"'>"+name+"</label><br/>");
 		}
-		sb.append("<p/>");
-		sb.append("<label for='lifetime'>Lifetime (sec):</label><br/>");
-		sb.append("<input type='text' id='lifetime' name='lifetime' value='86400'><br/>");
-		sb.append("<label for='userprefs'>User preferences:</label><br/>");
-		sb.append("<input type='text' id='userprefs' name='userprefs' value=''><br/>");
-		
-		sb.append("<br/><input type='submit' value='Create token'>");
+		sb.append("<br/>");
+		sb.append("<label class='fi' for='lifetime'>Lifetime (sec):</label><br/>");
+		sb.append("<input class='fi' type='text' id='lifetime' name='lifetime' value='86400'/><br/>");
+		sb.append("<br/>");
+		sb.append("<label class='fi' for='userprefs'>User preferences:</label><br/>");
+		sb.append("<input class='fi' type='text' id='userprefs' name='userprefs' value=''/><br/>");
+		sb.append("<br/><input class='fi' type='submit' value='Create token'/>");
 		sb.append("</form></div>");
+		return sb.toString();
+	}
+
+	String getHeader() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<div id='header'><a href='http://www.unicore.eu'><img src='/resources/unicore_logo.gif' border='0'/></a>");
+		sb.append("<br/> Gateway <br/></div>");
+		return sb.toString();
+	}
+
+	String getFooter(){
+		StringBuilder sb = new StringBuilder();
+		sb.append("<div id='footer'><hr/> Version: "+Gateway.RELEASE_VERSION);
+		sb.append("&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>");
+		sb.append("</div>");
 		return sb.toString();
 	}
 
