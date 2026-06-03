@@ -45,7 +45,7 @@ public class FrontPageRenderer {
 		out.println("<html><link rel='stylesheet' type='text/css' href='resources/gateway.css'/>"+
 				"<title>UNICORE Gateway</title><body>");
 		StringBuilder top = new StringBuilder();
-		top.append("<div id='header'><a href='http://www.unicore.eu'><img src='resources/unicore_logo.gif' border='0'/></a>");
+		top.append("<div id='header'><a href='https://www.unicore.eu'><img src='resources/unicore_logo.gif' border='0'/></a>");
 		top.append("<br/> Gateway <br/>");
 		if (certs != null)
 		{

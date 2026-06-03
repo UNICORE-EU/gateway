@@ -1,4 +1,4 @@
-{
+body {
  background:white;
  font-family:helvetica,arial,sans-serif;
  font-size:1em;
@@ -14,14 +14,14 @@
  background: #145a96;
 }
 
-.heading a:link { 
+.heading a:link {
 	color:#FFFFFF; 
-	text-decoration:underline 
+	text-decoration: underline 
 }
 
-.heading a:visited { 
-	color:#FFFFFF; 
-	text-decoration:underline 
+.heading a:visited {
+	color:#FFFFFF;
+	text-decoration: underline
 }
 
 .sitetable {
@@ -48,30 +48,41 @@ b.r2{margin: 0 3px}
 b.r3{margin: 0 2px}
 b.rtop b.r4, b.rbottom b.r4{margin: 0 1px;height: 2px}
 
-a:link { 
-	color:#145a96; 
-	text-decoration:underline 
+a:link {
+	color:#145a96;
+	text-decoration: underline 
 }
 
-a:visited { 
-	color:#000000; 
-	text-decoration:underline 
+a:visited {
+	color:#000000;
+	text-decoration: underline 
 }
 
-.tokenform { 
-  background: #FFFFFF;
+input {
+ font: inherit;
+}
+
+.tokenform {
+  background: #e7eef4;
   margin-left: 5%;
-  inline-size: 90%;
+  inline-size: 60%;
   padding: 12px;
- }
+}
 
-.fi { 
-  padding: 2px;
+.fg {
+  display: grid;
+  padding: 0.5em;
+}
+
+.formsubmit {
+ font-weight: bold;
+ font-size: 90%;
+ width: 12em;
 }
 
 .tokentext {
-  background: #FFFFFF;	
+  background: #e7eef4;
   margin-left: 5%;
   inline-size: 90%;
-  overflow-wrap:break-word}
+  overflow-wrap: break-word;
 }

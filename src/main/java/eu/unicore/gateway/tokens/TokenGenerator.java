@@ -131,31 +131,45 @@ public class TokenGenerator {
 		sb.append("<div>");
 		sb.append("<form class='tokenform' action='"+CREATE+"'>");
 		boolean first = true;
-		sb.append("<label class='fi'>Site:</label><br/>");
+		
+		sb.append("<fieldset>");
+		sb.append("<legend>Site</legend>");
 		for(Site site: sites) {
 			String name = site.getName();
-			sb.append("<input class='fi' type='radio' id='site_"+name+"' name='site' ");
+			sb.append("<div>");
+			sb.append("<input type='radio' id='site_"+name+"' name='site' ");
 			if(first) {
 				sb.append("checked ");
 				first = false;
 			}
 			sb.append("value='"+name+"'/>");
-			sb.append("<label class='fi' for='site_"+name+"'>"+name+"</label><br/>");
+			sb.append("<label for='site_"+name+"'>"+name+"</label>");
+			sb.append("</div>");
 		}
+		sb.append("</fieldset>");
 		sb.append("<br/>");
-		sb.append("<label class='fi' for='lifetime'>Lifetime (sec):</label><br/>");
-		sb.append("<input class='fi' type='text' id='lifetime' name='lifetime' value='86400'/><br/>");
+		sb.append("<fieldset>");
+		sb.append("<legend>Parameters</legend>");
+		sb.append("<div class='fg'>");
+		sb.append("<label for='lifetime'>Lifetime (sec)</label>");
+		sb.append("<input type='text' id='lifetime' name='lifetime' value='86400'/>");
+		sb.append("</div>");
+		sb.append("<div class='fg'>");
+		sb.append("<label for='userprefs'>User preferences</label>");
+		sb.append("<input type='text' id='userprefs' name='userprefs' value=''/>");
+		sb.append("</div>");
+		sb.append("</fieldset>");
 		sb.append("<br/>");
-		sb.append("<label class='fi' for='userprefs'>User preferences:</label><br/>");
-		sb.append("<input class='fi' type='text' id='userprefs' name='userprefs' value=''/><br/>");
-		sb.append("<br/><input class='fi' type='submit' value='Create token'/>");
+		sb.append("<div class='fg'>");
+		sb.append("<input type='submit' class='formsubmit' value='Create token'/>");
+		sb.append("</div>");
 		sb.append("</form></div>");
 		return sb.toString();
 	}
 
 	String getHeader() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<div id='header'><a href='http://www.unicore.eu'><img src='/resources/unicore_logo.gif' border='0'/></a>");
+		sb.append("<div id='header'><a href='https://www.unicore.eu'><img src='/resources/unicore_logo.gif' border='0'/></a>");
 		sb.append("<br/> Gateway <br/></div>");
 		return sb.toString();
 	}
