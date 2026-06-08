@@ -50,6 +50,7 @@ public class GatewayJettyServer extends JettyServerBase {
 		ServletHolder resHolder = new ServletHolder(new ResourceServlet());
 		URL u = getClass().getResource("/eu/unicore/gateway/resources");
 		resHolder.setInitParameter("baseResource", u.toString());
+		resHolder.setInitParameter("dirAllowed", "false");
 		root.addServlet(resHolder, "/resources/*");
 		if(gateway.getProperties().isAPITokenGeneratorEnabled()) {
 			root.setSecurityHandler(Configuration.configureOIDC(gateway.getProperties()));
