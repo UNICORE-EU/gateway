@@ -19,4 +19,8 @@ jobs:
         java-version: 17
     - name: Build with Maven
       run: mvn -B package -P code-coverage
+    - uses: actions/upload-artifact@v4
+      with:
+        name: code-coverage-report
+        path: target/site/jacoco/**
 
