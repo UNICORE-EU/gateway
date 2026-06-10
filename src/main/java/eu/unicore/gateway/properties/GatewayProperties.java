@@ -97,7 +97,7 @@ public class GatewayProperties extends FilePropertiesHelper
 				"Controls whether chunked passing of HTTP requests to backend sites is supported."));
 		DEFAULTS.put(KEY_CONN_GZIP,	new PropertyMD("true").setCategory(cliCat).setDescription(
 				"Controls whether support for compression is announced to backend sites."));
-		DEFAULTS.put(KEY_CONN_KEEPALIVE, new PropertyMD("true").setCategory(cliCat).setDescription(
+		DEFAULTS.put(KEY_CONN_KEEPALIVE, new PropertyMD("false").setCategory(cliCat).setDescription(
 				"Whether to keep alive the connections to backend sites."));
 		DEFAULTS.put(KEY_CONN_TIMEOUT, new PropertyMD("30000").setCategory(cliCat).setDescription(
 				"Connection timeout, used when connecting to backend sites."));

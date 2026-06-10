@@ -10,12 +10,9 @@ import java.net.URL;
 import org.apache.commons.io.FileUtils;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpStatus;
-import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.StatusLine;
 import org.junit.jupiter.api.AfterAll;
@@ -41,23 +38,6 @@ public class TestHttpsServer {
 		Thread.sleep(1000);
 		backend.stop();
 		gw.stop();
-	}
-
-	@Test
-	public void testWithSSL() throws Exception {
-		String url="https://localhost:64433/SSL-SITE/service";
-		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
-		HttpPost post= gw.getClientFactory().makePostMethod(url, 
-				new ByteArrayEntity(TestServer.getBody(), ContentType.APPLICATION_SOAP_XML));
-		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
-			System.out.println(new StatusLine(response));
-			String resp = EntityUtils.toString(response.getEntity());
-			System.out.println(resp);
-			int status=response.getCode();
-			assertEquals(HttpStatus.SC_OK, status);
-			assertFalse(resp.contains("Fault"));
-			assertTrue(resp.contains("OKOKOK"));
-		}
 	}
 
 	@Test

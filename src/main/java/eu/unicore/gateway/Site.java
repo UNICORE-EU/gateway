@@ -1,7 +1,6 @@
 package eu.unicore.gateway;
 
 import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -51,8 +50,6 @@ public interface Site {
 	/**
 	 * additional info about the site
 	 */
-	public default Map<String,String> getMetadata(){
-		return Collections.emptyMap();
-	}
+	public Map<String,String> getMetadata();
 
 }

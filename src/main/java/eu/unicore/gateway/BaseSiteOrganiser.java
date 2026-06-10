@@ -3,7 +3,6 @@ package eu.unicore.gateway;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,19 +53,6 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser {
 			s.reloadConfig();
 		}
 		cachedClients.clear();
-	}
-
-	@Override
-	public String toString()
-	{
-		StringBuilder sb = new StringBuilder();
-		Formatter formatter = new Formatter(sb);
-		for (Site site : getSites())
-		{
-			formatter.format(site.toString() + "\n");
-		}
-		formatter.close();
-		return sb.toString();
 	}
 
 	private final Map<URL, HttpClient> cachedClients = new HashMap<>();

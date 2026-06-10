@@ -71,22 +71,20 @@ public class TestMultiSite {
 		MultiSite ms=new MultiSite(gwURI,"test",null, null); 
 		assertTrue(ms.accept(gwURI+"/test"));
 		assertFalse(ms.accept(gwURI+"/other"));
+		try(FakeServer v1 = new FakeServer(); FakeServer v2 = new FakeServer())
+		{
+			v1.start();
+			v2.start();
+			Thread.sleep(2000);
+			ms.registerVsite(new VSite(gwURI,"site",v1.getURI(), null));
+			ms.registerVsite(new VSite(gwURI,"site",v2.getURI(), null));
 
-		FakeServer v1 = new FakeServer();
-		FakeServer v2 = new FakeServer();
-		v1.start();
-		v2.start();
-		Thread.sleep(2000);
-		ms.registerVsite(new VSite(gwURI,"site",v1.getURI(), null));
-		ms.registerVsite(new VSite(gwURI,"site",v2.getURI(), null));
+			List<VSite>sites = ms.getConfiguredSites();
+			assertEquals(2, sites.size());
 
-		List<VSite>sites = ms.getConfiguredSites();
-		assertEquals(2, sites.size());
-
-		assertTrue(ms.ping());
-		assertEquals("OK (2/2 nodes online)",ms.getStatusMessage());
-		v1.stop();
-		v2.stop();
+			assertTrue(ms.ping());
+			assertEquals("OK (2/2 nodes online)",ms.getStatusMessage());
+		}
 	}
 
 	@Test
@@ -94,27 +92,25 @@ public class TestMultiSite {
 		URI gwURI = new URI("http://foo");
 		MultiSite ms = new MultiSite(gwURI,"test",null,null);
 		assertEquals(0,ms.getConfiguredSites().size());
-		FakeServer s1=new FakeServer();
-		FakeServer s2=new FakeServer();
-		s1.start();
-		s2.start();
-		Thread.sleep(2000);
+		try(FakeServer s1=new FakeServer(); FakeServer s2=new FakeServer())
+		{
+			s1.start();
+			s2.start();
+			Thread.sleep(2000);
 
-		ms.registerVsite(new URI("http://localhost:"+s1.getPort()));
-		assertEquals(1,ms.getConfiguredSites().size());
+			ms.registerVsite(new URI("http://localhost:"+s1.getPort()));
+			assertEquals(1,ms.getConfiguredSites().size());
 
-		//re-registration should not do any harm
-		ms.registerVsite(new URI("http://localhost:"+s1.getPort()));
-		assertEquals(1,ms.getConfiguredSites().size());
-		assertEquals("OK (1/1 nodes online)",ms.getStatusMessage());
+			//re-registration should not do any harm
+			ms.registerVsite(new URI("http://localhost:"+s1.getPort()));
+			assertEquals(1,ms.getConfiguredSites().size());
+			assertEquals("OK (1/1 nodes online)",ms.getStatusMessage());
 
-		//register 2nd site
-		ms.registerVsite(new URI("http://localhost:"+s2.getPort()));
-		assertEquals(2,ms.getConfiguredSites().size());
-		assertEquals("OK (2/2 nodes online)",ms.getStatusMessage());
-
-		s1.stop();
-		s2.stop();
+			//register 2nd site
+			ms.registerVsite(new URI("http://localhost:"+s2.getPort()));
+			assertEquals(2,ms.getConfiguredSites().size());
+			assertEquals("OK (2/2 nodes online)",ms.getStatusMessage());
+		}
 	}
 
 	@Test
@@ -122,36 +118,29 @@ public class TestMultiSite {
 		URI gwURI=new URI("http://foo");
 		String param=SelectionStrategy.HEALTH_CHECK_INTERVAL+"=1000";
 		MultiSite ms=new MultiSite(gwURI,"test",param,null); 
-		FakeServer s1=new FakeServer();
-		FakeServer s2=new FakeServer();
-		s1.start();
-		s2.start();
-		Thread.sleep(2000);
+		try(FakeServer s1=new FakeServer(); FakeServer s2=new FakeServer())
+		{
+			s1.start();
+			s2.start();
+			Thread.sleep(2000);
+			VSite v1=new VSite(gwURI,"site",s1.getURI(),null);
+			v1.disablePingDelay();
+			ms.registerVsite(v1);
+			VSite v2=new VSite(gwURI,"site",s2.getURI(),null);
+			v2.disablePingDelay();
+			ms.registerVsite(v2);
+			VSite selected=ms.select("123.45.67.89");
+			assertTrue(selected==v1);
+			s1.stop();
+			while(!s1.isStopped())Thread.sleep(1000);
+			Thread.sleep(2000);
+			selected=ms.select("123.45.67.89");
+			assertTrue(selected==v2);
+			s1.restart();
+			Thread.sleep(2000);
+			selected=ms.select("123.45.67.89");
+			assertTrue(selected==v1);
 
-		VSite v1=new VSite(gwURI,"site",s1.getURI(),null);
-		v1.disablePingDelay();
-		ms.registerVsite(v1);
-		VSite v2=new VSite(gwURI,"site",s2.getURI(),null);
-		v2.disablePingDelay();
-		ms.registerVsite(v2);
-
-		VSite selected=ms.select("123.45.67.89");
-		assertTrue(selected==v1);
-
-		s1.stop();
-		while(!s1.isStopped())Thread.sleep(1000);
-
-		Thread.sleep(2000);
-
-		selected=ms.select("123.45.67.89");
-		assertTrue(selected==v2);
-
-		s1.restart();
-		Thread.sleep(2000);
-		selected=ms.select("123.45.67.89");
-		assertTrue(selected==v1);
-
-		s1.stop();
-		s2.stop();
+		}
 	}
 }
