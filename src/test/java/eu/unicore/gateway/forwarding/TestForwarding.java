@@ -15,7 +15,6 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
@@ -111,20 +110,20 @@ public class TestForwarding {
 		int status=doRegister("TEST",s1Url);
 		assertEquals(HttpStatus.SC_CREATED,status);
 		URL u = new URL(getScheme()+"://localhost:64433/TEST/test?port=1234");
-		HttpClient hc = gw.getClientFactory().makeHttpClient(u);
-		final HttpGet req = new HttpGet(u.toString());
-		req.addHeader("Connection", "Upgrade");
-		req.addHeader("Upgrade", ForwardingSetup.REQ_UPGRADE_HEADER_VALUE);
-		try(ClassicHttpResponse response = hc.executeOpen(null, req, HttpClientContext.create())){
-			System.out.println("---> "+new StatusLine(response));
-			assertEquals(432, response.getCode());
-		};
+		try(var hc = gw.getClientFactory().client(u)){
+			final HttpGet req = new HttpGet(u.toString());
+			req.addHeader("Connection", "Upgrade");
+			req.addHeader("Upgrade", ForwardingSetup.REQ_UPGRADE_HEADER_VALUE);
+			try(ClassicHttpResponse response = hc.executeOpen(null, req, HttpClientContext.create())){
+				System.out.println("---> "+new StatusLine(response));
+				assertEquals(432, response.getCode());
+			};
+		}
 		echo.stop();
 	}
 
 	private int doRegister(String name, String address)throws Exception{
 		String url = getScheme()+"://localhost:64433/VSITE_REGISTRATION_REQUEST";
-		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
 		HttpPost post=new HttpPost(url);
 		List<NameValuePair> parameters = new ArrayList<>();
 		parameters.add(new BasicNameValuePair("name", name));
@@ -132,7 +131,9 @@ public class TestForwarding {
 		parameters.add(new BasicNameValuePair("secret", "super-secret-password"));
 		UrlEncodedFormEntity postEntity = new UrlEncodedFormEntity(parameters);
 		post.setEntity(postEntity);
-		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
+		try(var hc = gw.getClientFactory().client(new URL(url));
+			ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create()))
+		{
 			return response.getCode();
 		}
 	}

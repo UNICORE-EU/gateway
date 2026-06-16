@@ -8,7 +8,6 @@ import java.io.File;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.ClassicHttpResponse;
@@ -22,7 +21,7 @@ import org.junit.jupiter.api.Test;
 public class TestHttpsServer {
 	protected static Gateway gw;
 	protected static FakeHttpsServer backend;
-	
+
 	@BeforeAll
 	public static void setUp() throws Exception {
 		File gp = new File("src/test/resources/gateway-ssl.properties");
@@ -43,36 +42,40 @@ public class TestHttpsServer {
 	@Test
 	public void testGetWithSignedAssertionForwarding() throws Exception {
 		String url="https://localhost:64433/SSL-SITE/service";
-		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
-		HttpGet get= new HttpGet(url);
-		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
-			System.out.println(new StatusLine(response));
-			String resp = EntityUtils.toString(response.getEntity());
-			System.out.println(resp);
-			int status=response.getCode();
-			assertEquals(HttpStatus.SC_OK, status);
-			assertFalse(resp.contains("Fault"));
-			System.out.println(resp);
-			assertTrue(resp.contains("Gateway"));
+		try(var hc = gw.getClientFactory().client(new URL(url))){
+			HttpGet get= new HttpGet(url);
+			try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
+				System.out.println(new StatusLine(response));
+				String resp = EntityUtils.toString(response.getEntity());
+				System.out.println(resp);
+				int status=response.getCode();
+				assertEquals(HttpStatus.SC_OK, status);
+				assertFalse(resp.contains("Fault"));
+				System.out.println(resp);
+				assertTrue(resp.contains("Gateway"));
+			}
 		}
 	}
 
 	@Test
 	public void testAcmeFiltering() throws Exception {
-		String url="http://localhost:64455/SSL-SITE/service";
-		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+		String url = "http://localhost:64455/SSL-SITE/service";
 		HttpGet get = new HttpGet(url);
- 		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
-			System.out.println(new StatusLine(response));
-			String resp = EntityUtils.toString(response.getEntity());
-			System.out.println(resp);
-			int status=response.getCode();
-			assertEquals(HttpStatus.SC_NOT_FOUND, status);
+		try(var hc = gw.getClientFactory().client(new URL(url))){
+			
+			try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
+				System.out.println(new StatusLine(response));
+				String resp = EntityUtils.toString(response.getEntity());
+				System.out.println(resp);
+				int status=response.getCode();
+				assertEquals(HttpStatus.SC_NOT_FOUND, status);
+			}
 		}
- 		url="http://localhost:64455/.well-known/acme-challenge/tokentest.txt";
+ 		url = "http://localhost:64455/.well-known/acme-challenge/tokentest.txt";
  		get = new HttpGet(url);
  		File token = new File("target", "tokentest.txt");
  		FileUtils.write(token, "test123", "UTF-8");
+ 		try(var hc = gw.getClientFactory().client(new URL(url))){
  		try(ClassicHttpResponse response = hc.executeOpen(null, get, HttpClientContext.create())){
 			System.out.println(new StatusLine(response));
 			String resp = EntityUtils.toString(response.getEntity());
@@ -80,6 +83,7 @@ public class TestHttpsServer {
 			int status=response.getCode();
 			assertEquals(HttpStatus.SC_OK, status);
 		}
+ 		}
 	}
 	
 }

@@ -1,5 +1,6 @@
 package eu.unicore.gateway;
 
+import java.io.Closeable;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
@@ -7,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.HttpClient;
 
 public abstract class BaseSiteOrganiser implements SiteOrganiser {
@@ -48,9 +50,14 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser {
 	}
 
 	@Override
-	public void reloadConfig() {
+	public synchronized void reloadConfig() {
 		for(Site s: sites.values()) {
 			s.reloadConfig();
+		}
+		for(var c: cachedClients.values()) {
+			if(c instanceof Closeable) {
+				IOUtils.closeQuietly((Closeable)c);
+			}
 		}
 		cachedClients.clear();
 	}
@@ -62,7 +69,7 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser {
 		URL url = site.getRealURI().toURL();
 		HttpClient c = cachedClients.get(url);
 		if(c==null) {
-			c = gateway.getClientFactory().makeHttpClient(url);
+			c = gateway.getClientFactory().pooledClient(url);
 			cachedClients.put(url, c);
 		}
 		return c;

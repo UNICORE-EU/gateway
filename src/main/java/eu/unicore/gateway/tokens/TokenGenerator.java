@@ -169,14 +169,14 @@ public class TokenGenerator {
 
 	String getHeader() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<div id='header'><a href='https://www.unicore.eu'><img src='/resources/unicore_logo.gif' border='0'/></a>");
+		sb.append("<div id='header'><a href='/'><img src='/resources/unicore_logo.gif' border='0'/></a>");
 		sb.append("<br/> Gateway <br/></div>");
 		return sb.toString();
 	}
 
 	String getFooter(){
 		StringBuilder sb = new StringBuilder();
-		sb.append("<div id='footer'><hr/> Version: "+Gateway.RELEASE_VERSION);
+		sb.append("<div id='footer'><hr/> Version: ").append(Gateway.RELEASE_VERSION);
 		sb.append("&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>");
 		sb.append("</div>");
 		return sb.toString();

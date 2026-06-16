@@ -230,6 +230,10 @@ public class Servlet extends HttpServlet {
 	private void forwardRequestToVSite(HttpUriRequestBase http, URI uri, VSite vsite,
 			HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException{
+		if(!vsite.isUp()) {
+			res.sendError(503, "Could not perform request: site <"+vsite.getName()+"> is down.");
+			return;
+		}
 		prepareRequest(http, uri, vsite, req, gateway);
 		try
 		{
@@ -249,11 +253,14 @@ public class Servlet extends HttpServlet {
 				OutputStream os = res.getOutputStream();
 				writeResponseContent(response, os);
 				os.flush();
+				vsite.OK();
 			}
 		}catch(Exception e){
+			String msg = Log.createFaultMessage("Could not perform request", e);
+			vsite.notOK(msg);
 			LogUtil.logException("Error performing "+http.getMethod()+
 					" request to <"+vsite.getName()+">", e, logger);
-			res.sendError(503, Log.createFaultMessage("Could not perform request", e));
+			res.sendError(503, "Could not perform request: site '"+vsite.getName()+"' is down.");
 		}
 	}
 

@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.Properties;
 
 import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.unicore.gateway.properties.GatewayProperties;
@@ -46,10 +48,22 @@ public class HttpClientFactory
 				clientCfg.isSslEnabled(), clientCfg.doSSLAuthn());
 	}
 
-	public HttpClient makeHttpClient(URL url) throws Exception {
-		return url.getProtocol().toLowerCase().equals("https") ?
-			HttpUtils.createClient(url.toString(), clientCfg):
-			HttpUtils.createClient(clientProperties);
+	/**
+	 * create a "one-shot" client that does not pool connections
+	 *
+	 * @param url
+	 */
+	public CloseableHttpClient client(URL url) throws Exception {
+		return HttpUtils.client(url.toString(), clientCfg);
+	}
+
+	/**
+	 * create a client that uses connection pool configured according to the gateway settings
+	 * @param url
+	 */
+	public HttpClient pooledClient(URL url) throws Exception {
+		PoolingHttpClientConnectionManager connMgr = HttpUtils.createPoolingConnectionManager(clientCfg);
+		return HttpUtils.createClient(url.toString(), clientCfg, connMgr, false);
 	}
 
 	public DefaultClientConfiguration getClientConfiguration() {

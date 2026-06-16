@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
@@ -234,7 +233,7 @@ public class TestTokenGenerator {
 
 	private int doRegister(String name, String address)throws Exception{
 		String url="http://localhost:64433/VSITE_REGISTRATION_REQUEST";
-		HttpClient hc = gw.getClientFactory().makeHttpClient(new URL(url));
+		
 		HttpPost post=new HttpPost(url);
 		List<NameValuePair> parameters = new ArrayList<>();
 		parameters.add(new BasicNameValuePair("name", name));
@@ -242,7 +241,9 @@ public class TestTokenGenerator {
 		parameters.add(new BasicNameValuePair("secret", "super-secret-password"));
 		UrlEncodedFormEntity postEntity = new UrlEncodedFormEntity(parameters);
 		post.setEntity(postEntity);
-		try(ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create())){
+		try(var hc = gw.getClientFactory().client(new URL(url));
+			ClassicHttpResponse response = hc.executeOpen(null, post, HttpClientContext.create()))
+		{
 			return response.getCode();
 		}
 	}

@@ -45,7 +45,7 @@ public class FrontPageRenderer {
 		out.println("<html><link rel='stylesheet' type='text/css' href='resources/gateway.css'/>"+
 				"<title>UNICORE Gateway</title><body>");
 		StringBuilder top = new StringBuilder();
-		top.append("<div id='header'><a href='https://www.unicore.eu'><img src='resources/unicore_logo.gif' border='0'/></a>");
+		top.append("<div id='header'><a href='/'><img src='resources/unicore_logo.gif' border='0'/></a>");
 		top.append("<br/> Gateway <br/>");
 		if (certs != null)
 		{
@@ -82,7 +82,7 @@ public class FrontPageRenderer {
 		StringBuilder sb = new StringBuilder();
 		Formatter formatter = new Formatter(sb);
 		formatter.format("<table class='sitetable'>");
-		boolean even=false;
+		boolean even = false;
 		String css;
 		String image;
 		String href;
@@ -110,7 +110,7 @@ public class FrontPageRenderer {
 				href = uri;
 			}
 			else{
-				StringBuilder hr=new StringBuilder();
+				StringBuilder hr = new StringBuilder();
 				for(VSite v: ((MultiSite)site).getConfiguredSites()){
 					String vsiteUri = showServiceAddresses ?
 							v.getRealURI().toString() : baseURL+"/"+v.getName();
@@ -177,13 +177,14 @@ public class FrontPageRenderer {
 
 	private String getFooter(){
 		StringBuilder sb=new StringBuilder();
-		sb.append("<div id='footer'><hr/> Version: "+Gateway.RELEASE_VERSION+" Up since: ").append(gateway.upSince());
+		sb.append("<div id='footer'><hr/> Version: ").append(Gateway.RELEASE_VERSION);
+		sb.append(" Up since: ").append(gateway.upSince());
+		sb.append("&nbsp;&nbsp;&nbsp;&nbsp;<a href='https://www.unicore.eu' target='_blank'>www.unicore.eu</a>");
 		if(gateway.getProperties().isDynamicRegistrationEnabled()){
 			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;<a href='resources/register.html'>register a site</a>");
 		}
 		if(gateway.getProperties().isAPITokenGeneratorEnabled()){
-			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;<a href='"+TokenGenerator.PATH
-					+ "'>create an API token</a>");
+			sb.append("&nbsp;&nbsp;&nbsp;&nbsp;<a href='").append(TokenGenerator.PATH).append("'>create an API token</a>");
 		}
 		sb.append("</div>");
 		return sb.toString();

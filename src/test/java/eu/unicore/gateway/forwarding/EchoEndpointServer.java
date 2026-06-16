@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,8 +106,9 @@ public class EchoEndpointServer implements Runnable {
 		return latestQuery;
 	}
 
-	private void parseHttp(InputStream input) throws UnsupportedEncodingException{
+	private boolean parseHttp(InputStream input) throws UnsupportedEncodingException{
 		BufferedReader br=new BufferedReader(new InputStreamReader(input,"UTF-8"));
+		boolean keepalive = true;
 		try{
 			String line = null;
 			do {
@@ -130,11 +132,12 @@ public class EchoEndpointServer implements Runnable {
 				}
 
 				boolean chunked =_latestHeaders.contains("Transfer-Encoding: chunked");
+				keepalive = !_latestHeaders.contains("Connection: close");
 
 				if((!chunked && contentLength==0) || line==null){
 					latestQuery = _latestQuery;
 					latestHeaders = _latestHeaders;
-					return;
+					return keepalive;
 				}
 
 				line=br.readLine();
@@ -177,10 +180,10 @@ public class EchoEndpointServer implements Runnable {
 				}
 			}
 			latestHeaders = _latestHeaders;
+			return keepalive;
 		}
 		catch(Exception e){
-			log.warn("Fake server had problem with reading request: "+e.getMessage());
-			e.printStackTrace();
+			return false;
 		}
 	}
 
@@ -212,7 +215,8 @@ public class EchoEndpointServer implements Runnable {
 						break;
 					}
 				}
-			}catch(Exception ex){ 
+			}catch(SocketTimeoutException te) {/* ignore */}
+			catch(Exception ex){ 
 				ex.printStackTrace();
 				break;
 			}

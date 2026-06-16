@@ -7,9 +7,11 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.http.HttpStatus;
 
@@ -106,8 +108,9 @@ public class FakeServer implements Runnable, AutoCloseable {
 		return latestRequestBody;
 	}
 
-	private void parseHttp(InputStream input) throws UnsupportedEncodingException{
+	private boolean parseHttp(InputStream input) throws UnsupportedEncodingException{
 		BufferedReader br=new BufferedReader(new InputStreamReader(input,"UTF-8"));
+		boolean keepalive = true;
 		try{
 			String line = null;
 			do {
@@ -131,12 +134,13 @@ public class FakeServer implements Runnable, AutoCloseable {
 				}
 
 				boolean chunked =_latestHeaders.contains("Transfer-Encoding: chunked");
+				keepalive = !_latestHeaders.contains("Connection: close");
 
 				if((!chunked && contentLength==0) || line==null){
 					latestQuery = _latestQuery;
 					latestHeaders = _latestHeaders;
 					latestRequestBody = sb.toString();
-					return;
+					return keepalive;
 				}
 
 				if(chunked){
@@ -178,10 +182,10 @@ public class FakeServer implements Runnable, AutoCloseable {
 			latestQuery = _latestQuery;
 			latestHeaders = _latestHeaders;
 			latestRequestBody = sb.toString();
+			return keepalive;
 		}
 		catch(Exception e){
-			log.warn("Fake server had problem with reading request: "+e.getMessage());
-			e.printStackTrace();
+			return false;
 		}
 	}
 
@@ -191,7 +195,7 @@ public class FakeServer implements Runnable, AutoCloseable {
 			try {
 				if(socket==null)socket = serverSocket.accept();
 
-				parseHttp(socket.getInputStream());
+				boolean keepalive = parseHttp(socket.getInputStream());
 
 				String status="HTTP/1.1 "+statusCode+" "+HttpStatus.getMessage(statusCode)+"\n";
 				String reply="Content-Length: "+answer.length+"\n\n";
@@ -205,7 +209,15 @@ public class FakeServer implements Runnable, AutoCloseable {
 				}
 				socket.getOutputStream().flush();
 				System.out.println("HANDLING REQUEST, returning "+status);
-			}catch(Exception ex){ /*it's usually some unimportant timeout we wouldn't catch anyways*/ }
+				if(!keepalive) {
+					IOUtils.closeQuietly(socket);
+					socket = null;
+				}
+			}catch(SocketException ex1){
+				IOUtils.closeQuietly(socket);
+				socket = null;
+			}
+			catch(Exception ex){ /*it's usually some unimportant timeout we wouldn't catch anyways*/ }
 		}
 		log.info("Stopped.");
 		stopped=true;

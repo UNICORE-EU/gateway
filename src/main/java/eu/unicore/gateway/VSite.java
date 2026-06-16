@@ -47,8 +47,8 @@ public class VSite implements Site {
 	private final InetSocketAddress inetAddress;
 
 	private final AtomicInteger numberOfRequests = new AtomicInteger(0);
-	private String errorMessage="OK";
-	private volatile boolean isUp = false;
+	private String errorMessage = "OK";
+	private volatile boolean isUp = true;
 	private volatile long lastPing = 0;
 	private long pingDelay = 30*1000;
 	private int pingTimeout = 10*1000;
@@ -92,6 +92,26 @@ public class VSite implements Site {
 		// N/A
 	}
 
+	/**
+	 * query the site status
+	 * @return true if the site is live, false if not
+	 */
+	public boolean isUp() {
+		return doPing(false);
+	}
+
+	public void notOK(String msg) {
+		this.isUp = false;
+		this.errorMessage = msg;
+		this.lastPing = System.currentTimeMillis();
+	}
+
+	public void OK() {
+		this.isUp = true;
+		this.errorMessage = "OK";
+		this.lastPing = System.currentTimeMillis();
+	}
+
 	// for testing
 	public void disablePingDelay() {
 		pingDelay = -1;
@@ -101,6 +121,11 @@ public class VSite implements Site {
 
 	@Override
 	public boolean ping()
+	{
+		return doPing(true);
+	}
+
+	private boolean doPing(boolean checkResult)
 	{
 		if(pingInProgress.get() || lastPing+pingDelay>System.currentTimeMillis()) {
 			return isUp;
@@ -136,14 +161,16 @@ public class VSite implements Site {
 				return Boolean.FALSE;
 			}
 		);
-		try{
-			// use a timeout here, too, just to be on the super-safe side
-			return res.get(3 * pingTimeout, TimeUnit.MILLISECONDS);
-		}catch(Exception tex){
-			errorMessage = "Timeout";
-			isUp = false;
+		if(checkResult) {
+			try{
+				// use a timeout here, too, just to be on the super-safe side
+				return res.get(3 * pingTimeout, TimeUnit.MILLISECONDS);
+			}catch(Exception tex){
+				errorMessage = "Timeout";
+				isUp = false;
+			}
 		}
-		return false;
+		return isUp;
 	}
 
 	public String resolve(String uri) throws URISyntaxException
