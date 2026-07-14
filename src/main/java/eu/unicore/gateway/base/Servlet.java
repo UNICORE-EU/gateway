@@ -165,6 +165,9 @@ public class Servlet extends HttpServlet {
 		catch(URISyntaxException ue){
 			res.sendError(HttpServletResponse.SC_BAD_REQUEST, "URI syntax");
 		}
+		catch(Exception ex) {
+			res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, Log.createFaultMessage("", ex));
+		}
 	}
 
 	/**

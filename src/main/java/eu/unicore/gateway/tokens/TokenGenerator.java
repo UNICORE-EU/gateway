@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -76,7 +77,12 @@ public class TokenGenerator {
 					out.println(getContent(getResultPage(apiToken, site.getName())));
 				}
 				else {
-					out.println(getContent(getForm(sites.getSites())));
+					Collection<Site> availableSites = new ArrayList<>();
+					for(Site s : sites.getSites()) {
+						if(s.getMetadata().get(TOKEN_URL)!=null)
+							availableSites.add(s);
+					}
+					out.println(getContent(getForm(availableSites)));
 				}
 			out.println("<br/>");
 			out.println(getFooter());

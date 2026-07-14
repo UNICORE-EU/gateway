@@ -30,7 +30,7 @@ public class CompositeSiteOrganiser extends StaticSiteOrganiser {
 	} 
 
 	@Override
-	public Site getSite(String name) {
+	public Site getSite(String name) throws Exception {
 		for(SiteOrganiser so: siteOrganisers){
 			Site s = so.getSite(name);
 			if(s!=null)return s;
@@ -42,7 +42,7 @@ public class CompositeSiteOrganiser extends StaticSiteOrganiser {
 	 * merge site lists from all registered organisers
 	 */
 	@Override
-	public Collection<Site> getSites() {
+	public Collection<Site> getSites() throws IOException {
 		Collection<Site>result = new HashSet<>();
 		result.addAll(super.getSites());
 		for(SiteOrganiser so: siteOrganisers){

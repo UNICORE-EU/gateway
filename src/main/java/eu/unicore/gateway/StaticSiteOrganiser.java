@@ -29,25 +29,21 @@ public class StaticSiteOrganiser extends BaseSiteOrganiser
 	}
 
 	@Override
-	public Collection<Site> getSites() {
+	public Collection<Site> getSites() throws IOException {
 		rereadConnectionsFile();
 		return super.getSites();
 	}
 
 	@Override
-	public VSite match(String targetURL, String clientIP) throws URISyntaxException{
+	public VSite match(String targetURL, String clientIP) throws URISyntaxException, IOException{
 		rereadConnectionsFile();
 		return super.match(targetURL, clientIP);
 	}
 
-	private void rereadConnectionsFile()
+	private void rereadConnectionsFile() throws IOException
 	{
-		try{
-			if(!props.reloadIfChanged())return;
-			readConnectionsFile();
-		}catch(Exception e) {
-			LogUtil.logException("Error reading connections file", e, log);
-		}
+		if(!props.reloadIfChanged())return;
+		readConnectionsFile();
 	}
 
 	private void readConnectionsFile()
@@ -61,7 +57,7 @@ public class StaticSiteOrganiser extends BaseSiteOrganiser
 				try
 				{
 					Site site = SiteFactory.buildSite(gateway.getHostURI(), siteName, addr, props.getSiteInfo(siteName));
-					if(sites.put(site.getName(), site)!=null){
+					if(sites.put(site.getName(), site)==null){
 						log.info("Added site: {}", site);	
 					}
 				}

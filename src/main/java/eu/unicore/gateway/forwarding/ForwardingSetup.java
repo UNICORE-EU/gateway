@@ -96,6 +96,9 @@ public class ForwardingSetup {
 		}catch(URISyntaxException ue) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "URI syntax");
 			return false;
+		}catch(IOException ue) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "URI syntax");
+			return false;
 		}
 		if(vsite==null){
 			response.sendError(404, "The requested resource could not be found");

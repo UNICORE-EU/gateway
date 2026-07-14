@@ -1,5 +1,6 @@
 package eu.unicore.gateway;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 
@@ -20,7 +21,7 @@ public interface SiteOrganiser
 	/**
 	 * get the current set of sites
 	 */
-	public Collection<Site> getSites();
+	public Collection<Site> getSites() throws IOException;
 
 	/**
 	 * select a matching VSite. The client IP may be ignored, or it may be used
@@ -30,7 +31,7 @@ public interface SiteOrganiser
 	 * @param clientIP - the IP of the client
 	 * @return matching vsite
 	 */
-	public VSite match(String targetURL, String clientIP) throws URISyntaxException;
+	public VSite match(String targetURL, String clientIP) throws URISyntaxException, IOException;
 
 	/**
 	 *  reload configuration - for example due to config changes
@@ -45,6 +46,6 @@ public interface SiteOrganiser
 	/**
 	 * get a site by name
 	 */
-	public Site getSite(String name);
+	public Site getSite(String name) throws Exception;
 
 }

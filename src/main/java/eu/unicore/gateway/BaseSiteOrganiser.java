@@ -1,6 +1,7 @@
 package eu.unicore.gateway;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
@@ -23,13 +24,13 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser {
 	}
 
 	@Override
-	public Collection<Site> getSites()
+	public Collection<Site> getSites() throws IOException
 	{
 		return sites.values();
 	}
 
 	@Override
-	public VSite match(String targetURL, String clientIP) throws URISyntaxException
+	public VSite match(String targetURL, String clientIP) throws URISyntaxException, IOException
 	{
 		synchronized(sites){
 			for (Site site : getSites())
@@ -44,7 +45,7 @@ public abstract class BaseSiteOrganiser implements SiteOrganiser {
 	}
 
 	@Override
-	public Site getSite(String name)
+	public Site getSite(String name) throws Exception
 	{
 		return sites.get(name);
 	}

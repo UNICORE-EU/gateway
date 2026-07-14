@@ -78,7 +78,7 @@ public class FrontPageRenderer {
 	}
 
 	public static String toHTMLString(String baseURL, SiteOrganiser so, SortOrder order, boolean showServiceAddresses)
-	{
+	throws IOException {
 		StringBuilder sb = new StringBuilder();
 		Formatter formatter = new Formatter(sb);
 		formatter.format("<table class='sitetable'>");

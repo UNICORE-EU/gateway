@@ -1,8 +1,6 @@
 package eu.unicore.gateway;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 
 import org.apache.logging.log4j.Logger;
@@ -23,7 +21,7 @@ public class DynamicSiteOrganiser extends BaseSiteOrganiser
 		this.inclPattern = inclPattern;
 	}
 
-	public boolean register(String name, URI realURI) throws UnknownHostException, URISyntaxException {
+	public boolean register(String name, URI realURI) throws Exception {
 		try{
 			checkExclusion(realURI);
 			checkInclusion(realURI);
