@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.ee10.servlet.ResourceServlet;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
@@ -14,9 +15,12 @@ import org.eclipse.jetty.server.Handler;
 import eu.unicore.gateway.Gateway;
 import eu.unicore.gateway.acme.AcmeHandler;
 import eu.unicore.gateway.forwarding.ProtocolUpgradeFilter;
+import eu.unicore.gateway.properties.GatewayProperties;
 import eu.unicore.gateway.tokens.Configuration;
 import eu.unicore.gateway.util.FileWatcher;
+import eu.unicore.gateway.util.LogUtil;
 import eu.unicore.security.canl.CredentialProperties;
+import eu.unicore.util.Log;
 import eu.unicore.util.configuration.ConfigurationException;
 import eu.unicore.util.jetty.JettyServerBase;
 
@@ -29,6 +33,8 @@ import eu.unicore.util.jetty.JettyServerBase;
  * @author K. Benedyczak
  */
 public class GatewayJettyServer extends JettyServerBase {
+
+	private static final Logger log = LogUtil.getLogger(LogUtil.GATEWAY, GatewayJettyServer.class);
 
 	private final Gateway gateway;
 
@@ -53,8 +59,15 @@ public class GatewayJettyServer extends JettyServerBase {
 		resHolder.setInitParameter("dirAllowed", "false");
 		root.addServlet(resHolder, "/resources/*");
 		if(gateway.getProperties().isAPITokenGeneratorEnabled()) {
-			root.setSecurityHandler(Configuration.configureOIDC(gateway.getProperties()));
-			root.setSessionHandler(new SessionHandler());
+			try {
+				root.setSecurityHandler(Configuration.configureOIDC(gateway.getProperties()));
+				root.setSessionHandler(new SessionHandler());
+			}
+			catch(Exception ex) {
+				Log.logException("Cannot initialise OIDC for API token generator - feature will be disabled.",
+						ex, log);
+				gateway.getProperties().setProperty(GatewayProperties.KEY_API_TOKEN_PROPERTIES+"enable", "false");
+			}
 		}
 		return root;
 	}

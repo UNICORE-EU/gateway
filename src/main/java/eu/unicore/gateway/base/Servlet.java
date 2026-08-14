@@ -234,7 +234,7 @@ public class Servlet extends HttpServlet {
 			HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException{
 		if(!vsite.isUp()) {
-			res.sendError(503, "Could not perform request: site <"+vsite.getName()+"> is down.");
+			res.sendError(503, "Could not perform request: site '"+vsite.getName()+"' is down.");
 			return;
 		}
 		prepareRequest(http, uri, vsite, req, gateway);

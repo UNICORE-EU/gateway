@@ -50,7 +50,7 @@ public class VSite implements Site {
 	private String errorMessage = "OK";
 	private volatile boolean isUp = true;
 	private volatile long lastPing = 0;
-	private long pingDelay = 30*1000;
+	private long pingDelay = 10*1000;
 	private int pingTimeout = 10*1000;
 	private final Map<String,String>meta = new HashMap<>();
 
