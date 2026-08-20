@@ -9,7 +9,7 @@ License: BSD
 Distribution: RedHat
 Group: System Environment/Daemons
 URL: https://www.unicore.eu
-Requires: java-11-openjdk-headless
+Requires: jre-headless >= 17
 AutoReqProv: no
 BuildArch: @component-architecture@
 Packager: Björn Hagemeier unicore-support@lists.sourceforge.net
