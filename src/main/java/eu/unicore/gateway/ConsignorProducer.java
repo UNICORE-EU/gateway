@@ -17,7 +17,7 @@ import java.util.Map;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.message.BasicHeader;
 
-import eu.emi.security.authn.x509.X509Credential;
+import io.imunity.tanl.x509.X509Credential;
 import eu.unicore.security.canl.AuthnAndTrustProperties;
 
 /**
