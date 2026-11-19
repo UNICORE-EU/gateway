@@ -1,6 +1,8 @@
 package eu.unicore.gateway;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -32,15 +34,14 @@ public class TestVsite {
 		URI gw=new URI("http://localhost");
 		Site s1=new VSite(gw,"FOO","http://localhost:1234", null);
 		Site s2=new VSite(gw,"FOO","http://localhost:1234", null);
+		Site s3=new VSite(gw,"BAR","http://localhost:1234", null);
+		Site s4=new VSite(gw,"FOO","http://localhost:4321", null);
 		assertEquals(s1,s2);
-	}
-	
-	@Test
-	public void testVSiteNotEquals()throws Exception{
-		URI gw=new URI("http://localhost");
-		Site s1=new VSite(gw,"FOO","http://localhost:3456", null);
-		Site s2=new VSite(gw,"FOO2","http://localhost:3456", null);
-		assertNotSame(s1,s2);
+		assertEquals(s1,s1);
+		assertNotEquals(s1, s3);
+		assertNotEquals(s1, s4);
+		assertNotEquals(s1, null);
+		assertNotEquals(s1, "");
 	}
 
 	@Test
@@ -49,5 +50,21 @@ public class TestVsite {
 				"test", "http://localhost:1234", null);
 		String resolved = v0.resolve("http://test.foo.org:8080/test/abc");
 		assertEquals("http://localhost:1234/abc",resolved);
+	}
+	
+	@Test
+	public void testVsiteStatus() throws Exception{
+		VSite v = null; 
+		try(FakeServer s1=new FakeServer()){
+			s1.start();
+			URI gw = new URI("http://localhost");
+			v = new VSite(gw,"FOO",s1.getURI(), null);
+			assertTrue(v.ping());
+			System.out.println(v.getStatusMessage());
+		}
+		v.disablePingDelay();
+		Thread.sleep(2000);
+		assertFalse(v.ping());
+		System.out.println(v.getStatusMessage());		
 	}
 }

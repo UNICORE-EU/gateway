@@ -140,17 +140,11 @@ public class VSite implements Site {
 						isUp = true;
 					}
 					return Boolean.TRUE;
-				}catch(ConnectException ce){
-					if(isUp){
-						log.info("VSite '{}' @ {} is down.", name, realURI);
-						isUp = false;
-					}
-					errorMessage="Site is down: connection refused.";
 				}catch(Exception e){
 					if(isUp) {
 						String msg = Log.getDetailMessage(e);
-						log.info("VSite '{}' @ {} is unavailable: {}", name, realURI, msg);
-						errorMessage="Site unavailable: " + msg;
+						log.info("VSite '{}' @ {} is down: {}", name, realURI, msg);
+						errorMessage="Site is down: " + msg;
 						isUp = false;
 					}
 				}

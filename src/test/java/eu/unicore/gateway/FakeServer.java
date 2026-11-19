@@ -45,7 +45,7 @@ public class FakeServer implements Runnable, AutoCloseable {
 	 */
 	public FakeServer(int port)throws IOException{
 		serverSocket=new ServerSocket(port);
-		serverSocket.setSoTimeout(5000);
+		serverSocket.setSoTimeout(1000);
 		this.port=serverSocket.getLocalPort();
 	}
 
@@ -70,7 +70,6 @@ public class FakeServer implements Runnable, AutoCloseable {
 
 	public synchronized void restart()throws Exception{
 		if(serverSocket!=null)throw new IllegalStateException();
-
 		serverSocket=new ServerSocket(port);
 		stopping=false;
 		stopped=false;
@@ -217,7 +216,7 @@ public class FakeServer implements Runnable, AutoCloseable {
 				IOUtils.closeQuietly(socket);
 				socket = null;
 			}
-			catch(Exception ex){ /*it's usually some unimportant timeout we wouldn't catch anyways*/ }
+			catch(Exception ex){ /* timeout probably :-) */ }
 		}
 		log.info("Stopped.");
 		stopped=true;
