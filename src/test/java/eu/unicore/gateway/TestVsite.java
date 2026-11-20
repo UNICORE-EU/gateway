@@ -54,15 +54,16 @@ public class TestVsite {
 	@Test
 	public void testVsiteStatus() throws Exception{
 		VSite v = null; 
-		try(FakeServer s1=new FakeServer()){
-			s1.start();
-			URI gw = new URI("http://localhost");
-			v = new VSite(gw,"FOO",s1.getURI(), null);
-			assertTrue(v.ping());
-			System.out.println(v.getStatusMessage());
-		}
+		FakeServer s1 = new FakeServer();
+		s1.start();
+		URI gw = new URI("http://localhost");
+		v = new VSite(gw,"FOO",s1.getURI(), null);
+		assertTrue(v.ping());
+		System.out.println(v.getStatusMessage());
+		s1.stop();
 		v.disablePingDelay();
-		Thread.sleep(1000);
+		Thread.sleep(10000);
+		assertTrue(s1.isStopped());
 		assertFalse(v.ping());
 		System.out.println(v.getStatusMessage());		
 	}
