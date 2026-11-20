@@ -1,10 +1,11 @@
 package eu.unicore.gateway.util;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import eu.unicore.util.configuration.ConfigurationException;
 
 /**
  * helper to watch a file and invoke a specific action if modified.
@@ -19,9 +20,9 @@ public class FileWatcher implements Runnable{
 
 	private long lastAccessed = System.currentTimeMillis();
 
-	public FileWatcher(File target, Runnable action) throws FileNotFoundException{
+	public FileWatcher(File target, Runnable action) throws ConfigurationException{
 		if(!target.exists() || !target.canRead()){
-			throw new FileNotFoundException("File "+target.getAbsolutePath()+
+			throw new ConfigurationException("File "+target.getAbsolutePath()+
 					" does not exist or is not readable.");
 		}
 		this.action = action;

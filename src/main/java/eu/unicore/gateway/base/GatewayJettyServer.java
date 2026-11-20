@@ -1,7 +1,6 @@
 package eu.unicore.gateway.base;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
@@ -90,17 +89,13 @@ public class GatewayJettyServer extends JettyServerBase {
 		super.initServer();
 		CredentialProperties cProps = gateway.getSecurityProperties().getCredentialProperties(); 
 		if(cProps.isDynamicalReloadEnabled()) {
-			try{
-				FileWatcher fw = new FileWatcher(
-						new File(cProps.getValue(CredentialProperties.PROP_LOCATION)),
-						() -> {
-							gateway.getSecurityProperties().reloadCredential();
-							reloadCredential();
-							});
-				fw.schedule(10, TimeUnit.SECONDS);	
-			}catch(FileNotFoundException fe) {
-				throw new ConfigurationException("", fe);
-			}
+			FileWatcher fw = new FileWatcher(
+					new File(cProps.getValue(CredentialProperties.PROP_LOCATION)),
+					() -> {
+						gateway.getSecurityProperties().reloadCredential();
+						reloadCredential();
+					});
+			fw.schedule(10, TimeUnit.SECONDS);	
 		}
 	}
 

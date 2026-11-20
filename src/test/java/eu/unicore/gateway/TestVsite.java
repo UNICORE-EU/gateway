@@ -3,7 +3,6 @@ package eu.unicore.gateway;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
@@ -63,7 +62,7 @@ public class TestVsite {
 			System.out.println(v.getStatusMessage());
 		}
 		v.disablePingDelay();
-		Thread.sleep(2000);
+		Thread.sleep(1000);
 		assertFalse(v.ping());
 		System.out.println(v.getStatusMessage());		
 	}

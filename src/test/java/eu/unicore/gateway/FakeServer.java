@@ -45,7 +45,7 @@ public class FakeServer implements Runnable, AutoCloseable {
 	 */
 	public FakeServer(int port)throws IOException{
 		serverSocket=new ServerSocket(port);
-		serverSocket.setSoTimeout(1000);
+		serverSocket.setSoTimeout(5000);
 		this.port=serverSocket.getLocalPort();
 	}
 
@@ -62,10 +62,11 @@ public class FakeServer implements Runnable, AutoCloseable {
 	}
 
 	private static int n=0;
+	private Thread _t;
 	public synchronized void start(){
-		Thread t=new Thread(this);
-		t.setName("FakeVSiteListenerThread"+(n++));
-		t.start();
+		_t=new Thread(this);
+		_t.setName("FakeVSiteListenerThread"+(n++));
+		_t.start();
 	}
 
 	public synchronized void restart()throws Exception{
@@ -77,6 +78,7 @@ public class FakeServer implements Runnable, AutoCloseable {
 	}
 
 	public void stop(){
+		_t.interrupt();
 		stopping=true;
 	}
 
@@ -207,7 +209,7 @@ public class FakeServer implements Runnable, AutoCloseable {
 					socket.getOutputStream().write("Content-Length: 0\n\n".getBytes());
 				}
 				socket.getOutputStream().flush();
-				System.out.println("HANDLING REQUEST, returning "+status);
+				log.debug("HANDLING REQUEST, returning {}", status);
 				if(!keepalive) {
 					IOUtils.closeQuietly(socket);
 					socket = null;
